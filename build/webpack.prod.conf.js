@@ -9,6 +9,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
+var isDist = !!process.env.DIST_ENV
+
 var env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : config.build.env
@@ -35,8 +37,22 @@ var webpackConfig = merge(baseWebpackConfig, {
       compress: {
         warnings: false
       },
-      sourceMap: true
-    }),
+      sourceMap: config.build.productionSourceMap
+    })
+  ]
+})
+
+if (isDist) {
+  webpackConfig.entry = {
+    'vue-json-pretty': './src/index.js'
+  }
+  webpackConfig.output = {
+    filename: './dist/[name].js',
+    library: 'VueJsonPretty',
+    libraryTarget: 'umd'
+  }
+} else {
+  webpackConfig.plugins.push(
     // extract css into its own file
     new ExtractTextPlugin({
       filename: utils.assetsPath('css/[name].[contenthash].css')
@@ -97,8 +113,8 @@ var webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ]
-})
+  )
+}
 
 if (config.build.productionGzip) {
   var CompressionWebpackPlugin = require('compression-webpack-plugin')
