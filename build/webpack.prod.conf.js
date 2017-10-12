@@ -10,6 +10,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
 var isDist = !!process.env.DIST_ENV
+var distPath = './dist'
 
 var env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -38,7 +39,13 @@ var webpackConfig = merge(baseWebpackConfig, {
         warnings: false
       },
       sourceMap: config.build.productionSourceMap
-    })
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../README.md'),
+        to: isDist ? distPath : config.build.assetsRoot
+      }
+    ])
   ]
 })
 
@@ -47,10 +54,18 @@ if (isDist) {
     'vue-json-pretty': './src/index.js'
   }
   webpackConfig.output = {
-    filename: './dist/[name].js',
+    filename: `${distPath}/[name].js`,
     library: 'VueJsonPretty',
     libraryTarget: 'umd'
   }
+  webpackConfig.plugins.push(
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../package.json'),
+        to: distPath
+      }
+    ])
+  )
 } else {
   webpackConfig.plugins.push(
     // extract css into its own file
