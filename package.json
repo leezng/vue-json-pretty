@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "leezng <294795201@qq.com>",
-  "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
