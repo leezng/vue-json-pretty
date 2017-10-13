@@ -5,7 +5,7 @@
       :data="data"
       :index="index"
       :last-index="lastIndex">
-      <span v-if="child && Array.isArray(data)">{{ index }}:</span>
+      <span v-if="child && !Array.isArray(json)">{{ index }}:</span>
     </brackets-left>
 
     <!-- data 为对象时, index 表示 key, 为数组才表示索引 -->
@@ -20,6 +20,7 @@
       @click.stop="handleClick">
       <tree
         v-if="Array.isArray(item) || isObject(item)"
+        :json="data"
         :data="item"
         :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
         :index="index"
@@ -50,12 +51,16 @@
   export default {
     name: 'tree',
     props: {
-      data: {},
-      child: Boolean,
+      /* 外部可用 START */
+      data: {}, // 当前树的数据
+      // 数据层级顶级路径
       path: {
         type: String,
         default: 'root'
       },
+      /* 外部可用 END */
+      json: {}, // 当前树的父级数据
+      child: Boolean, // 是否子树
       index: {},
       lastIndex: {}
     },
