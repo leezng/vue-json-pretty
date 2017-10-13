@@ -1,27 +1,48 @@
 # vue-json-pretty
 
-> A Vue.js project
+A Vue.js project for json-pretty. [leezng/vue-json-pretty](https://github.com/leezng/vue-json-pretty)
 
-## Build Setup
+## Installation
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
+```js
+npm install vue-json-pretty
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Usage
+
+```html
+<template>
+  <div>
+    ...
+    <vue-json-pretty
+      :path="'res'"
+      :data="{ key: 'value' }"
+      @click="handleClick">
+    </vue-json-pretty>
+  </div>
+</template>
+```
+
+```js
+import VueJsonPretty from 'vue-json-pretty'
+
+export default {
+  components: {
+    VueJsonPretty
+  }
+}
+```
+
+## Props
+
+| Attribute | Description | Type | Default |
+|-------- |-------- |-------- | -------- |
+| data | json data | string, array, object | - |
+| path | root data path | string | root |
+
+## Events
+
+| Event Name | Description | Callback Parameters |
+|---------- |-------- |---------- |
+| click  | triggered when a data item is clicked | (path, data) |
+

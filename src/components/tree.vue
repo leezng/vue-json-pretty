@@ -1,75 +1,95 @@
 <template>
   <div class="vjs__tree">
-    <span v-if="!child && show" class="vjs__tree__node" @click="toggle">{{ isArray(json) ? '[' : '{' }}</span>
-    <span v-show="!show" class="vjs__tree__node" @click.stop="toggle">
-      {{ isArray(json) ? '[...]' : '{...}' }}
-    </span>
+    <brackets-left
+      :visiable.sync="visiable"
+      :data="data"
+      :index="index"
+      :last-index="lastIndex">
+      <span v-if="child && Array.isArray(data)">{{ index }}:</span>
+    </brackets-left>
 
+    <!-- data 为对象时, index 表示 key, 为数组才表示索引 -->
     <div
-      v-for="(item, index) in json"
-      v-show="show"
+      v-for="(item, index) in data"
+      v-show="visiable"
       class="vjs__tree__content"
       :style="{ 'background-color': treeContentBackground }"
       :key="index"
       @mouseover.stop="treeContentBackground = '#eee'"
       @mouseout.stop="treeContentBackground = 'transparent'"
-      @click.stop="getItemData">
-      <tree-child
-        v-if="isArray(item) || isObject(item)"
+      @click.stop="handleClick">
+      <tree
+        v-if="Array.isArray(item) || isObject(item)"
+        :data="item"
+        :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
         :index="index"
-        :data="json"
-        :item="item">
-        <tree
-          :data="item"
-          :child="true"
-          :path="path + (isArray(json) ? `[${index}]` : `.${index}`)">
-        </tree>
-      </tree-child>
+        :last-index="getLastIndex()"
+        :child="true"
+        @click="handleItemClick">
+      </tree>
 
-      <div v-else :class="{ 'vjs__lastIndex': index !== lastIndex }" >
-        <span v-if="isObject(json)">{{ index }}:</span>
+      <div v-else :class="{ 'vjs__not__lastIndex': index !== getLastIndex() }" >
+        <span v-if="isObject(data)">{{ index }}:</span>
         <span :class="getValueClass(item)">{{ `${item}` }}</span>
       </div>
     </div>
 
-    <span v-if="!child && show" class="vjs__tree__node" @click.stop="toggle">
-      {{ isArray(json) ? ']' : '}' }}
-    </span>
+    <brackets-right
+      :visiable.sync="visiable"
+      :data="data"
+      :index="index"
+      :last-index="lastIndex">
+    </brackets-right>
   </div>
 </template>
 
 <script>
-  import TreeChild from './tree-child'
-  import mixin from 'src/mixins/mixin'
+  import BracketsLeft from './brackets-left'
+  import BracketsRight from './brackets-right'
 
   export default {
     name: 'tree',
-    mixins: [mixin],
     props: {
       data: {},
       child: Boolean,
       path: {
         type: String,
-        default: 'res'
-      }
+        default: 'root'
+      },
+      index: {},
+      lastIndex: {}
     },
     data () {
       return {
+        visiable: true,
         treeContentBackground: 'transparent'
       }
     },
     components: {
-      TreeChild
-    },
-    computed: {
-      json () {
-        return JSON.parse(JSON.stringify(this.data))
-      }
+      BracketsLeft,
+      BracketsRight
     },
     methods: {
-      getItemData () {
-        console.log('path: ', this.path)
-        console.log('data: ', this.json)
+      // 触发组件的 click 事件
+      handleClick () {
+        this.$emit('click', this.path, this.data)
+      },
+      // 处理子树触发的 click 事件, 并传递到顶层
+      handleItemClick (path, data) {
+        this.$emit('click', path, data)
+      },
+      // 工具函数: 判断是否对象
+      isObject (value) {
+        return Object.prototype.toString.call(value).slice(8, -1).toLowerCase() === 'object'
+      },
+      // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
+      getLastIndex () {
+        if (Array.isArray(this.data)) {
+          return this.data.length - 1
+        } else if (this.isObject(this.data)) {
+          let arr = Object.keys(this.data)
+          return arr[arr.length - 1]
+        }
       },
       getValueClass (value) {
         if (value === null) {
@@ -97,7 +117,7 @@
         color: #20a0ff;
       }
     }
-    .vjs__lastIndex:after {
+    .vjs__not__lastIndex:after {
       content: ",";
     }
     .vjs__value__null {
