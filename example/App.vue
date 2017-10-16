@@ -1,7 +1,11 @@
 <template>
   <div id="app" class="example-app">
-    <vue-json-pretty :data="data" :path="'res'" @click="handleClick"></vue-json-pretty>
+    <div>
+      <h2>JSON Tree:</h2>
+      <vue-json-pretty :data="data" :path="'res'" @click="handleClick"></vue-json-pretty>
+    </div>
     <div class="result">
+      <h2>Click Result:</h2>
       <div>path: {{itemPath}}</div>
       <div>data: <pre>{{itemData}}</pre></div>
     </div>
@@ -30,7 +34,8 @@ export default {
         c: {
           a: null,
           b: 2
-        }
+        },
+        d: 123456789
       },
       itemData: {},
       itemPath: ''
@@ -39,29 +44,30 @@ export default {
   methods: {
     handleClick (path, data) {
       this.itemPath = path
-      this.itemData = data
+      this.itemData = !data ? data + '' : data // 处理 data = null 的情况
     }
   }
 }
 </script>
 
 <style lang="less">
+  html, body {
+    margin: 0;
+  }
   .example-app {
-    padding: 30px;
     > div {
       float: left;
-      padding: 15px;
+      padding: 0 15px;
       width: 50%;
       min-height: 300px;
-      border: 1px solid #ccc;
       box-sizing: border-box;
-    }
-    .result {
-      font-family: Consolas;
-      pre {
-        margin: 0;
-        font-family: inherit;
+      &:first-child {
+        border-right: 5px double #ccc;
       }
+    }
+    .result pre{
+      margin: 0;
+      font-family: Consolas;
     }
   }
 </style>

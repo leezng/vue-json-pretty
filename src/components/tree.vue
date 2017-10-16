@@ -1,46 +1,52 @@
 <template>
-  <div class="vjs__tree">
-    <brackets-left
-      :visiable.sync="visiable"
-      :data="data"
-      :index="index"
-      :last-index="lastIndex">
-      <span v-if="child && !Array.isArray(json)">{{ index }}:</span>
-    </brackets-left>
-
-    <!-- data 为对象时, index 表示 key, 为数组才表示索引 -->
-    <div
-      v-for="(item, index) in data"
-      v-show="visiable"
-      class="vjs__tree__content"
-      :style="{ 'background-color': treeContentBackground }"
-      :key="index"
-      @mouseover.stop="treeContentBackground = '#eee'"
-      @mouseout.stop="treeContentBackground = 'transparent'"
-      @click.stop="handleClick">
-      <tree
-        v-if="Array.isArray(item) || isObject(item)"
-        :json="data"
-        :data="item"
-        :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
+  <div
+    class="vjs__tree"
+    :style="{ 'background-color': treeContentBackground }"
+    @click.stop="handleClick"
+    @mouseover.stop="treeContentBackground = '#eee'"
+    @mouseout.stop="treeContentBackground = 'transparent'">
+    <template v-if="Array.isArray(data) || isObject(data)">
+      <!-- 左闭合 -->
+      <brackets-left
+        :visiable.sync="visiable"
+        :data="data"
         :index="index"
-        :last-index="getLastIndex()"
-        :child="true"
-        @click="handleItemClick">
-      </tree>
+        :last-index="lastIndex">
+        <span v-if="child && !Array.isArray(parentData)">{{ index }}:</span>
+      </brackets-left>
 
-      <div v-else :class="{ 'vjs__not__lastIndex': index !== getLastIndex() }" >
-        <span v-if="isObject(data)">{{ index }}:</span>
-        <span :class="getValueClass(item)">{{ `${item}` }}</span>
+      <!-- 数据内容, data 为对象时, index 表示 key, 为数组才表示索引 -->
+      <div
+        v-for="(item, index) in data"
+        v-show="visiable"
+        class="vjs__tree__content"
+        :key="index">
+        <tree
+          :parent-data="data"
+          :data="item"
+          :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
+          :index="index"
+          :child="true"
+          @click="handleItemClick">
+        </tree>
       </div>
-    </div>
 
-    <brackets-right
-      :visiable.sync="visiable"
-      :data="data"
-      :index="index"
-      :last-index="lastIndex">
-    </brackets-right>
+      <!-- 右闭合 -->
+      <brackets-right
+        :visiable.sync="visiable"
+        :data="data"
+        :index="index"
+        :last-index="lastIndex">
+      </brackets-right>
+    </template>
+
+    <template v-else>
+      <div :class="{ 'vjs__not__lastIndex': index !== lastIndex }">
+        <span v-if="isObject(parentData)">{{ index }}:</span>
+        <!-- data 可能为 null, 因此界面展示转为字符串 -->
+        <span :class="getValueClass(data)">{{ data + '' }}</span>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -50,6 +56,10 @@
 
   export default {
     name: 'tree',
+    components: {
+      BracketsLeft,
+      BracketsRight
+    },
     props: {
       /* 外部可用 START */
       data: {}, // 当前树的数据
@@ -59,10 +69,9 @@
         default: 'root'
       },
       /* 外部可用 END */
-      json: {}, // 当前树的父级数据
+      parentData: {}, // 当前树的父级数据
       child: Boolean, // 是否子树
-      index: {},
-      lastIndex: {}
+      index: {}
     },
     data () {
       return {
@@ -70,9 +79,16 @@
         treeContentBackground: 'transparent'
       }
     },
-    components: {
-      BracketsLeft,
-      BracketsRight
+    computed: {
+      // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
+      lastIndex () {
+        if (Array.isArray(this.parentData)) {
+          return this.parentData.length - 1
+        } else if (this.isObject(this.parentData)) {
+          let arr = Object.keys(this.parentData)
+          return arr[arr.length - 1]
+        }
+      }
     },
     methods: {
       // 触发组件的 click 事件
@@ -86,15 +102,6 @@
       // 工具函数: 判断是否对象
       isObject (value) {
         return Object.prototype.toString.call(value).slice(8, -1).toLowerCase() === 'object'
-      },
-      // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
-      getLastIndex () {
-        if (Array.isArray(this.data)) {
-          return this.data.length - 1
-        } else if (this.isObject(this.data)) {
-          let arr = Object.keys(this.data)
-          return arr[arr.length - 1]
-        }
       },
       getValueClass (value) {
         if (value === null) {

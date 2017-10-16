@@ -37,7 +37,7 @@ export default {
 
 | Attribute | Description | Type | Default |
 |-------- |-------- |-------- | -------- |
-| data | json data | string, array, object | - |
+| data | json data | JSON object | - |
 | path | root data path | string | root |
 
 ## Events
