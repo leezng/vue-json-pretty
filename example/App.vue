@@ -2,7 +2,13 @@
   <div id="app" class="example-app">
     <div>
       <h2>JSON Tree:</h2>
-      <vue-json-pretty :data="data" :path="'res'" @click="handleClick"></vue-json-pretty>
+      <vue-json-pretty
+        :data="data"
+        :path="'res'"
+        :path-checked="['res', 'res.c']"
+        :path-selectable="pathSelectableFn"
+        @click="handleClick">
+      </vue-json-pretty>
     </div>
     <div class="result">
       <h2>Click Result:</h2>
@@ -22,15 +28,16 @@ export default {
   },
   data () {
     return {
+      val: '',
       data: {
-        a: 1,
-        b: [{
+        a: 12,
+        b: [[[{
           a: 1,
           b: 2
         }, {
           a: 'abcde',
           b: true
-        }],
+        }]]],
         c: {
           a: null,
           b: 2
@@ -42,9 +49,13 @@ export default {
     }
   },
   methods: {
-    handleClick (path, data) {
+    handleClick (path, data, checked) {
+      console.log('click', path, data, checked)
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
+    },
+    pathSelectableFn (path, data) {
+      return !(Array.isArray(data) && data.some(item => Array.isArray(item)))
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.2.0",
-  "description": "A Vue.js project",
+  "version": "1.3.0",
+  "description": "A Vue.js 2.0 Toolkit for json",
   "author": "leezng <294795201@qq.com>",
   "main": "vue-json-pretty.js",
   "scripts": {
@@ -11,6 +11,22 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run e2e",
     "lint": "eslint --ext .js,.vue src test/e2e/specs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:leezng/vue-json-pretty.git"
+  },
+  "homepage": "https://leezng.github.io/vue-json-pretty",
+  "keywords": [
+    "vue",
+    "json",
+    "format",
+    "pretty",
+    "vue-component"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leezng/vue-json-pretty/issues"
   },
   "dependencies": {
     "vue": "^2.3.0"

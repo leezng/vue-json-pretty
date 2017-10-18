@@ -1,10 +1,19 @@
 <template>
   <div
     class="vjs__tree"
-    :style="{ 'background-color': treeContentBackground }"
-    @click.stop="handleClick"
-    @mouseover.stop="treeContentBackground = '#eee'"
-    @mouseout.stop="treeContentBackground = 'transparent'">
+    :style="{
+      'background-color': treeContentBackground,
+      'position': child ? '' : 'relative',
+      'margin-left': !child && existCheckbox ? '30px' : ''
+    }"
+    @click.stop="handleClick($event)"
+    @mouseover.stop="handleMouseover"
+    @mouseout.stop="handleMouseout">
+
+    <template v-if="selectable && existCheckbox" class="vjs-checkbox">
+      <checkbox v-model="checkboxVal" @change="handleClick($event, true)"></checkbox>
+    </template>
+
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
       <brackets-left
@@ -25,6 +34,9 @@
           :parent-data="data"
           :data="item"
           :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
+          :path-checked="pathChecked"
+          :path-selectable="pathSelectable"
+          :selectable-type="selectableType"
           :index="index"
           :child="true"
           @click="handleItemClick">
@@ -51,12 +63,14 @@
 </template>
 
 <script>
+  import Checkbox from './checkbox'
   import BracketsLeft from './brackets-left'
   import BracketsRight from './brackets-right'
 
   export default {
     name: 'tree',
     components: {
+      Checkbox,
       BracketsLeft,
       BracketsRight
     },
@@ -68,15 +82,31 @@
         type: String,
         default: 'root'
       },
+      // 定义已选中的数据层级
+      pathChecked: {
+        type: Array,
+        default: () => []
+      },
+      // 定义某个数据层级是否支持选中操作
+      pathSelectable: {
+        type: Function,
+        default: () => true
+      },
+      // 定义数据层级支持的选中方式, 默认所有方式均支持
+      selectableType: {
+        type: String,
+        default: 'both' // both, checkbox, tree
+      },
       /* 外部可用 END */
       parentData: {}, // 当前树的父级数据
-      child: Boolean, // 是否子树
+      child: Boolean, // 是否子树(优化: 通过 $parent?)
       index: {}
     },
     data () {
       return {
         visiable: true,
-        treeContentBackground: 'transparent'
+        treeContentBackground: 'transparent',
+        checkboxVal: this.pathChecked.includes(this.path) // 复选框的值
       }
     },
     computed: {
@@ -88,16 +118,40 @@
           let arr = Object.keys(this.parentData)
           return arr[arr.length - 1]
         }
+      },
+      // 当前的树是否支持选中功能
+      selectable () {
+        return this.pathSelectable(this.path, this.data)
+      },
+      // 存在复选框
+      existCheckbox () {
+        return this.selectableType === 'both' || this.selectableType === 'checkbox'
+      },
+      // 存在mouseover
+      existMouseover () {
+        return this.selectableType === 'both' || this.selectableType === 'tree'
       }
     },
     methods: {
-      // 触发组件的 click 事件
-      handleClick () {
-        this.$emit('click', this.path, this.data)
+      /**
+       * 触发组件的 click 事件
+       * @param  {Boolean} changed 复选框值是否已改变(如果来自复选框 change 事件则已改变)
+       */
+      handleClick (e, changed = false) {
+        // 由于 checkbox 也依赖该函数, 因此通过 changed 进行排除
+        if (!changed && !this.existMouseover || !this.selectable) return
+        changed || (this.checkboxVal = !this.checkboxVal)
+        this.$emit('click', this.path, this.data, this.checkboxVal)
       },
       // 处理子树触发的 click 事件, 并传递到顶层
-      handleItemClick (path, data) {
-        this.$emit('click', path, data)
+      handleItemClick (path, data, checked) {
+        this.$emit('click', path, data, checked)
+      },
+      handleMouseover () {
+        this.existMouseover && this.selectable && (this.treeContentBackground = '#eee')
+      },
+      handleMouseout () {
+        this.existMouseover && this.selectable && (this.treeContentBackground = 'transparent')
       },
       // 工具函数: 判断是否对象
       isObject (value) {
@@ -117,10 +171,12 @@
 </script>
 
 <style lang="less">
+  @content-padding: 15px; /* 树的内容区域左留空*/
+
   .vjs__tree {
     font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono";
     .vjs__tree__content {
-      padding-left: 15px;
+      padding-left: @content-padding;
       border-left: 1px dotted #ccc;
     }
     .vjs__tree__node {
@@ -146,6 +202,10 @@
       &:after {
         content: "\""
       }
+    }
+    .vjs-checkbox {
+      position: absolute;
+      left: -30px;
     }
   }
 </style>

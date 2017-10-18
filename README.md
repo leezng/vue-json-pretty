@@ -1,8 +1,13 @@
 # vue-json-pretty
 
-A Vue.js project for json-pretty. [leezng/vue-json-pretty](https://github.com/leezng/vue-json-pretty)
+A Vue.js 2.0 Toolkit for json.
 
-## Installation
+## Links
+
+- [Demo](https://leezng.github.io/vue-json-pretty)
+- [Github](https://github.com/leezng/vue-json-pretty)
+
+## Install
 
 ```js
 npm install vue-json-pretty
@@ -39,6 +44,9 @@ export default {
 |-------- |-------- |-------- | -------- |
 | data | json data | JSON object | - |
 | path | root data path | string | root |
+| pathChecked | defines the selected data path | array | [] |
+| pathSelectable | defines whether a data path supports selection | Function(itemPath, itemData) | - |
+| selectableType | defines the selected type, by default all types are supported | enum: both, checkbox, tree | both |
 
 ## Events
 
