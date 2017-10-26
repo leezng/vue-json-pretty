@@ -175,6 +175,7 @@
 
   .vjs__tree {
     font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono";
+    line-height: 1.5;
     .vjs__tree__content {
       padding-left: @content-padding;
       border-left: 1px dotted #ccc;
