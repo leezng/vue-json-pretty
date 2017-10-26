@@ -157,13 +157,14 @@
       isObject (value) {
         return Object.prototype.toString.call(value).slice(8, -1).toLowerCase() === 'object'
       },
+      // 简单类型数据添加 class, 定义样式
       getValueClass (value) {
         if (value === null) {
+          // null
           return 'vjs__value__null'
-        } else if (typeof value === 'number') {
-          return 'vjs__value__number'
-        } else if (typeof value === 'string') {
-          return 'vjs__value__string'
+        } else {
+          // string, number, boolean
+          return `vjs__value__${typeof value}`
         }
       }
     }
@@ -189,11 +190,16 @@
     .vjs__not__lastIndex:after {
       content: ",";
     }
+    .vjs-checkbox {
+      position: absolute;
+      left: -30px;
+    }
     .vjs__value__null {
       font-weight: bold;
       color: #ff4949;
     }
-    .vjs__value__number {
+    .vjs__value__number,
+    .vjs__value__boolean {
       font-weight: bold;
       color: #1d8ce0;
     }
@@ -203,10 +209,6 @@
       &:after {
         content: "\""
       }
-    }
-    .vjs-checkbox {
-      position: absolute;
-      left: -30px;
     }
   }
 </style>
