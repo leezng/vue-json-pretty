@@ -6,6 +6,7 @@ A Vue.js 2.0 Toolkit for json.
 
 - [Demo](https://leezng.github.io/vue-json-pretty)
 - [Github](https://github.com/leezng/vue-json-pretty)
+- [中文文档](./README.zh-CN.md)
 
 ## Install
 
