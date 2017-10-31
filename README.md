@@ -1,6 +1,6 @@
 # vue-json-pretty
 
-A Vue.js 2.0 Toolkit for json.
+A Vue.js 2.0 Toolkit for JSON.
 
 ## Links
 
