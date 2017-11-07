@@ -1,0 +1,31 @@
+language: node_js
+node_js:
+  - "iojs"
+  - "7"
+
+cache:
+  directories:
+    - "node_modules"
+
+install:
+  - npm install
+
+script:
+  - npm run build
+
+after_script:
+  - cd ./example-dist
+  - git init
+  - git config user.name "leezng"
+  - git config user.email "leezng@163.com"
+  - git add .
+  - git commit -m "update example page"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
+
+branches:
+  only:
+    - dev
+
+env:
+  global:
+    - GH_REF: github.com/leezng/leezng.github.io.git
