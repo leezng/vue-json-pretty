@@ -28,4 +28,4 @@ branches:
 
 env:
   global:
-    - GH_REF: github.com/leezng/leezng.github.io.git
+    - GH_REF: github.com/leezng/vue-json-pretty.git
