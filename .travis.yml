@@ -14,6 +14,7 @@ script:
   - npm run build
 
 after_script:
+  - git checkout -b gh-pages origin/gh-pages
   - cd ./example-dist
   - git branch
   - git init
