@@ -13,10 +13,11 @@ script:
   - npm run build
 
 after_script:
-  - git branch -r
-  - git checkout -b gh-pages origin/gh-pages
+  - git remote show origin
   - cd ./example-dist
   - git init
+  - git remote show origin
+  - git branch
   - git config user.name "leezng"
   - git config user.email "leezng@163.com"
   - git add .
