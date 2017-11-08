@@ -15,7 +15,9 @@ script:
 
 after_script:
   - cd ./example-dist
+  - git branch
   - git init
+  - git branch
   - git config user.name "leezng"
   - git config user.email "leezng@163.com"
   - git add .
