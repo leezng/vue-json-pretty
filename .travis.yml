@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - "iojs"
   - "7"
 
 cache:
@@ -14,11 +13,10 @@ script:
   - npm run build
 
 after_script:
+  - git branch -r
   - git checkout -b gh-pages origin/gh-pages
   - cd ./example-dist
-  - git branch
   - git init
-  - git branch
   - git config user.name "leezng"
   - git config user.email "leezng@163.com"
   - git add .
