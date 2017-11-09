@@ -16,6 +16,7 @@ after_script:
   - git remote show origin
   - cd ./example-dist
   - git init
+  - git remote add origin "https://${GH_TOKEN}@${GH_REF}"
   - git remote show origin
   - git branch
   - git config user.name "leezng"
