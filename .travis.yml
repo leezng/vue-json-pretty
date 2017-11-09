@@ -18,6 +18,7 @@ after_script:
   - git init
   - git remote add origin "https://${GH_TOKEN}@${GH_REF}"
   - git remote show origin
+  - git checkout -b gh-pages origin/gh-pages
   - git branch
   - git config user.name "leezng"
   - git config user.email "leezng@163.com"
