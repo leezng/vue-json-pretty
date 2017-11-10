@@ -9,23 +9,41 @@ cache:
 install:
   - npm install
 
-script:
-  - npm run build
+stages:
+  - lint
+  - name: gh-pages
+    if: branch = master
+  - name: release
+    if: branch = master
 
-after_script:
-  - cd ./example-dist
-  - git init
-  - git remote add origin "https://${GH_TOKEN}@${GH_REF}"
-  - git checkout -b gh-pages
-  - git config user.name "leezng"
-  - git config user.email "leezng@163.com"
-  - git add .
-  - git commit -m "update example page"
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
+jobs:
+  include:
+    - stage: lint
+      script: npm run lint
+    - stage: gh-pages
+      script: npm run build
+      after_script:
+        - cd ./example-dist
+        - git init
+        - git remote add origin "https://${GH_TOKEN}@${GH_REF}"
+        - git checkout -b gh-pages
+        - git config user.name "leezng"
+        - git config user.email "leezng@163.com"
+        - git add .
+        - git commit -m "update example page"
+        - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
+    - stage: release
+      script: echo "Deploying to GitHub releases ..."
+      deploy:
+        provider: releases
+        api_key: ${GH_TOKEN}
+        skip_cleanup: true
+        on:
+          tags: true
 
-branches:
-  only:
-    - dev
+# branches:
+#   only:
+#     - dev
 
 env:
   global:
