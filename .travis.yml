@@ -11,16 +11,16 @@ install:
 
 stages:
   - lint
-  - name: gh-pages
+  - name: gh_pages
     if: branch = master
-  - name: release
+  - name: github_release
     if: branch = master
 
 jobs:
   include:
     - stage: lint
       script: npm run lint
-    - stage: gh-pages
+    - stage: gh_pages
       script: npm run build
       after_script:
         - cd ./example-dist
@@ -32,7 +32,7 @@ jobs:
         - git add .
         - git commit -m "update example page"
         - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
-    - stage: release
+    - stage: github_release
       script: echo "Deploying to GitHub releases ..."
       deploy:
         provider: releases
@@ -40,6 +40,12 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
+    # - stage: npm_release
+    #   script: echo "Deploying to npm releases ..."
+    #   deploy:
+    #     provider: npm
+    #     email: ""
+    #     api_key: ""
 
 # branches:
 #   only:
