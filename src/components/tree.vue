@@ -82,6 +82,11 @@
         type: String,
         default: 'root'
       },
+      // 定义数据层级支持的选中方式, 默认无该功能
+      selectableType: {
+        type: String,
+        default: '' // both, checkbox, tree
+      },
       // 定义已选中的数据层级
       pathChecked: {
         type: Array,
@@ -91,11 +96,6 @@
       pathSelectable: {
         type: Function,
         default: () => true
-      },
-      // 定义数据层级支持的选中方式, 默认所有方式均支持
-      selectableType: {
-        type: String,
-        default: 'both' // both, checkbox, tree
       },
       /* 外部可用 END */
       parentData: {}, // 当前树的父级数据
