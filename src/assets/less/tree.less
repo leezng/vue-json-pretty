@@ -1,0 +1,39 @@
+@content-padding: 15px; /* 树的内容区域左留空*/
+
+.vjs__tree {
+  font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono";
+  line-height: 1.5;
+  .vjs__tree__content {
+    padding-left: @content-padding;
+    border-left: 1px dotted #ccc;
+  }
+  .vjs__tree__node {
+    cursor: pointer;
+    &:hover {
+      color: #20a0ff;
+    }
+  }
+  .vjs__not__lastIndex:after {
+    content: ",";
+  }
+  .vjs-checkbox {
+    position: absolute;
+    left: -30px;
+  }
+  .vjs__value__null {
+    font-weight: bold;
+    color: #ff4949;
+  }
+  .vjs__value__number,
+  .vjs__value__boolean {
+    font-weight: bold;
+    color: #1d8ce0;
+  }
+  .vjs__value__string {
+    color: #13ce66;
+    &:before,
+    &:after {
+      content: "\""
+    }
+  }
+}

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import VueJsonPretty from 'src/components/tree'
+import VueJsonPretty from 'src'
 
 export default {
   name: 'app',
