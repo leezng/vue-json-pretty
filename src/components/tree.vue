@@ -159,12 +159,16 @@
       },
       // 简单类型数据添加 class, 定义样式
       getValueClass (value) {
-        if (value === null) {
-          // null
-          return 'vjs__value__null'
-        } else {
-          // string, number, boolean
-          return `vjs__value__${typeof value}`
+        let dataType = Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
+        // 若使用 typeof 会影响 webpack 压缩后体积变大
+        switch (dataType) {
+          case 'null':
+          case 'string':
+          case 'number':
+          case 'boolean':
+            return `vjs__value__${dataType}`
+          default:
+            return ''
         }
       }
     }
