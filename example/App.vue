@@ -1,22 +1,41 @@
 <template>
-  <div id="app" class="example-app">
-    <div class="block">
-      <h2>JSON Input:</h2>
-      <textarea v-model="val"></textarea>
-
-      <h2>Click Result:</h2>
-      <div>path: {{itemPath}}</div>
-      <div>data: <pre>{{itemData}}</pre></div>
+  <div id="app">
+    <div class="example example-1">
+      <h2>EXAMPLE 1</h2>
+      <div class="block">
+        <h3>JSON Input:</h3>
+        <textarea v-model="val"></textarea>
+      </div>
+      <div class="block">
+        <h3>JSON Tree:</h3>
+        <vue-json-pretty
+          :data="json"
+          :path="'res'">
+        </vue-json-pretty>
+      </div>
     </div>
-    <div class="block">
-      <h2>JSON Tree:</h2>
-      <vue-json-pretty
-        :data="json"
-        :path="'res'"
-        :path-checked="['res', 'res.c']"
-        :path-selectable="pathSelectableFn"
-        @click="handleClick">
-      </vue-json-pretty>
+
+    <div class="example example-2">
+      <h2>EXAMPLE 2</h2>
+      <div class="block">
+        <h3>JSON Input:</h3>
+        <textarea v-model="val"></textarea>
+
+        <h3>Click Result:</h3>
+        <div>path: {{itemPath}}</div>
+        <div>data: <pre>{{itemData}}</pre></div>
+      </div>
+      <div class="block">
+        <h3>JSON Tree:</h3>
+        <vue-json-pretty
+          :data="json"
+          :path="'res'"
+          :path-checked="['res', 'res.c']"
+          :path-selectable="pathSelectableFn"
+          :selectable-type="'both'"
+          @click="handleClick">
+        </vue-json-pretty>
+      </div>
     </div>
   </div>
 </template>
@@ -36,17 +55,17 @@ export default {
         status: 200,
         error: '',
         data: [{
-          news_id: '51184',
-          title: '行货iPhone X评测：用真正黑科技革新未来',
-          source: '网易手机'
-        },{
-          news_id: '51183',
-          title: '交通天堂：未来城市如何为人与无人车设计街道？',
-          source: '网易智能'
-        },{
-          news_id: '51182',
-          title: '特斯拉马斯克的美国政商关系：政府不掏一百亿不建厂',
-          source: 'AI财经社'
+          news_id: 51184,
+          title: 'iPhone X Review: Innovative future with real black technology',
+          source: 'Netease phone'
+        }, {
+          news_id: 51183,
+          title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
+          source: 'Netease smart'
+        }, {
+          news_id: 51182,
+          title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
+          source: 'AI Finance'
         }]
       },
       itemData: {},
@@ -84,10 +103,10 @@ export default {
   html, body {
     margin: 0;
   }
-  h2 {
+  h2, h3 {
     margin: 0 0 10px;
   }
-  .example-app {
+  .example {
     padding: 10px;
     overflow: hidden;
     .block {
@@ -95,16 +114,17 @@ export default {
       padding: 0 20px;
       width: 50%;
       box-sizing: border-box;
-      textarea {
-        padding: 5px;
-        width: 100%;
-        height: 100px;
-        box-sizing: border-box;
-      }
-      pre{
-        margin: 0;
-        font-family: Consolas;
-      }
+    }
+    textarea {
+      padding: 5px;
+      width: 100%;
+      height: 100px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    pre{
+      margin: 0;
+      font-family: Consolas;
     }
   }
 </style>
