@@ -68,7 +68,7 @@
   import BracketsRight from './brackets-right'
 
   export default {
-    name: 'tree',
+    name: 'vue-json-pretty',
     components: {
       Checkbox,
       BracketsLeft,
