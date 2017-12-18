@@ -30,7 +30,7 @@
         v-show="visiable"
         class="vjs__tree__content"
         :key="index">
-        <tree
+        <vue-json-pretty
           :parent-data="data"
           :data="item"
           :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
@@ -40,7 +40,7 @@
           :index="index"
           :child="true"
           @click="handleItemClick">
-        </tree>
+        </vue-json-pretty>
       </div>
 
       <!-- 右闭合 -->
