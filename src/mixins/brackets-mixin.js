@@ -8,8 +8,7 @@ export default {
       required: true
     },
     index: [Number, String],
-    lastIndex: [Number, String],
-    isLast: Boolean
+    lastIndex: [Number, String]
   },
   computed: {
     dataVisiable: {
