@@ -51,7 +51,7 @@ export default {
 | path | root data path | string | root |
 | pathChecked | defines the selected data path | array | [] |
 | pathSelectable | defines whether a data path supports selection | Function(itemPath, itemData) | - |
-| selectableType | defines the selected type, by default all types are supported | enum: both, checkbox, tree | both |
+| selectableType | defines the selected type, this feature is not supported by default | enum: both, checkbox, tree | - |
 
 ## Events
 
