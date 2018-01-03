@@ -4,7 +4,7 @@
 [![npm package](https://img.shields.io/npm/v/vue-json-pretty.svg)](https://www.npmjs.org/package/vue-json-pretty)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/leezng/vue-json-pretty/blob/master/LICENSE)
 
-A Vue 2.x Toolkit for JSON.
+A vue 2.x component for rendering JSON data as a tree structure.
 
 ## Links
 
