@@ -56,7 +56,7 @@ export default {
 | path | 定义最顶层数据层级 | string | root |
 | pathChecked | 定义哪些数据层级是已被选中的 | array | [] |
 | pathSelectable | 定义哪些数据层级是可以被选中的 | Function(itemPath, itemData) | - |
-| selectableType | 定义组件支持的选中方式，默认支持复选框选中与数据点击选中 | enum: both, checkbox, tree | both |
+| selectableType | 定义组件支持的选中方式，默认无选中功能 | enum: both, checkbox, tree | - |
 
 ## Events
 
