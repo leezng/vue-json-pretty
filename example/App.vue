@@ -120,6 +120,7 @@ export default {
       width: 100%;
       height: 100px;
       box-sizing: border-box;
+      resize: vertical;
       font-family: inherit;
     }
     pre{

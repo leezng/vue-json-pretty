@@ -4,7 +4,7 @@
 [![npm package](https://img.shields.io/npm/v/vue-json-pretty.svg)](https://www.npmjs.org/package/vue-json-pretty)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/leezng/vue-json-pretty/blob/master/LICENSE)
 
-一个基于 Vue.js 2.0 开发的 JSON 美化插件
+一个基于 Vue 2.x 开发的 JSON 美化插件
 
 - 基本功能: JSON 的美化
 - 附加功能: JSON 数据对应层级数据的点击获取
