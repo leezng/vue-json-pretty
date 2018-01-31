@@ -21,7 +21,7 @@
         <h3>JSON Input:</h3>
         <textarea v-model="val"></textarea>
 
-        <h3>Click Result:</h3>
+        <h3>Latest Click Result:</h3>
         <div>path: {{itemPath}}</div>
         <div>data: <pre>{{itemData}}</pre></div>
       </div>
@@ -103,6 +103,7 @@ export default {
 <style lang="less">
   html, body {
     margin: 0;
+    background-color: #f9f9f9;
   }
   .example {
     position: relative;
@@ -130,6 +131,11 @@ export default {
       border-radius: 5px;
       resize: vertical;
       font-family: inherit;
+      &:focus {
+        outline: none;
+        border-color: #1d8ce0;
+        box-shadow: 0 0 3px #1d8ce0;
+      }
     }
     pre{
       margin: 0;

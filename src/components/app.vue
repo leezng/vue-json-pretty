@@ -3,13 +3,12 @@
     class="vjs__tree"
     :style="{
       'background-color': treeContentBackground,
-      'position': child ? '' : 'relative',
-      'margin-left': !child && existCheckbox ? '30px' : ''
+      'position': currentDeep > 1 ? '' : 'relative',
+      'margin-left': currentDeep === 1 && existCheckbox ? '30px' : ''
     }"
     @click.stop="handleClick($event)"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout">
-
     <template v-if="selectable && existCheckbox" class="vjs-checkbox">
       <checkbox v-model="checkboxVal" @change="handleClick($event, true)"></checkbox>
     </template>
@@ -21,7 +20,7 @@
         :data="data"
         :index="index"
         :last-index="lastIndex">
-        <span v-if="child && !Array.isArray(parentData)">{{ index }}:</span>
+        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ index }}:</span>
       </brackets-left>
 
       <!-- 数据内容, data 为对象时, index 表示 key, 为数组才表示索引 -->
@@ -33,12 +32,13 @@
         <vue-json-pretty
           :parent-data="data"
           :data="item"
+          :deep="deep"
           :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
           :path-checked="pathChecked"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
           :index="index"
-          :child="true"
+          :current-deep="currentDeep + 1"
           @click="handleItemClick">
         </vue-json-pretty>
       </div>
@@ -76,7 +76,13 @@
     },
     props: {
       /* 外部可用 START */
-      data: {}, // 当前树的数据
+      // 当前树的数据
+      data: {},
+      // 定义树的深度, 大于该深度的子树将不被展开
+      deep: {
+        type: Number,
+        default: Infinity
+      },
       // 数据层级顶级路径
       path: {
         type: String,
@@ -98,13 +104,19 @@
         default: () => true
       },
       /* 外部可用 END */
-      parentData: {}, // 当前树的父级数据
-      child: Boolean, // 是否子树(优化: 通过 $parent?)
+
+      // 当前树的父级数据
+      parentData: {},
+      // 当前树的深度, 以根节点作为0开始, 所以第一层树的深度为1, 递归逐次递增
+      currentDeep: {
+        type: Number,
+        default: 1
+      },
       index: {}
     },
     data () {
       return {
-        visiable: true,
+        visiable: this.currentDeep <= this.deep,
         treeContentBackground: 'transparent',
         checkboxVal: this.pathChecked.includes(this.path) // 复选框的值
       }
