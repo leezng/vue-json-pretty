@@ -6,6 +6,9 @@
 
 A vue 2.x component for rendering JSON data as a tree structure.
 
+- basic: JSON pretty
+- advanced: get item data from JSON
+
 ## Links
 
 - [Demo](https://leezng.github.io/vue-json-pretty)
@@ -45,15 +48,21 @@ export default {
 
 ## Props
 
-| Attribute | Description | Type | Default |
+- If you are using only the basic features (JSON pretty), just focus on the `base` properties.
+- If you are using advanced features (get item data), you need to focus on the `base` and `advanced` attributes.
+
+| Attribute | Level | Description | Type | Default |
 |-------- |-------- |-------- | -------- |
-| data | json data | JSON object | - |
-| path | root data path | string | root |
-| pathChecked | defines the selected data path | array | [] |
-| pathSelectable | defines whether a data path supports selection | Function(itemPath, itemData) | - |
-| selectableType | defines the selected type, this feature is not supported by default | enum: both, checkbox, tree | - |
+| data | basic | json data | JSON object | - |
+| deep | basic |data depth, data larger than this depth will not be expanded | number | Infinity |
+| path | advanced | root data path | string | root |
+| pathChecked | advanced | defines the selected data path | array | [] |
+| pathSelectable | advanced | defines whether a data path supports selection | Function(itemPath, itemData) | - |
+| selectableType | advanced | defines the selected type, this feature is not supported by default | enum: both, checkbox, tree | - |
 
 ## Events
+
+- The following events are base on advanced features.
 
 | Event Name | Description | Callback Parameters |
 |---------- |-------- |---------- |

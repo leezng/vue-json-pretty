@@ -6,8 +6,8 @@
 
 一个将 JSON 字符串渲染成树形结构的 Vue2.x 组件
 
-- 基本功能: JSON 的美化
-- 附加功能: JSON 数据对应层级数据的点击获取
+- 基础功能: JSON 的美化
+- 高级功能: JSON 数据对应层级数据的获取
 
 ## 链接
 
@@ -18,7 +18,7 @@
 ## 安装
 
 ```js
-npm install vue-json-pretty
+npm install vue-json-pretty -save
 ```
 
 ## 快速开始
@@ -48,17 +48,21 @@ export default {
 
 ## Props
 
-若仅使用 `JSON` 美化功能，只需传入 `data` 属性即可。
+- 若仅使用基础功能(JSON美化)，只需关注功能级别为 `基础` 的属性。
+- 若使用高级功能(数据层级的获取)，需关注 `基础` 与 `高级` 的属性。
 
-| 属性 | 说明 | 类型 | 默认值 |
-|-------- |-------- |-------- | -------- |
-| data | 待美化的源数据，注意不是 `JSON` 字符串 | `JSON` 对象 | - |
-| path | 定义最顶层数据层级 | string | root |
-| pathChecked | 定义哪些数据层级是已被选中的 | array | [] |
-| pathSelectable | 定义哪些数据层级是可以被选中的 | Function(itemPath, itemData) | - |
-| selectableType | 定义组件支持的选中方式，默认无选中功能 | enum: both, checkbox, tree | - |
+| 属性 | 功能级别 | 说明 | 类型 | 默认值 |
+|-------- |-------- |-------- |-------- | -------- |
+| data | 基础 | 待美化的源数据，注意不是 `JSON` 字符串 | `JSON` 对象 | - |
+| deep | 基础 | 数据深度, 大于该深度的数据将不被展开 | number | Infinity |
+| path | 高级 | 定义最顶层数据层级 | string | root |
+| pathChecked | 高级 | 定义哪些数据层级是已被选中的 | array | [] |
+| pathSelectable | 高级 | 定义哪些数据层级是可以被选中的 | Function(itemPath, itemData) | - |
+| selectableType | 高级 | 定义组件支持的选中方式，默认无选中功能 | enum: both, checkbox, tree | - |
 
 ## Events
+
+- 若使用高级功能，下列事件才是有效的。
 
 | 事件名 | 说明 | 回调参数 |
 |---------- |-------- |---------- |
