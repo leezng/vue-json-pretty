@@ -52,7 +52,7 @@ export default {
 - If you are using advanced features (get item data), you need to focus on the `base` and `advanced` attributes.
 
 | Attribute | Level | Description | Type | Default |
-|-------- |-------- |-------- | -------- |
+|-------- |-------- |-------- |-------- | -------- |
 | data | basic | json data | JSON object | - |
 | deep | basic |data depth, data larger than this depth will not be expanded | number | Infinity |
 | path | advanced | root data path | string | root |
