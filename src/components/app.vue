@@ -116,15 +116,12 @@
     },
     data () {
       return {
+        visiable: this.currentDeep <= this.deep,
         treeContentBackground: 'transparent',
         checkboxVal: this.pathChecked.includes(this.path) // 复选框的值
       }
     },
     computed: {
-      // 当前树是否可展开
-      visiable () {
-        return this.currentDeep <= this.deep
-      },
       // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
       lastIndex () {
         if (Array.isArray(this.parentData)) {
