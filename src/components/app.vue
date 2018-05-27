@@ -18,26 +18,25 @@
       <brackets-left
         :visiable.sync="visiable"
         :data="data"
-        :index="index"
-        :last-index="lastIndex">
-        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ index }}:</span>
+        :not-last-key="notLastKey">
+        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ currentKey }}:</span>
       </brackets-left>
 
-      <!-- 数据内容, data 为对象时, index 表示 key, 为数组才表示索引 -->
+      <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
       <div
-        v-for="(item, index) in data"
+        v-for="(item, key) in data"
         v-show="visiable"
         class="vjs__tree__content"
-        :key="index">
+        :key="key">
         <vue-json-pretty
           :parent-data="data"
           :data="item"
           :deep="deep"
-          :path="path + (Array.isArray(data) ? `[${index}]` : `.${index}`)"
+          :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-checked="pathChecked"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
-          :index="index"
+          :current-key="key"
           :current-deep="currentDeep + 1"
           @click="handleItemClick">
         </vue-json-pretty>
@@ -47,22 +46,23 @@
       <brackets-right
         :visiable.sync="visiable"
         :data="data"
-        :index="index"
-        :last-index="lastIndex">
+        :not-last-key="notLastKey">
       </brackets-right>
     </template>
 
-    <template v-else>
-      <div :class="{ 'vjs__not__lastIndex': index !== lastIndex }">
-        <span v-if="isObject(parentData)">{{ index }}:</span>
-        <!-- data 可能为 null, 因此界面展示转为字符串 -->
-        <span :class="getValueClass(data)">{{ data + '' }}</span>
-      </div>
-    </template>
+    <simple-text
+      v-else
+      :parentDataType="getDataType(parentData)"
+      :dataType="getDataType(data)"
+      :text="data + ''"
+      :notLastKey="notLastKey"
+      :currentKey="currentKey">
+    </simple-text>
   </div>
 </template>
 
 <script>
+  import SimpleText from './simple-text'
   import Checkbox from './checkbox'
   import BracketsLeft from './brackets-left'
   import BracketsRight from './brackets-right'
@@ -70,6 +70,7 @@
   export default {
     name: 'vue-json-pretty',
     components: {
+      SimpleText,
       Checkbox,
       BracketsLeft,
       BracketsRight
@@ -112,7 +113,8 @@
         type: Number,
         default: 1
       },
-      index: {}
+      // 当前树的数据 data 为数组时 currentKey 表示索引, 为对象时表示键名
+      currentKey: [Number, String]
     },
     data () {
       return {
@@ -123,13 +125,17 @@
     },
     computed: {
       // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
-      lastIndex () {
+      lastKey () {
         if (Array.isArray(this.parentData)) {
           return this.parentData.length - 1
         } else if (this.isObject(this.parentData)) {
           let arr = Object.keys(this.parentData)
           return arr[arr.length - 1]
         }
+      },
+      // 是否不是最后一项
+      notLastKey () {
+        return this.currentKey !== this.lastKey
       },
       // 当前的树是否支持选中功能
       selectable () {
@@ -167,21 +173,12 @@
       },
       // 工具函数: 判断是否对象
       isObject (value) {
-        return Object.prototype.toString.call(value).slice(8, -1).toLowerCase() === 'object'
+        return this.getDataType(value) === 'object'
       },
-      // 简单类型数据添加 class, 定义样式
-      getValueClass (value) {
-        let dataType = Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
+      // 获取数据类型
+      getDataType (value) {
         // 若使用 typeof 会影响 webpack 压缩后体积变大
-        switch (dataType) {
-          case 'null':
-          case 'string':
-          case 'number':
-          case 'boolean':
-            return `vjs__value__${dataType}`
-          default:
-            return ''
-        }
+        return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
       }
     }
   }

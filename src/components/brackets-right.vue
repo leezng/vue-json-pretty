@@ -1,10 +1,10 @@
 <template>
   <div v-show="dataVisiable">
     <span
-      :class="{
-        'vjs__tree__node': true,
-        'vjs__not__lastIndex': index !== lastIndex }"
-      @click.stop="dataVisiable = !dataVisiable">{{ Array.isArray(data) ? ']' : '}' }}</span>
+      class="vjs__tree__node"
+      @click.stop="dataVisiable = !dataVisiable">
+      {{ bracketsFormatter(Array.isArray(data) ? ']' : '}') }}
+    </span>
   </div>
 </template>
 
