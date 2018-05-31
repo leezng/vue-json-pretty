@@ -7,8 +7,7 @@ export default {
     data: {
       required: true
     },
-    index: [Number, String],
-    lastIndex: [Number, String]
+    notLastKey: Boolean
   },
   computed: {
     dataVisiable: {
@@ -18,6 +17,11 @@ export default {
       set (val) {
         this.$emit('update:visiable', val)
       }
+    }
+  },
+  methods: {
+    bracketsFormatter (brackets) {
+      return this.notLastKey ? `${brackets},` : brackets
     }
   }
 }

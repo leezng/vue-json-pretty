@@ -9,6 +9,7 @@
       <div class="block">
         <h3>JSON Tree:</h3>
         <vue-json-pretty
+          :deep="deep"
           :data="json"
           :path="'res'">
         </vue-json-pretty>
@@ -21,6 +22,19 @@
         <h3>JSON Input:</h3>
         <textarea v-model="val"></textarea>
 
+        <h3>Options</h3>
+        <div class="options">
+          <label>selectable-type</label>
+          <select v-model="selectableType">
+            <option>-</option>
+            <option>both</option>
+            <option>checkbox</option>
+            <option>tree</option>
+          </select>
+          <label>path</label>
+          <input type="text" v-model="path">
+        </div>
+
         <h3>Latest Click Result:</h3>
         <div>path: {{itemPath}}</div>
         <div>data: <pre>{{itemData}}</pre></div>
@@ -29,10 +43,10 @@
         <h3>JSON Tree:</h3>
         <vue-json-pretty
           :data="json"
-          :path="'res'"
+          :path="path"
           :path-checked="['res', 'res.c']"
-          :path-selectable="pathSelectableFn"
-          :selectable-type="'both'"
+          :path-selectable="((path, data) => typeof data !== 'number')"
+          :selectable-type="selectableType"
           @click="handleClick">
         </vue-json-pretty>
       </div>
@@ -69,6 +83,9 @@ export default {
           source: 'AI Finance'
         }]
       },
+      selectableType: 'both',
+      path: 'res',
+      deep: 3,
       itemData: {},
       itemPath: ''
     }
@@ -91,10 +108,6 @@ export default {
       console.log('click', path, data, checked)
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
-    },
-    pathSelectableFn (path, data) {
-      // return !(Array.isArray(data) && data.some(item => Array.isArray(item)))
-      return true
     }
   }
 }
@@ -114,6 +127,9 @@ export default {
   .example-box {
     margin: 0 -15px;
     overflow: hidden;
+    h3 {
+      display: inline-block;
+    }
     .title {
       text-align: center;
     }
@@ -123,13 +139,13 @@ export default {
       width: 50%;
       box-sizing: border-box;
     }
+    input,
+    select,
     textarea {
-      padding: 5px;
-      width: 100%;
-      height: 150px;
+      padding: 3px 8px;
       box-sizing: border-box;
       border-radius: 5px;
-      resize: vertical;
+      border: 1px solid #bbb;
       font-family: inherit;
       &:focus {
         outline: none;
@@ -137,11 +153,19 @@ export default {
         box-shadow: 0 0 3px #1d8ce0;
       }
     }
-    pre{
+    textarea {
+      width: 100%;
+      height: 150px;
+      resize: vertical;
+    }
+    pre {
       margin: 0;
       font-family: Consolas;
-      overflow: auto;
+      overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .options {
+      font-size: 14px;
     }
   }
 </style>
