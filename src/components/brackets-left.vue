@@ -28,7 +28,7 @@
       // 双括号内容生成器
       doubleBracketsGenerator (data) {
         const isArray = Array.isArray(data)
-        const brackets = isArray ? '[...]' : '{...}'
+        let brackets = isArray ? '[...]' : '{...}'
         if (this.showLength) {
           // 若展示长度, 形如 [...] // 3 items
           const text = isArray
@@ -36,7 +36,7 @@
             : `${Object.keys(data).length} keys`
           brackets += ` // ${text}`
         }
-        return bracketsFormatter(brackets)
+        return this.bracketsFormatter(brackets)
       }
     }
   }
