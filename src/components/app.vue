@@ -18,6 +18,7 @@
       <brackets-left
         :visiable.sync="visiable"
         :data="data"
+        :show-length="showLength"
         :not-last-key="notLastKey">
         <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ currentKey }}:</span>
       </brackets-left>
@@ -32,6 +33,7 @@
           :parent-data="data"
           :data="item"
           :deep="deep"
+          :show-length="showLength"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-checked="pathChecked"
           :path-selectable="pathSelectable"
@@ -83,6 +85,11 @@
       deep: {
         type: Number,
         default: Infinity
+      },
+      // 是否显示数组|对象的长度
+      showLength: {
+        type: Boolean,
+        default: false
       },
       // 数据层级顶级路径
       path: {
@@ -171,7 +178,7 @@
       handleMouseout () {
         this.existMouseover && this.selectable && (this.treeContentBackground = 'transparent')
       },
-      // 工具函数: 判断是否对象
+      // 是否对象
       isObject (value) {
         return this.getDataType(value) === 'object'
       },

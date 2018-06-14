@@ -2,7 +2,7 @@
   <div v-show="dataVisiable">
     <span
       class="vjs__tree__node"
-      @click.stop="dataVisiable = !dataVisiable">
+      @click.stop="toggleBrackets">
       {{ bracketsFormatter(Array.isArray(data) ? ']' : '}') }}
     </span>
   </div>
