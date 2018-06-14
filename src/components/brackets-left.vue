@@ -20,7 +20,7 @@
   import bracketsMixin from 'src/mixins/brackets-mixin'
 
   export default {
-    mixins: [bracketsMixin]，
+    mixins: [bracketsMixin],
     props: {
       showLength: Boolean
     },
