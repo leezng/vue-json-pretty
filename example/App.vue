@@ -33,6 +33,9 @@
           </select>
           <label>path</label>
           <input type="text" v-model="path">
+          <label>showLength</label>
+          <input type="checkbox" v-model="showLength">
+          <label for="checkbox">{{ showLength }}</label>
         </div>
 
         <h3>Latest Click Result:</h3>
@@ -44,6 +47,7 @@
         <vue-json-pretty
           :data="json"
           :path="path"
+          :show-length="showLength"
           :path-checked="['res', 'res.c']"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
@@ -84,6 +88,7 @@ export default {
         }]
       },
       selectableType: 'both',
+      showLength: false,
       path: 'res',
       deep: 3,
       itemData: {},
