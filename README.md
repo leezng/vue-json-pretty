@@ -54,7 +54,8 @@ export default {
 | Attribute | Level | Description | Type | Default |
 |-------- |-------- |-------- |-------- | -------- |
 | data | basic | json data | JSON object | - |
-| deep | basic |data depth, data larger than this depth will not be expanded | number | Infinity |
+| deep | basic | data depth, data larger than this depth will not be expanded | number | Infinity |
+| showLength | basic | whether to show the length when closed | boolean | false |
 | path | advanced | root data path | string | root |
 | pathChecked | advanced | defines the selected data path | array | [] |
 | pathSelectable | advanced | defines whether a data path supports selection | Function(itemPath, itemData) | - |
