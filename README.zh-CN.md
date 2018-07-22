@@ -55,6 +55,7 @@ export default {
 |-------- |-------- |-------- |-------- | -------- |
 | data | 基础 | 待美化的源数据，注意不是 `JSON` 字符串 | `JSON` 对象 | - |
 | deep | 基础 | 数据深度, 大于该深度的数据将不被展开 | number | Infinity |
+| showLength | 基础 | 是否在数据线闭合的时候展示长度 | boolean | false |
 | path | 高级 | 定义最顶层数据层级 | string | root |
 | pathChecked | 高级 | 定义哪些数据层级是已被选中的 | array | [] |
 | pathSelectable | 高级 | 定义哪些数据层级是可以被选中的 | Function(itemPath, itemData) | - |
