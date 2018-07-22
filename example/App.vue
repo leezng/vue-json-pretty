@@ -24,18 +24,31 @@
 
         <h3>Options</h3>
         <div class="options">
-          <label>selectable-type</label>
-          <select v-model="selectableType">
-            <option>-</option>
-            <option>both</option>
-            <option>checkbox</option>
-            <option>tree</option>
-          </select>
-          <label>path</label>
-          <input type="text" v-model="path">
-          <label>showLength</label>
-          <input type="checkbox" v-model="showLength">
-          <label for="checkbox">{{ showLength }}</label>
+          <div>
+            <label>selectable-type</label>
+            <select v-model="selectableType">
+              <option>-</option>
+              <option>both</option>
+              <option>checkbox</option>
+              <option>tree</option>
+            </select>
+          </div>
+          <div>
+            <label>path</label>
+            <input type="text" v-model="path">
+          </div>
+          <div>
+            <label>showLength</label>
+            <input type="checkbox" v-model="showLength">
+          </div>
+          <!-- <div>
+            <label>deep</label>
+            <select v-model="deep">
+              <option :value="2">2</option>
+              <option :value="3">3</option>
+              <option :value="4">4</option>
+            </select>
+          </div> -->
         </div>
 
         <h3>Latest Click Result:</h3>
@@ -47,6 +60,7 @@
         <vue-json-pretty
           :data="json"
           :path="path"
+          :deep="deep"
           :show-length="showLength"
           :path-checked="['res', 'res.c']"
           :path-selectable="((path, data) => typeof data !== 'number')"
@@ -84,13 +98,14 @@ export default {
         }, {
           news_id: 51182,
           title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
-          source: 'AI Finance'
+          source: 'AI Finance',
+          members: ['Daniel, Mike, John']
         }]
       },
       selectableType: 'both',
-      showLength: false,
+      showLength: true,
       path: 'res',
-      deep: 3,
+      deep: 4,
       itemData: {},
       itemPath: ''
     }
