@@ -1,6 +1,6 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A Vue.js 2.0 Toolkit for JSON",
   "author": "leezng <im.leezng@gmail.com>",
   "main": "vue-json-pretty.js",
@@ -89,8 +89,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "dependencies": {
-    "vue": "^2.3.0"
-  }
+  ]
 }
