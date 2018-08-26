@@ -16,7 +16,7 @@
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
       <brackets-left
-        :visiable.sync="visiable"
+        :visible.sync="visible"
         :data="data"
         :show-length="showLength"
         :not-last-key="notLastKey">
@@ -26,7 +26,7 @@
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
       <div
         v-for="(item, key) in data"
-        v-show="visiable"
+        v-show="visible"
         class="vjs__tree__content"
         :key="key">
         <vue-json-pretty
@@ -46,7 +46,7 @@
 
       <!-- 右闭合 -->
       <brackets-right
-        :visiable.sync="visiable"
+        :visible.sync="visible"
         :data="data"
         :not-last-key="notLastKey">
       </brackets-right>
@@ -125,7 +125,7 @@
     },
     data () {
       return {
-        visiable: this.currentDeep <= this.deep,
+        visible: this.currentDeep <= this.deep,
         treeContentBackground: 'transparent',
         checkboxVal: this.pathChecked.includes(this.path) // 复选框的值
       }
@@ -186,6 +186,11 @@
       getDataType (value) {
         // 若使用 typeof 会影响 webpack 压缩后体积变大
         return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
+      }
+    },
+    watch: {
+      deep (newVal) {
+        this.visible = this.currentDeep <= newVal
       }
     }
   }

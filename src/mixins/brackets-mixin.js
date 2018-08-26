@@ -1,6 +1,6 @@
 export default {
   props: {
-    visiable: {
+    visible: {
       required: true,
       type: Boolean
     },
@@ -12,10 +12,10 @@ export default {
   computed: {
     dataVisiable: {
       get () {
-        return this.visiable
+        return this.visible
       },
       set (val) {
-        this.$emit('update:visiable', val)
+        this.$emit('update:visible', val)
       }
     }
   },
