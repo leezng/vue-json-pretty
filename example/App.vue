@@ -41,14 +41,14 @@
             <label>showLength</label>
             <input type="checkbox" v-model="showLength">
           </div>
-          <!-- <div>
+          <div>
             <label>deep</label>
             <select v-model="deep">
               <option :value="2">2</option>
               <option :value="3">3</option>
               <option :value="4">4</option>
             </select>
-          </div> -->
+          </div>
         </div>
 
         <h3>Latest Click Result:</h3>
