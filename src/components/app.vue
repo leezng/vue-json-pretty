@@ -40,6 +40,7 @@
           :selectable-type="selectableType"
           :current-key="key"
           :current-deep="currentDeep + 1"
+          :selected-path="selectedPath"
           @click="handleItemClick">
         </vue-json-pretty>
       </div>
@@ -121,7 +122,11 @@
         default: 1
       },
       // 当前树的数据 data 为数组时 currentKey 表示索引, 为对象时表示键名
-      currentKey: [Number, String]
+      currentKey: [Number, String],
+      selectedPath: {
+        type: String,
+        default: ''
+      }
     },
     data () {
       return {
@@ -191,6 +196,15 @@
     watch: {
       deep (newVal) {
         this.visible = this.currentDeep <= newVal
+      },
+      selectedPath (path) {
+        if (path && path !== '') {
+          if (this.path === path) {
+            this.treeContentBackground = '#eee'
+          } else {
+            this.treeContentBackground = 'transparent'
+          }
+        }
       }
     }
   }
