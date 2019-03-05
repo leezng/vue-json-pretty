@@ -42,6 +42,10 @@
             <input type="checkbox" v-model="showLength">
           </div>
           <div>
+            <label>showDoubleQuotes</label>
+            <input type="checkbox" v-model="showDoubleQuotes">
+          </div>
+          <div>
             <label>deep</label>
             <select v-model="deep">
               <option :value="2">2</option>
@@ -61,6 +65,7 @@
           :data="json"
           :path="path"
           :deep="deep"
+          :show-double-quotes="showDoubleQuotes"
           :show-length="showLength"
           :path-checked="['res', 'res.c']"
           :path-selectable="((path, data) => typeof data !== 'number')"
@@ -104,6 +109,7 @@ export default {
       },
       selectableType: 'both',
       showLength: true,
+      showDoubleQuotes: true,
       path: 'res',
       deep: 4,
       itemData: {},

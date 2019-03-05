@@ -20,7 +20,7 @@
         :data="data"
         :show-length="showLength"
         :not-last-key="notLastKey">
-        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ currentKey }}:</span>
+        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ keyFormatter(currentKey) }}:</span>
       </brackets-left>
 
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
@@ -34,6 +34,7 @@
           :data="item"
           :deep="deep"
           :show-length="showLength"
+          :show-double-quotes="showDoubleQuotes"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-checked="pathChecked"
           :path-selectable="pathSelectable"
@@ -54,10 +55,11 @@
 
     <simple-text
       v-else
-      :parentDataType="getDataType(parentData)"
-      :dataType="getDataType(data)"
+      :show-double-quotes="showDoubleQuotes"
+      :parent-data-type="getDataType(parentData)"
+      :data-type="getDataType(data)"
       :text="data + ''"
-      :notLastKey="notLastKey"
+      :not-last-key="notLastKey"
       :currentKey="currentKey">
     </simple-text>
   </div>
@@ -91,6 +93,11 @@
         type: Boolean,
         default: false
       },
+      // key名是否显示双引号
+      showDoubleQuotes: {
+        type: Boolean,
+        default: true
+      },
       // 数据层级顶级路径
       path: {
         type: String,
@@ -113,6 +120,7 @@
       },
       /* 外部可用 END */
 
+      /* 内部递归使用 */
       // 当前树的父级数据
       parentData: {},
       // 当前树的深度, 以根节点作为0开始, 所以第一层树的深度为1, 递归逐次递增
@@ -186,6 +194,9 @@
       getDataType (value) {
         // 若使用 typeof 会影响 webpack 压缩后体积变大
         return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
+      },
+      keyFormatter (key) {
+        return this.showDoubleQuotes ? `"${key}"` : key
       }
     },
     watch: {

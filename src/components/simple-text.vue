@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span v-if="parentDataType === 'object'">{{ currentKey }}:</span>
+    <span v-if="parentDataType === 'object'">{{ keyFormatter(currentKey) }}:</span>
     <span :class="`vjs__value__${dataType}`">
       {{ textFormatter(text) }}
     </span>
@@ -11,6 +11,7 @@
 <script>
   export default {
     props: {
+      showDoubleQuotes: Boolean,
       parentDataType: String, // 父级数据类型
       dataType: String, // 当前 text 数据类型
       text: String,
@@ -18,6 +19,9 @@
       currentKey: [Number, String]
     },
     methods: {
+      keyFormatter (key) {
+        return this.showDoubleQuotes ? `"${key}"` : key
+      },
       textFormatter (text) {
         let output = text
         if (this.dataType === 'string') output = `"${output}"`
