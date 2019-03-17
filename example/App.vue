@@ -11,7 +11,8 @@
         <vue-json-pretty
           :deep="deep"
           :data="json"
-          :path="'res'">
+          :path="'res'"
+          @click="handleClick">
         </vue-json-pretty>
       </div>
     </div>
@@ -28,9 +29,7 @@
             <label>selectable-type</label>
             <select v-model="selectableType">
               <option>-</option>
-              <option>both</option>
               <option>checkbox</option>
-              <option>tree</option>
             </select>
           </div>
           <div>
@@ -44,6 +43,10 @@
           <div>
             <label>showDoubleQuotes</label>
             <input type="checkbox" v-model="showDoubleQuotes">
+          </div>
+          <div>
+            <label>showMouseOver</label>
+            <input type="checkbox" v-model="showMouseOver">
           </div>
           <div>
             <label>deep</label>
@@ -66,11 +69,13 @@
           :path="path"
           :deep="deep"
           :show-double-quotes="showDoubleQuotes"
+          :show-mouse-over="showMouseOver"
           :show-length="showLength"
-          :path-checked="['res', 'res.c']"
+          v-model="pathSelected"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
-          @click="handleClick">
+          @click="handleClick"
+          @change="handleChange">
         </vue-json-pretty>
       </div>
     </div>
@@ -107,9 +112,11 @@ export default {
           members: ['Daniel, Mike, John']
         }]
       },
-      selectableType: 'both',
+      pathSelected: ['res', 'res.error'],
+      selectableType: 'checkbox',
       showLength: true,
       showDoubleQuotes: true,
+      showMouseOver: true,
       path: 'res',
       deep: 4,
       itemData: {},
@@ -130,10 +137,13 @@ export default {
     }
   },
   methods: {
-    handleClick (path, data, checked) {
-      console.log('click', path, data, checked)
+    handleClick (path, data) {
+      console.log('click: ', path, data)
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
+    },
+    handleChange (val) {
+      console.log('change: ', val)
     }
   }
 }

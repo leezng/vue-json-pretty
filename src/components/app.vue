@@ -30,18 +30,20 @@
         class="vjs__tree__content"
         :key="key">
         <vue-json-pretty
+          v-model="value"
           :parent-data="data"
           :data="item"
           :deep="deep"
           :show-length="showLength"
           :show-double-quotes="showDoubleQuotes"
+          :show-mouse-over="showMouseOver"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
-          :path-checked="pathChecked"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
           :current-key="key"
           :current-deep="currentDeep + 1"
-          @click="handleItemClick">
+          @click="handleItemClick"
+          @change="handleItemChange">
         </vue-json-pretty>
       </div>
 
@@ -98,6 +100,11 @@
         type: Boolean,
         default: true
       },
+      // 是否展示鼠标悬浮效果
+      showMouseOver: {
+        type: Boolean,
+        default: false
+      },
       // 数据层级顶级路径
       path: {
         type: String,
@@ -106,10 +113,10 @@
       // 定义数据层级支持的选中方式, 默认无该功能
       selectableType: {
         type: String,
-        default: '' // both, checkbox, tree
+        default: '' // radio, checkbox
       },
-      // 定义已选中的数据层级
-      pathChecked: {
+      // 存在选择功能时，定义已选中的数据层级
+      value: {
         type: Array,
         default: () => []
       },
@@ -120,7 +127,7 @@
       },
       /* 外部可用 END */
 
-      /* 内部递归使用 */
+      /* 内部使用 */
       // 当前树的父级数据
       parentData: {},
       // 当前树的深度, 以根节点作为0开始, 所以第一层树的深度为1, 递归逐次递增
@@ -135,10 +142,13 @@
       return {
         visible: this.currentDeep <= this.deep,
         treeContentBackground: 'transparent',
-        checkboxVal: this.pathChecked.includes(this.path) // 复选框的值
+        checkboxVal: this.value.includes(this.path) // 复选框的值
       }
     },
     computed: {
+      model () {
+        return this.value || []
+      },
       // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
       lastKey () {
         if (Array.isArray(this.parentData)) {
@@ -158,33 +168,43 @@
       },
       // 存在复选框
       existCheckbox () {
-        return this.selectableType === 'both' || this.selectableType === 'checkbox'
-      },
-      // 存在mouseover
-      existMouseover () {
-        return this.selectableType === 'both' || this.selectableType === 'tree'
+        return this.selectableType === 'checkbox'
       }
     },
     methods: {
       /**
        * 触发组件的 click 事件
-       * @param  {Boolean} changed 复选框值是否已改变(如果来自复选框 change 事件则已改变)
+       * @param  {Boolean} fromSelect 是否来自复选框的事件
        */
-      handleClick (e, changed = false) {
-        // 由于 checkbox 也依赖该函数, 因此通过 changed 进行排除
-        if (!changed && !this.existMouseover || !this.selectable) return
-        changed || (this.checkboxVal = !this.checkboxVal)
-        this.$emit('click', this.path, this.data, this.checkboxVal)
+      handleClick (e, fromSelect = false) {
+        // 由于 checkbox 也依赖该函数, 因此通过 fromSelect 进行排除
+        this.$emit('click', this.path, this.data)
+        if (fromSelect) {
+          const index = this.model.findIndex(item => item === this.path)
+          if (index !== -1) {
+            this.model.splice(index, 1)
+          } else {
+            this.model.push(this.path)
+          }
+          this.$emit('input', this.model)
+          this.$emit('change', this.checkboxVal)
+        }
       },
       // 处理子树触发的 click 事件, 并传递到顶层
       handleItemClick (path, data, checked) {
         this.$emit('click', path, data, checked)
       },
+      handleItemChange (val) {
+        // 不存在选择的时候change事件无意义
+        if (this.existCheckbox) {
+          this.$emit('change', val)
+        }
+      },
       handleMouseover () {
-        this.existMouseover && this.selectable && (this.treeContentBackground = '#eee')
+        this.showMouseOver && this.selectable && (this.treeContentBackground = '#eee')
       },
       handleMouseout () {
-        this.existMouseover && this.selectable && (this.treeContentBackground = 'transparent')
+        this.showMouseOver && this.selectable && (this.treeContentBackground = 'transparent')
       },
       // 是否对象
       isObject (value) {
