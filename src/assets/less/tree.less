@@ -1,30 +1,53 @@
-@content-padding: 1em; /* 树内容区域缩进2个英文字符, 此处1em为1个中文字符=2个英文字符 */
+@import "./var.less";
 
-.vjs__tree {
+/* 树内容区域缩进2个英文字符, 此处1em为1个中文字符=2个英文字符 */
+@content-padding: 1em;
+
+.mixin-value-style(@color) {
+  color: @color;
+}
+
+.@{css-prefix}-tree {
   font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono", monospace;
   font-size: 14px;
-  .vjs__tree__content {
-    padding-left: @content-padding;
-    border-left: 1px dotted #ccc;
-  }
-  .vjs__tree__node {
-    cursor: pointer;
-    &:hover {
-      color: #20a0ff;
+
+  &.is-root {
+    position: relative;
+
+    &.has-selectable-control {
+      margin-left: @selectabl-span;
     }
   }
-  .vjs-checkbox {
-    position: absolute;
-    left: -30px;
+
+  &.is-mouseover {
+    background-color: @highlight-bg-color;
   }
-  .vjs__value__null {
-    color: #ff4949;
+
+  .@{css-prefix}-tree__content {
+    padding-left: @content-padding;
+    border-left: 1px dotted @border-color;
   }
-  .vjs__value__number,
-  .vjs__value__boolean {
-    color: #1d8ce0;
+
+  .@{css-prefix}-tree__brackets {
+    cursor: pointer;
+    &:hover {
+      color: @color-primary;
+    }
   }
-  .vjs__value__string {
-    color: #13ce66;
+
+  .@{css-prefix}-value__null {
+    .mixin-value-style(@color-null);
+  }
+
+  .@{css-prefix}-value__number {
+    .mixin-value-style(@color-number);
+  }
+
+  .@{css-prefix}-value__boolean {
+    .mixin-value-style(@color-boolean);
+  }
+
+  .@{css-prefix}-value__string {
+    .mixin-value-style(@color-string);
   }
 }
