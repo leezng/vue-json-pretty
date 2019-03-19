@@ -26,10 +26,11 @@
         <h3>Options</h3>
         <div class="options">
           <div>
-            <label>selectable-type</label>
+            <label>selectableType</label>
             <select v-model="selectableType">
               <option>-</option>
               <option>checkbox</option>
+              <option>radio</option>
             </select>
           </div>
           <div>
@@ -64,17 +65,19 @@
       </div>
       <div class="block">
         <h3>JSON Tree:</h3>
+        {{value}}
         <vue-json-pretty
+          v-if="renderOK"
           :data="json"
           :path="path"
           :deep="deep"
           :show-double-quotes="showDoubleQuotes"
           :show-mouse-over="showMouseOver"
           :show-length="showLength"
-          v-model="pathSelected"
+          v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
-          @click="handleClick"
+          @click="handleClick(...arguments, 'complexTree')"
           @change="handleChange">
         </vue-json-pretty>
       </div>
@@ -93,6 +96,7 @@ export default {
   },
   data () {
     return {
+      renderOK: true,
       val: '',
       data: {
         status: 200,
@@ -109,11 +113,11 @@ export default {
           news_id: 51182,
           title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
           source: 'AI Finance',
-          members: ['Daniel, Mike, John']
+          members: ['Daniel', 'Mike', 'John']
         }]
       },
-      pathSelected: ['res', 'res.error'],
-      selectableType: 'checkbox',
+      value: 'res.error',
+      selectableType: 'radio',
       showLength: true,
       showDoubleQuotes: true,
       showMouseOver: true,
@@ -126,6 +130,20 @@ export default {
   created () {
     this.val = JSON.stringify(this.data)
   },
+  watch: {
+    selectableType (newVal) {
+      this.renderOK = false
+      if (newVal === 'radio') {
+        this.value = 'res.error'
+      } else if (newVal === 'checkbox') {
+        this.value = ['res', 'res.error']
+      }
+      // 重新渲染, 因为2中情况的v-model格式不同
+      this.$nextTick(() => {
+        this.renderOK = true
+      })
+    }
+  },
   computed: {
     json () {
       try {
@@ -137,8 +155,8 @@ export default {
     }
   },
   methods: {
-    handleClick (path, data) {
-      console.log('click: ', path, data)
+    handleClick (path, data, treeName = '') {
+      console.log('click: ', path, data, treeName)
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
     },

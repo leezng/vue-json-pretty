@@ -1,32 +1,40 @@
 <template>
   <div>
-    <span v-if="parentDataType === 'object'">{{ keyFormatter(currentKey) }}:</span>
-    <span :class="`vjs__value__${dataType}`">
-      {{ textFormatter(text) }}
+    <slot></slot>
+    <span :class="`vjs-value__${dataType}`">
+      {{ textFormatter(data) }}
     </span>
-    <!-- <span v-if="notLastKey">,</span> -->
   </div>
 </template>
 
 <script>
+  import { getDataType } from 'src/utils'
+
   export default {
     props: {
       showDoubleQuotes: Boolean,
-      parentDataType: String, // 父级数据类型
-      dataType: String, // 当前 text 数据类型
-      text: String,
-      notLastKey: Boolean,
+      parentData: {},
+      data: {},
+      showComma: Boolean,
       currentKey: [Number, String]
     },
-    methods: {
-      keyFormatter (key) {
-        return this.showDoubleQuotes ? `"${key}"` : key
+    computed: {
+      // 当前数据类型
+      dataType () {
+        return getDataType(this.data)
       },
-      textFormatter (text) {
-        let output = text
-        if (this.dataType === 'string') output = `"${output}"`
-        if (this.notLastKey) output += ','
-        return output
+
+      // 父级数据类型
+      parentDataType () {
+        return getDataType(this.parentData)
+      }
+    },
+    methods: {
+      textFormatter (data) {
+        let text = data + ''
+        if (this.dataType === 'string') text = `"${text}"`
+        if (this.showComma) text += ','
+        return text
       }
     }
   }
