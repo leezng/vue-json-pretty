@@ -29,9 +29,13 @@
             <label>selectableType</label>
             <select v-model="selectableType">
               <option>-</option>
-              <option>checkbox</option>
-              <option>radio</option>
+              <option>single</option>
+              <option>multiple</option>
             </select>
+          </div>
+          <div v-if="selectableType === 'single'">
+            <label>showRadio</label>
+            <input type="checkbox" v-model="showRadio">
           </div>
           <div>
             <label>path</label>
@@ -77,6 +81,7 @@
           v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
+          :show-radio="showRadio"
           @click="handleClick(...arguments, 'complexTree')"
           @change="handleChange">
         </vue-json-pretty>
@@ -117,7 +122,8 @@ export default {
         }]
       },
       value: 'res.error',
-      selectableType: 'radio',
+      selectableType: 'single',
+      showRadio: true,
       showLength: true,
       showDoubleQuotes: true,
       showMouseOver: true,
@@ -133,9 +139,9 @@ export default {
   watch: {
     selectableType (newVal) {
       this.renderOK = false
-      if (newVal === 'radio') {
+      if (newVal === 'single') {
         this.value = 'res.error'
-      } else if (newVal === 'checkbox') {
+      } else if (newVal === 'multiple') {
         this.value = ['res', 'res.error']
       }
       // 重新渲染, 因为2中情况的v-model格式不同

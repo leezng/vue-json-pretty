@@ -2,17 +2,17 @@
   <div
     :class="{
       'vjs-tree': true,
-      'has-selectable-control': existCheckbox || existRadio,
+      'has-selectable-control': isMultiple || showRadio,
       'is-root': currentDeep === 1,
       'is-selectable': selectable,
       'is-mouseover': isMouseover
     }"
-    @click.stop="handleClick($event)"
+    @click.stop="handleClick($event, 'tree')"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout">
     <template v-if="selectable">
-      <vue-checkbox v-if="existCheckbox" v-model="currentCheckboxVal" @change="handleClick($event, 'checkbox')"></vue-checkbox>
-      <vue-radio v-else-if="existRadio" v-model="model" @change="handleClick($event, 'radio')" :path="path"></vue-radio>
+      <vue-checkbox v-if="isMultiple" v-model="currentCheckboxVal" @change="handleClick($event, 'checkbox')"></vue-checkbox>
+      <vue-radio v-else-if="isSingle && showRadio" v-model="model" @change="handleClick($event, 'radio')" :path="path"></vue-radio>
     </template>
 
     <template v-if="Array.isArray(data) || isObject(data)">
@@ -42,6 +42,7 @@
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
+          :show-radio="showRadio"
           :current-key="key"
           :current-deep="currentDeep + 1"
           @click="handleItemClick"
@@ -118,7 +119,12 @@
       // 定义数据层级支持的选中方式, 默认无该功能
       selectableType: {
         type: String,
-        default: '' // radio, checkbox
+        default: '' // ''|multiple|single    radio, checkbox
+      },
+      // defined radio's view when selectableType=single
+      showRadio: {
+        type: Boolean,
+        default: false
       },
       // 存在选择功能时, 定义已选中的数据层级
       //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
@@ -155,7 +161,7 @@
     computed: {
       model: {
         get () {
-          const defaultVal = this.selectableType === 'checkbox' ? [] : this.selectableType === 'radio' ? '' : null
+          const defaultVal = this.selectableType === 'multiple' ? [] : this.selectableType === 'single' ? '' : null
           return this.value || defaultVal
         },
         set (val) {
@@ -183,23 +189,25 @@
         return this.pathSelectable(this.path, this.data)
       },
 
-      // 存在复选框
-      existCheckbox () {
-        return this.selectableType === 'checkbox'
+      // 多选模式
+      isMultiple () {
+        return this.selectableType === 'multiple'
       },
 
-      existRadio () {
-        return this.selectableType === 'radio'
+      // 单选模式
+      isSingle () {
+        return this.selectableType === 'single'
       }
     },
     methods: {
       /**
        * emit click event
-       * @param  {Boolean} emitType
+       * @param  {Boolean} emitType tree/checkbox/radio
        */
       handleClick (e, emitType = '') {
         this.$emit('click', this.path, this.data)
-        if (emitType === 'checkbox') {
+        if (this.isMultiple && emitType === 'checkbox') {
+          // handle multiple
           const index = this.model.findIndex(item => item === this.path)
           if (index !== -1) {
             this.model.splice(index, 1)
@@ -207,7 +215,8 @@
             this.model.push(this.path)
           }
           this.$emit('change', this.currentCheckboxVal)
-        } else if (emitType === 'radio') {
+        } else if (this.isSingle && (emitType === 'radio' || emitType === 'tree')) {
+          // handle single
           if (this.model !== this.path) {
             this.model = this.path
             this.$emit('change', this.model)
@@ -222,8 +231,8 @@
 
       // handle children's change, and propagation
       handleItemChange (val) {
-        // 不存在选择的时候change事件无意义
-        if (this.existCheckbox) {
+        // 存在选择的时候change事件才有意义
+        if (this.selectableType) {
           this.$emit('change', val)
         }
       },
