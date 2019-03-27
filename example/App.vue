@@ -28,14 +28,18 @@
           <div>
             <label>selectableType</label>
             <select v-model="selectableType">
-              <option>-</option>
+              <option label="-"></option>
               <option>single</option>
               <option>multiple</option>
             </select>
           </div>
-          <div v-if="selectableType === 'single'">
-            <label>showRadio</label>
-            <input type="checkbox" v-model="showRadio">
+          <div>
+            <label>showSelectController</label>
+            <input type="checkbox" v-model="showSelectController">
+          </div>
+          <div>
+            <label>selectOnClickNode</label>
+            <input type="checkbox" v-model="selectOnClickNode">
           </div>
           <div>
             <label>path</label>
@@ -78,10 +82,11 @@
           :show-double-quotes="showDoubleQuotes"
           :show-mouse-over="showMouseOver"
           :show-length="showLength"
+          :select-on-click-node="selectOnClickNode"
           v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
-          :show-radio="showRadio"
+          :show-select-controller="showSelectController"
           @click="handleClick(...arguments, 'complexTree')"
           @change="handleChange">
         </vue-json-pretty>
@@ -123,10 +128,11 @@ export default {
       },
       value: 'res.error',
       selectableType: 'single',
-      showRadio: true,
+      showSelectController: true,
       showLength: true,
       showDoubleQuotes: true,
       showMouseOver: true,
+      selectOnClickNode: true,
       path: 'res',
       deep: 4,
       itemData: {},

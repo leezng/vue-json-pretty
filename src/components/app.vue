@@ -2,7 +2,7 @@
   <div
     :class="{
       'vjs-tree': true,
-      'has-selectable-control': isMultiple || showRadio,
+      'has-selectable-control': isMultiple || showSelectController,
       'is-root': currentDeep === 1,
       'is-selectable': selectable,
       'is-mouseover': isMouseover
@@ -10,9 +10,9 @@
     @click.stop="handleClick($event, 'tree')"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout">
-    <template v-if="selectable">
+    <template v-if="showSelectController && selectable">
       <vue-checkbox v-if="isMultiple" v-model="currentCheckboxVal" @change="handleClick($event, 'checkbox')"></vue-checkbox>
-      <vue-radio v-else-if="isSingle && showRadio" v-model="model" @change="handleClick($event, 'radio')" :path="path"></vue-radio>
+      <vue-radio v-else-if="isSingle" v-model="model" @change="handleClick($event, 'radio')" :path="path"></vue-radio>
     </template>
 
     <template v-if="Array.isArray(data) || isObject(data)">
@@ -42,7 +42,8 @@
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
-          :show-radio="showRadio"
+          :show-select-controller="showSelectController"
+          :select-on-click-node="selectOnClickNode"
           :current-key="key"
           :current-deep="currentDeep + 1"
           @click="handleItemClick"
@@ -121,10 +122,15 @@
         type: String,
         default: '' // ''|multiple|single    radio, checkbox
       },
-      // defined radio's view when selectableType=single
-      showRadio: {
+      // 是否展示左侧选择控件
+      showSelectController: {
         type: Boolean,
         default: false
+      },
+      // 是否在点击树的时候选中节点
+      selectOnClickNode: {
+        type: Boolean,
+        default: true
       },
       // 存在选择功能时, 定义已选中的数据层级
       //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
@@ -206,7 +212,7 @@
        */
       handleClick (e, emitType = '') {
         this.$emit('click', this.path, this.data)
-        if (this.isMultiple && emitType === 'checkbox') {
+        if (this.isMultiple && (emitType === 'checkbox' || (this.selectOnClickNode && emitType === 'tree'))) {
           // handle multiple
           const index = this.model.findIndex(item => item === this.path)
           if (index !== -1) {
@@ -214,8 +220,12 @@
           } else {
             this.model.push(this.path)
           }
+
+          if (emitType !== 'checkbox') {
+            this.currentCheckboxVal = !this.currentCheckboxVal
+          }
           this.$emit('change', this.currentCheckboxVal)
-        } else if (this.isSingle && (emitType === 'radio' || emitType === 'tree')) {
+        } else if (this.isSingle && (emitType === 'radio' || (this.selectOnClickNode && emitType === 'tree'))) {
           // handle single
           if (this.model !== this.path) {
             this.model = this.path
@@ -252,6 +262,11 @@
 
       keyFormatter (key) {
         return this.showDoubleQuotes ? `"${key}"` : key
+      }
+    },
+    created () {
+      if (this.selectableType && !this.selectOnClickNode && !this.showSelectController) {
+        throw new Error('[vue-json-pretty] error')
       }
     },
     watch: {
