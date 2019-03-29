@@ -203,6 +203,11 @@
       // 单选模式
       isSingle () {
         return this.selectableType === 'single'
+      },
+
+      propsError () {
+        const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
+        return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
       }
     },
     methods: {
@@ -264,14 +269,22 @@
         return this.showDoubleQuotes ? `"${key}"` : key
       }
     },
-    created () {
-      if (this.selectableType && !this.selectOnClickNode && !this.showSelectController) {
-        throw new Error('[vue-json-pretty] error')
-      }
+    // 捕获一个来自子组件的错误
+    //    因为是递归组件，因此错误只对外暴露一次，子组件的错误不再对外传递
+    errorCaptured () {
+      return false
     },
     watch: {
       deep (newVal) {
         this.visible = this.currentDeep <= newVal
+      },
+      propsError: {
+        handler (message) {
+          if (message) {
+            throw new Error(`[vue-json-pretty] ${message}`)
+          }
+        },
+        immediate: true
       }
     }
   }
