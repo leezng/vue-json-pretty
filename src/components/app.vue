@@ -6,6 +6,7 @@
       'is-root': currentDeep === 1,
       'is-selectable': selectable,
       'is-selected': isSelected,
+      'is-highlight-selected': isSelected && highlightSelectedNode,
       'is-mouseover': isMouseover
     }"
     @click.stop="handleClick($event, 'tree')"
@@ -39,7 +40,8 @@
           :deep="deep"
           :show-length="showLength"
           :show-double-quotes="showDoubleQuotes"
-          :show-mouse-over="showMouseOver"
+          :highlight-mouseover-node="highlightMouseoverNode"
+          :highlight-selected-node="highlightSelectedNode"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
@@ -108,11 +110,6 @@
         type: Boolean,
         default: true
       },
-      // 是否展示鼠标悬浮效果
-      showMouseOver: {
-        type: Boolean,
-        default: false
-      },
       // 数据层级顶级路径
       path: {
         type: String,
@@ -143,6 +140,16 @@
       pathSelectable: {
         type: Function,
         default: () => true
+      },
+      // highlight current node when mouseover
+      highlightMouseoverNode: {
+        type: Boolean,
+        default: false
+      },
+      // highlight current node when selected
+      highlightSelectedNode: {
+        type: Boolean,
+        default: true
       },
       /* outer props */
 
@@ -264,11 +271,11 @@
       },
 
       handleMouseover () {
-        this.showMouseOver && this.selectable && (this.isMouseover = true)
+        this.highlightMouseoverNode && this.selectable && (this.isMouseover = true)
       },
 
       handleMouseout () {
-        this.showMouseOver && this.selectable && (this.isMouseover = false)
+        this.highlightMouseoverNode && this.selectable && (this.isMouseover = false)
       },
 
       // 是否对象

@@ -23,6 +23,10 @@
     background-color: @highlight-bg-color;
   }
 
+  &.is-highlight-selected {
+    background-color: darken(@highlight-bg-color, 5%);
+  }
+
   .@{css-prefix}-tree__content {
     padding-left: @content-padding;
     border-left: 1px dotted @border-color;

@@ -54,8 +54,12 @@
             <input type="checkbox" v-model="showDoubleQuotes">
           </div>
           <div>
-            <label>showMouseOver</label>
-            <input type="checkbox" v-model="showMouseOver">
+            <label>highlightMouseoverNode</label>
+            <input type="checkbox" v-model="highlightMouseoverNode">
+          </div>
+          <div>
+            <label>highlightSelectedNode</label>
+            <input type="checkbox" v-model="highlightSelectedNode">
           </div>
           <div>
             <label>deep</label>
@@ -80,7 +84,8 @@
           :path="path"
           :deep="deep"
           :show-double-quotes="showDoubleQuotes"
-          :show-mouse-over="showMouseOver"
+          :highlight-mouseover-node="highlightMouseoverNode"
+          :highlight-selected-node="highlightSelectedNode"
           :show-length="showLength"
           :select-on-click-node="selectOnClickNode"
           v-model="value"
@@ -131,7 +136,8 @@ export default {
       showSelectController: true,
       showLength: true,
       showDoubleQuotes: true,
-      showMouseOver: true,
+      highlightMouseoverNode: true,
+      highlightSelectedNode: true,
       selectOnClickNode: true,
       path: 'res',
       deep: 4,
@@ -148,7 +154,7 @@ export default {
       if (newVal === 'single') {
         this.value = 'res.error'
       } else if (newVal === 'multiple') {
-        this.value = ['res', 'res.error']
+        this.value = ['res.error', 'res.data[0].title']
       }
       // 重新渲染, 因为2中情况的v-model格式不同
       this.$nextTick(() => {
