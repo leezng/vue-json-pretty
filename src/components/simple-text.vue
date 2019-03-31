@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot></slot>
-    <span :class="`vjs-value__${dataType}`">
+    <span :class="`vjs-value vjs-value__${dataType}`">
       {{ textFormatter(data) }}
     </span>
   </div>

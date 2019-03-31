@@ -5,6 +5,7 @@
       'has-selectable-control': isMultiple || showSelectController,
       'is-root': currentDeep === 1,
       'is-selectable': selectable,
+      'is-selected': isSelected,
       'is-mouseover': isMouseover
     }"
     @click.stop="handleClick($event, 'tree')"
@@ -22,7 +23,7 @@
         :data="data"
         :show-length="showLength"
         :show-comma="notLastKey">
-        <span v-if="currentDeep > 1 && !Array.isArray(parentData)">{{ keyFormatter(currentKey) }}:</span>
+        <span v-if="currentDeep > 1 && !Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
       </brackets-left>
 
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
@@ -66,7 +67,7 @@
       :parent-data="parentData"
       :data="data"
       :current-key="currentKey">
-      <span v-if="!Array.isArray(parentData)">{{ keyFormatter(currentKey) }}:</span>
+      <span v-if="!Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
     </simple-text>
   </div>
 </template>
@@ -203,6 +204,16 @@
       // 单选模式
       isSingle () {
         return this.selectableType === 'single'
+      },
+
+      isSelected () {
+        if (this.isMultiple) {
+          return this.model.includes(this.path)
+        } else if (this.isSingle) {
+          return this.model === this.path
+        } else {
+          return false
+        }
       },
 
       propsError () {
