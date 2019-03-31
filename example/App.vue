@@ -3,15 +3,46 @@
     <div class="example-box">
       <h2 class="title">EXAMPLE 1</h2>
       <div class="block">
-        <h3>JSON Input:</h3>
+        <h3>JSON:</h3>
         <textarea v-model="val"></textarea>
+
+        <h3>Options:</h3>
+        <div class="options">
+          <div>
+            <label>showLength</label>
+            <input type="checkbox" v-model="showLength">
+          </div>
+          <div>
+            <label>showLine</label>
+            <input type="checkbox" v-model="showLine">
+          </div>
+          <div>
+            <label>showDoubleQuotes</label>
+            <input type="checkbox" v-model="showDoubleQuotes">
+          </div>
+          <div>
+            <label>highlightMouseoverNode</label>
+            <input type="checkbox" v-model="highlightMouseoverNode">
+          </div>
+          <div>
+            <label>deep</label>
+            <select v-model="deep">
+              <option :value="2">2</option>
+              <option :value="3">3</option>
+              <option :value="4">4</option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="block">
-        <h3>JSON Tree:</h3>
+        <h3>vue-json-pretty:</h3>
         <vue-json-pretty
-          :deep="deep"
           :data="json"
-          :path="'res'"
+          :deep="deep"
+          :show-double-quotes="showDoubleQuotes"
+          :show-length="showLength"
+          :show-line="showLine"
+          :highlight-mouseover-node="highlightMouseoverNode"
           @click="handleClick">
         </vue-json-pretty>
       </div>
@@ -20,10 +51,10 @@
     <div class="example-box">
       <h2 class="title">EXAMPLE 2</h2>
       <div class="block">
-        <h3>JSON Input:</h3>
+        <h3>JSON:</h3>
         <textarea v-model="val"></textarea>
 
-        <h3>Options</h3>
+        <h3>Options:</h3>
         <div class="options">
           <div>
             <label>selectableType</label>
@@ -81,7 +112,7 @@
         <div>data: <pre>{{itemData}}</pre></div>
       </div>
       <div class="block">
-        <h3>JSON Tree:</h3>
+        <h3>vue-json-pretty:</h3>
         <vue-json-pretty
           v-if="renderOK"
           :data="json"
@@ -139,14 +170,14 @@ export default {
       value: 'res.error',
       selectableType: 'single',
       showSelectController: true,
-      showLength: true,
+      showLength: false,
       showLine: true,
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       highlightSelectedNode: true,
       selectOnClickNode: true,
       path: 'res',
-      deep: 4,
+      deep: 3,
       itemData: {},
       itemPath: ''
     }
@@ -184,8 +215,8 @@ export default {
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
     },
-    handleChange (val) {
-      console.log('change: ', val)
+    handleChange (newVal, oldVal) {
+      console.log('newVal: ', newVal, ' oldVal: ', oldVal)
     }
   }
 }

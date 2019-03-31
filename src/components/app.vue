@@ -208,7 +208,7 @@
 
       // 当前的树是否支持选中功能
       selectable () {
-        return this.pathSelectable(this.path, this.data)
+        return this.pathSelectable(this.path, this.data) && (this.isMultiple || this.isSingle)
       },
 
       // 多选模式
@@ -243,9 +243,12 @@
        */
       handleClick (e, emitType = '') {
         this.$emit('click', this.path, this.data)
+        if (!this.selectable) return
+
         if (this.isMultiple && (emitType === 'checkbox' || (this.selectOnClickNode && emitType === 'tree'))) {
           // handle multiple
           const index = this.model.findIndex(item => item === this.path)
+          const oldVal = [...this.model]
           if (index !== -1) {
             this.model.splice(index, 1)
           } else {
@@ -255,12 +258,14 @@
           if (emitType !== 'checkbox') {
             this.currentCheckboxVal = !this.currentCheckboxVal
           }
-          this.$emit('change', this.currentCheckboxVal)
+          this.$emit('change', this.model, oldVal)
         } else if (this.isSingle && (emitType === 'radio' || (this.selectOnClickNode && emitType === 'tree'))) {
           // handle single
           if (this.model !== this.path) {
-            this.model = this.path
-            this.$emit('change', this.model)
+            const oldVal = this.model
+            const newVal = this.path
+            this.model = newVal
+            this.$emit('change', newVal, oldVal)
           }
         }
       },
@@ -271,19 +276,20 @@
       },
 
       // handle children's change, and propagation
-      handleItemChange (val) {
-        // 存在选择的时候change事件才有意义
-        if (this.selectableType) {
-          this.$emit('change', val)
+      handleItemChange (newVal, oldVal) {
+        // 可选的时候change事件才有意义
+        if (this.selectable) {
+          this.$emit('change', newVal, oldVal)
         }
       },
 
       handleMouseover () {
-        this.highlightMouseoverNode && this.selectable && (this.isMouseover = true)
+        // 可选择的树|普通展示树, 都支持mouseover
+        this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = true)
       },
 
       handleMouseout () {
-        this.highlightMouseoverNode && this.selectable && (this.isMouseover = false)
+        this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = false)
       },
 
       // 是否对象

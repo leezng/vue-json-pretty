@@ -13,6 +13,7 @@ A vue 2.x component for rendering JSON data as a tree structure.
 
 - [Demo](https://leezng.github.io/vue-json-pretty)
 - [Github](https://github.com/leezng/vue-json-pretty)
+- [NPM](https://www.npmjs.com/package/vue-json-pretty)
 - [中文文档](./README.zh-CN.md)
 
 ## Install
@@ -49,23 +50,28 @@ export default {
 ## Props
 
 - If you are using only the basic features (JSON pretty), just focus on the `base` properties.
-- If you are using advanced features (get item data), you need to focus on the `base` and `advanced` attributes.
+- If you are using advanced features (selected), you can use `base` and `advanced` attributes.
 
 | Attribute | Level | Description | Type | Default |
 |-------- |-------- |-------- |-------- | -------- |
 | data | basic | json data | JSON object | - |
 | deep | basic | data depth, data larger than this depth will not be expanded | number | Infinity |
 | showLength | basic | whether to show the length when closed | boolean | false |
+| showLine | basic | whether to show the line | boolean | true |
+| showDoubleQuotes | basic | whether to show doublequotes on key | boolean | true |
+| highlightMouseoverNode | basic | highlight current node when mouseover | boolean | false |
+| v-model | advanced | defines value when the tree can be selected | string, array | -, [] |
 | path | advanced | root data path | string | root |
 | pathChecked | advanced | defines the selected data path | array | [] |
 | pathSelectable | advanced | defines whether a data path supports selection | Function(itemPath, itemData) | - |
-| selectableType | advanced | defines the selected type, this feature is not supported by default | enum: both, checkbox, tree | - |
+| selectableType | advanced | defines the selected type, this feature is not supported by default | enum: -, multiple, single  | - |
+| showSelectController | advanced | whether to show the select controller at left | boolean | false |
+| selectOnClickNode | advanced | whether to change selected value when click node | boolean | true |
+| highlightSelectedNode | advanced | highlight current node when selected | boolean | true |
 
 ## Events
-
-- The following events are base on advanced features.
 
 | Event Name | Description | Callback Parameters |
 |---------- |-------- |---------- |
 | click  | triggered when a data item is clicked | (path, data) |
-
+| change  | triggered when the selected value changed (only the selectableType not null) | (newVal, oldVal) |
