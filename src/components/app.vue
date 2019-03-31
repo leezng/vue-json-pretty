@@ -31,7 +31,10 @@
       <div
         v-for="(item, key) in data"
         v-show="visible"
-        class="vjs-tree__content"
+        :class="{
+          'vjs-tree__content': true,
+          'has-line': showLine
+        }"
         :key="key">
         <vue-json-pretty
           v-model="model"
@@ -40,6 +43,7 @@
           :deep="deep"
           :show-length="showLength"
           :show-double-quotes="showDoubleQuotes"
+          :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
@@ -124,6 +128,10 @@
       showSelectController: {
         type: Boolean,
         default: false
+      },
+      showLine: {
+        type: Boolean,
+        default: true
       },
       // 是否在点击树的时候选中节点
       selectOnClickNode: {

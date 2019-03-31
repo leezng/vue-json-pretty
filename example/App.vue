@@ -50,6 +50,10 @@
             <input type="checkbox" v-model="showLength">
           </div>
           <div>
+            <label>showLine</label>
+            <input type="checkbox" v-model="showLine">
+          </div>
+          <div>
             <label>showDoubleQuotes</label>
             <input type="checkbox" v-model="showDoubleQuotes">
           </div>
@@ -70,14 +74,14 @@
             </select>
           </div>
         </div>
-
-        <h3>Latest Click Result:</h3>
+        <h3>v-model:</h3>
+        <div>{{value}}</div>
+        <h3>Current Click:</h3>
         <div>path: {{itemPath}}</div>
         <div>data: <pre>{{itemData}}</pre></div>
       </div>
       <div class="block">
         <h3>JSON Tree:</h3>
-        {{value}}
         <vue-json-pretty
           v-if="renderOK"
           :data="json"
@@ -87,6 +91,7 @@
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
           :show-length="showLength"
+          :show-line="showLine"
           :select-on-click-node="selectOnClickNode"
           v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
@@ -135,6 +140,7 @@ export default {
       selectableType: 'single',
       showSelectController: true,
       showLength: true,
+      showLine: true,
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       highlightSelectedNode: true,

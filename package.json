@@ -1,6 +1,6 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.4.1",
+  "version": "1.6.0",
   "description": "A Vue.js 2.0 Toolkit for JSON",
   "author": "leezng <im.leezng@gmail.com>",
   "main": "vue-json-pretty.js",

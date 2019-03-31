@@ -29,7 +29,9 @@
 
   .@{css-prefix}-tree__content {
     padding-left: @content-padding;
-    border-left: 1px dotted @border-color;
+    &.has-line {
+      border-left: 1px dotted @border-color;
+    }
   }
 
   .@{css-prefix}-tree__brackets {
@@ -37,6 +39,10 @@
     &:hover {
       color: @color-primary;
     }
+  }
+
+  .@{css-prefix}-comment {
+    color: @comment-color;
   }
 
   .@{css-prefix}-value__null {
