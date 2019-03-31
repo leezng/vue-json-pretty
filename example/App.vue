@@ -3,43 +3,26 @@
     <div class="example-box">
       <h2 class="title">EXAMPLE 1</h2>
       <div class="block">
-        <h3>JSON Input:</h3>
-        <textarea v-model="val"></textarea>
-      </div>
-      <div class="block">
-        <h3>JSON Tree:</h3>
-        <vue-json-pretty
-          :deep="deep"
-          :data="json"
-          :path="'res'">
-        </vue-json-pretty>
-      </div>
-    </div>
-
-    <div class="example-box">
-      <h2 class="title">EXAMPLE 2</h2>
-      <div class="block">
-        <h3>JSON Input:</h3>
+        <h3>JSON:</h3>
         <textarea v-model="val"></textarea>
 
-        <h3>Options</h3>
+        <h3>Options:</h3>
         <div class="options">
-          <div>
-            <label>selectable-type</label>
-            <select v-model="selectableType">
-              <option>-</option>
-              <option>both</option>
-              <option>checkbox</option>
-              <option>tree</option>
-            </select>
-          </div>
-          <div>
-            <label>path</label>
-            <input type="text" v-model="path">
-          </div>
           <div>
             <label>showLength</label>
             <input type="checkbox" v-model="showLength">
+          </div>
+          <div>
+            <label>showLine</label>
+            <input type="checkbox" v-model="showLine">
+          </div>
+          <div>
+            <label>showDoubleQuotes</label>
+            <input type="checkbox" v-model="showDoubleQuotes">
+          </div>
+          <div>
+            <label>highlightMouseoverNode</label>
+            <input type="checkbox" v-model="highlightMouseoverNode">
           </div>
           <div>
             <label>deep</label>
@@ -50,22 +33,103 @@
             </select>
           </div>
         </div>
+      </div>
+      <div class="block">
+        <h3>vue-json-pretty:</h3>
+        <vue-json-pretty
+          :data="json"
+          :deep="deep"
+          :show-double-quotes="showDoubleQuotes"
+          :show-length="showLength"
+          :show-line="showLine"
+          :highlight-mouseover-node="highlightMouseoverNode"
+          @click="handleClick">
+        </vue-json-pretty>
+      </div>
+    </div>
 
-        <h3>Latest Click Result:</h3>
+    <div class="example-box">
+      <h2 class="title">EXAMPLE 2</h2>
+      <div class="block">
+        <h3>JSON:</h3>
+        <textarea v-model="val"></textarea>
+
+        <h3>Options:</h3>
+        <div class="options">
+          <div>
+            <label>selectableType</label>
+            <select v-model="selectableType">
+              <option label="-"></option>
+              <option>single</option>
+              <option>multiple</option>
+            </select>
+          </div>
+          <div>
+            <label>showSelectController</label>
+            <input type="checkbox" v-model="showSelectController">
+          </div>
+          <div>
+            <label>selectOnClickNode</label>
+            <input type="checkbox" v-model="selectOnClickNode">
+          </div>
+          <div>
+            <label>path</label>
+            <input type="text" v-model="path">
+          </div>
+          <div>
+            <label>showLength</label>
+            <input type="checkbox" v-model="showLength">
+          </div>
+          <div>
+            <label>showLine</label>
+            <input type="checkbox" v-model="showLine">
+          </div>
+          <div>
+            <label>showDoubleQuotes</label>
+            <input type="checkbox" v-model="showDoubleQuotes">
+          </div>
+          <div>
+            <label>highlightMouseoverNode</label>
+            <input type="checkbox" v-model="highlightMouseoverNode">
+          </div>
+          <div>
+            <label>highlightSelectedNode</label>
+            <input type="checkbox" v-model="highlightSelectedNode">
+          </div>
+          <div>
+            <label>deep</label>
+            <select v-model="deep">
+              <option :value="2">2</option>
+              <option :value="3">3</option>
+              <option :value="4">4</option>
+            </select>
+          </div>
+        </div>
+        <h3>v-model:</h3>
+        <div>{{value}}</div>
+        <h3>Current Click:</h3>
         <div>path: {{itemPath}}</div>
         <div>data: <pre>{{itemData}}</pre></div>
       </div>
       <div class="block">
-        <h3>JSON Tree:</h3>
+        <h3>vue-json-pretty:</h3>
         <vue-json-pretty
+          v-if="renderOK"
           :data="json"
           :path="path"
           :deep="deep"
+          :show-double-quotes="showDoubleQuotes"
+          :highlight-mouseover-node="highlightMouseoverNode"
+          :highlight-selected-node="highlightSelectedNode"
           :show-length="showLength"
-          :path-checked="['res', 'res.c']"
+          :show-line="showLine"
+          :select-on-click-node="selectOnClickNode"
+          v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
-          @click="handleClick">
+          :show-select-controller="showSelectController"
+          @click="handleClick(...arguments, 'complexTree')"
+          @change="handleChange">
         </vue-json-pretty>
       </div>
     </div>
@@ -83,6 +147,7 @@ export default {
   },
   data () {
     return {
+      renderOK: true,
       val: '',
       data: {
         status: 200,
@@ -99,19 +164,40 @@ export default {
           news_id: 51182,
           title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
           source: 'AI Finance',
-          members: ['Daniel, Mike, John']
+          members: ['Daniel', 'Mike', 'John']
         }]
       },
-      selectableType: 'both',
-      showLength: true,
+      value: 'res.error',
+      selectableType: 'single',
+      showSelectController: true,
+      showLength: false,
+      showLine: true,
+      showDoubleQuotes: true,
+      highlightMouseoverNode: true,
+      highlightSelectedNode: true,
+      selectOnClickNode: true,
       path: 'res',
-      deep: 4,
+      deep: 3,
       itemData: {},
       itemPath: ''
     }
   },
   created () {
     this.val = JSON.stringify(this.data)
+  },
+  watch: {
+    selectableType (newVal) {
+      this.renderOK = false
+      if (newVal === 'single') {
+        this.value = 'res.error'
+      } else if (newVal === 'multiple') {
+        this.value = ['res.error', 'res.data[0].title']
+      }
+      // 重新渲染, 因为2中情况的v-model格式不同
+      this.$nextTick(() => {
+        this.renderOK = true
+      })
+    }
   },
   computed: {
     json () {
@@ -124,10 +210,13 @@ export default {
     }
   },
   methods: {
-    handleClick (path, data, checked) {
-      console.log('click', path, data, checked)
+    handleClick (path, data, treeName = '') {
+      console.log('click: ', path, data, treeName)
       this.itemPath = path
       this.itemData = !data ? data + '' : data // 处理 data = null 的情况
+    },
+    handleChange (newVal, oldVal) {
+      console.log('newVal: ', newVal, ' oldVal: ', oldVal)
     }
   }
 }

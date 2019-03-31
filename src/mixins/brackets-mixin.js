@@ -7,7 +7,7 @@ export default {
     data: {
       required: true
     },
-    notLastKey: Boolean
+    showComma: Boolean
   },
   computed: {
     dataVisiable: {
@@ -26,7 +26,7 @@ export default {
     },
     // 括号优化函数, 若不是最后一项, 自动添加逗号
     bracketsFormatter (brackets) {
-      return this.notLastKey ? `${brackets},` : brackets
+      return this.showComma ? `${brackets},` : brackets
     }
   }
 }
