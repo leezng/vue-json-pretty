@@ -9,7 +9,7 @@
       'is-highlight-selected': isSelected && highlightSelectedNode,
       'is-mouseover': isMouseover
     }"
-    @click.stop="handleClick($event, 'tree')"
+    @click="handleClick($event, 'tree')"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout">
     <template v-if="showSelectController && selectable">
@@ -239,9 +239,14 @@
     methods: {
       /**
        * emit click event
-       * @param  {Boolean} emitType tree/checkbox/radio
+       * @param  {string} emitType tree/checkbox/radio
        */
       handleClick (e, emitType = '') {
+        // Event can not be stopPropagation, because user may be listening the click event.
+        // So use _uid to simulated.
+        if (e._uid && e._uid !== this._uid) return
+        e._uid = this._uid
+
         this.$emit('click', this.path, this.data)
         if (!this.selectable) return
 
