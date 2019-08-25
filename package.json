@@ -1,7 +1,7 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.6.0",
-  "description": "A Vue.js 2.0 Toolkit for JSON",
+  "version": "1.6.1",
+  "description": "A JSON tree view component that is easy to use and also supports data selection.",
   "author": "leezng <im.leezng@gmail.com>",
   "main": "vue-json-pretty.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.28.0",
     "cssnano": "^3.10.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.18.2",
     "eslint-config-standard": "^6.2.1",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.7.1",
@@ -74,7 +74,7 @@
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.0",
     "webpack": "^3.12.0",
-    "webpack-bundle-analyzer": "^2.2.1",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.18.0",
     "webpack-merge": "^4.1.0"

@@ -6,8 +6,8 @@
 
 A vue 2.x component for rendering JSON data as a tree structure.
 
-- basic: JSON pretty
-- advanced: get item data from JSON
+- As a JSON Formatter
+- Get item data from JSON
 
 ## Links
 
@@ -49,25 +49,25 @@ export default {
 
 ## Props
 
-- If you are using only the basic features (JSON pretty), just focus on the `base` properties.
-- If you are using advanced features (selected), you can use `base` and `advanced` attributes.
+- If you are using only the normal features (JSON pretty), just focus on the `base` properties.
+- If you are using higher features (Get data), you can use `base` and `higher` attributes.
 
 | Attribute | Level | Description | Type | Default |
 |-------- |-------- |-------- |-------- | -------- |
-| data | basic | json data | JSON object | - |
-| deep | basic | data depth, data larger than this depth will not be expanded | number | Infinity |
-| showLength | basic | whether to show the length when closed | boolean | false |
-| showLine | basic | whether to show the line | boolean | true |
-| showDoubleQuotes | basic | whether to show doublequotes on key | boolean | true |
-| highlightMouseoverNode | basic | highlight current node when mouseover | boolean | false |
-| v-model | advanced | defines value when the tree can be selected | string, array | -, [] |
-| path | advanced | root data path | string | root |
-| pathChecked | advanced | defines the selected data path | array | [] |
-| pathSelectable | advanced | defines whether a data path supports selection | Function(itemPath, itemData) | - |
-| selectableType | advanced | defines the selected type, this feature is not supported by default | enum: -, multiple, single  | - |
-| showSelectController | advanced | whether to show the select controller at left | boolean | false |
-| selectOnClickNode | advanced | whether to change selected value when click node | boolean | true |
-| highlightSelectedNode | advanced | highlight current node when selected | boolean | true |
+| data | normal | json data | JSON object | - |
+| deep | normal | data depth, data larger than this depth will not be expanded | number | Infinity |
+| showLength | normal | whether to show the length when closed | boolean | false |
+| showLine | normal | whether to show the line | boolean | true |
+| showDoubleQuotes | normal | whether to show doublequotes on key | boolean | true |
+| highlightMouseoverNode | normal | highlight current node when mouseover | boolean | false |
+| v-model | higher | defines value when the tree can be selected | string, array | -, [] |
+| path | higher | root data path | string | root |
+| pathChecked | higher | defines the selected data path | array | [] |
+| pathSelectable | higher | defines whether a data path supports selection | Function(itemPath, itemData) | - |
+| selectableType | higher | defines the selected type, this feature is not supported by default | enum: -, multiple, single  | - |
+| showSelectController | higher | whether to show the select controller at left | boolean | false |
+| selectOnClickNode | higher | whether to change selected value when click node | boolean | true |
+| highlightSelectedNode | higher | highlight current node when selected | boolean | true |
 
 ## Events
 
