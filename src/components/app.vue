@@ -73,7 +73,12 @@
       :parent-data="parentData"
       :data="data"
       :current-key="currentKey">
-      <span v-if="!Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
+      <span
+        v-if="parentData && currentKey && !Array.isArray(parentData)"
+        class="vjs-key"
+      >
+        {{ keyFormatter(currentKey) }}:
+      </span>
     </simple-text>
   </div>
 </template>
