@@ -1,6 +1,6 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A JSON tree view component that is easy to use and also supports data selection.",
   "author": "leezng <im.leezng@gmail.com>",
   "main": "vue-json-pretty.js",

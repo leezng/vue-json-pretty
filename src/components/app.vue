@@ -9,12 +9,12 @@
       'is-highlight-selected': isSelected && highlightSelectedNode,
       'is-mouseover': isMouseover
     }"
-    @click="handleClick($event, 'tree')"
+    @click="handleClick"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout">
     <template v-if="showSelectController && selectable">
-      <vue-checkbox v-if="isMultiple" v-model="currentCheckboxVal" @change="handleClick($event, 'checkbox')"></vue-checkbox>
-      <vue-radio v-else-if="isSingle" v-model="model" @change="handleClick($event, 'radio')" :path="path"></vue-radio>
+      <vue-checkbox v-if="isMultiple" v-model="currentCheckboxVal" @change="handleValueChange('checkbox')"></vue-checkbox>
+      <vue-radio v-else-if="isSingle" v-model="model" @change="handleValueChange('radio')" :path="path"></vue-radio>
     </template>
 
     <template v-if="Array.isArray(data) || isObject(data)">
@@ -73,7 +73,12 @@
       :parent-data="parentData"
       :data="data"
       :current-key="currentKey">
-      <span v-if="!Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
+      <span
+        v-if="parentData && currentKey && !Array.isArray(parentData)"
+        class="vjs-key"
+      >
+        {{ keyFormatter(currentKey) }}:
+      </span>
     </simple-text>
   </div>
 </template>
@@ -237,20 +242,8 @@
       }
     },
     methods: {
-      /**
-       * emit click event
-       * @param  {string} emitType tree/checkbox/radio
-       */
-      handleClick (e, emitType = '') {
-        // Event can not be stopPropagation, because user may be listening the click event.
-        // So use _uid to simulated.
-        if (e._uid && e._uid !== this._uid) return
-        e._uid = this._uid
-
-        this.$emit('click', this.path, this.data)
-        if (!this.selectable) return
-
-        if (this.isMultiple && (emitType === 'checkbox' || (this.selectOnClickNode && emitType === 'tree'))) {
+      handleValueChange (emitType) {
+        if (this.isMultiple && (emitType === 'checkbox' || emitType === 'tree')) {
           // handle multiple
           const index = this.model.findIndex(item => item === this.path)
           const oldVal = [...this.model]
@@ -264,7 +257,7 @@
             this.currentCheckboxVal = !this.currentCheckboxVal
           }
           this.$emit('change', this.model, oldVal)
-        } else if (this.isSingle && (emitType === 'radio' || (this.selectOnClickNode && emitType === 'tree'))) {
+        } else if (this.isSingle && (emitType === 'radio' || emitType === 'tree')) {
           // handle single
           if (this.model !== this.path) {
             const oldVal = this.model
@@ -272,6 +265,22 @@
             this.model = newVal
             this.$emit('change', newVal, oldVal)
           }
+        }
+      },
+
+      /**
+       * emit click event
+       * @param  {string} emitType tree/checkbox/radio
+       */
+      handleClick (e) {
+        // Event can not be stopPropagation, because user may be listening the click event.
+        // So use _uid to simulated.
+        if (e._uid && e._uid !== this._uid) return
+        e._uid = this._uid
+
+        this.$emit('click', this.path, this.data)
+        if (this.selectable && this.selectOnClickNode) {
+          this.handleValueChange('tree')
         }
       },
 

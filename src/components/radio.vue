@@ -7,7 +7,7 @@
       type="radio"
       v-model="model"
       :value="currentPath"
-      @change="test"
+      @change="change"
       @focus="focus = true"
       @blur="focus = false">
   </label>
@@ -42,7 +42,7 @@
       }
     },
     methods: {
-      test () {
+      change () {
         this.$emit('change', this.model)
       }
     }
