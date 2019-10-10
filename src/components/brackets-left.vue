@@ -4,14 +4,14 @@
 
     <!-- Expand -->
     <span
-      v-show="dataVisiable"
+      v-show="dataVisible"
       class="vjs-tree__brackets"
       @click.stop="toggleBrackets">
       {{ Array.isArray(data) ? '[' : '{' }}
     </span>
 
     <!-- Collapse -->
-    <span v-show="!dataVisiable">
+    <span v-show="!dataVisible">
       <span
         class="vjs-tree__brackets"
         @click.stop="toggleBrackets">
