@@ -1,5 +1,5 @@
 <template>
-  <div v-show="dataVisiable">
+  <div v-show="dataVisible">
     <span
       class="vjs-tree__brackets"
       @click.stop="toggleBrackets">
