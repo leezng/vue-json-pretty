@@ -68,6 +68,7 @@ export default {
 | showSelectController | higher | whether to show the select controller at left | boolean | false |
 | selectOnClickNode | higher | whether to change selected value when click node | boolean | true |
 | highlightSelectedNode | higher | highlight current node when selected | boolean | true |
+| collapseBrackets | higher | need to collpase brackets when the brackets are clicked | boolean | true |
 
 ## Events
 

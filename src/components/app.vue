@@ -23,7 +23,8 @@
         :visible.sync="visible"
         :data="data"
         :show-length="showLength"
-        :show-comma="notLastKey">
+        :show-comma="notLastKey"
+        :collapse-brackets.sync="collapseBrackets">
         <span v-if="currentDeep > 1 && !Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
       </brackets-left>
 
@@ -46,6 +47,7 @@
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
+          :collapse-brackets.sync="collapseBrackets"
           :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
@@ -62,7 +64,8 @@
       <brackets-right
         :visible.sync="visible"
         :data="data"
-        :show-comma="notLastKey">
+        :show-comma="notLastKey"
+        :collapse-brackets.sync="collapseBrackets">
       </brackets-right>
     </template>
 
@@ -161,6 +164,11 @@
       },
       // highlight current node when selected
       highlightSelectedNode: {
+        type: Boolean,
+        default: true
+      },
+      // restrict the brackets to collapse when clicked
+      collapseBrackets: {
         type: Boolean,
         default: true
       },

@@ -97,6 +97,10 @@
             <input type="checkbox" v-model="highlightSelectedNode">
           </div>
           <div>
+            <label>collapseBrackets</label>
+            <input type="checkbox" v-model="collapseBrackets">
+          </div>
+          <div>
             <label>deep</label>
             <select v-model="deep">
               <option :value="2">2</option>
@@ -121,6 +125,7 @@
           :show-double-quotes="showDoubleQuotes"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
+          :collapseBrackets="collapseBrackets"
           :show-length="showLength"
           :show-line="showLine"
           :select-on-click-node="selectOnClickNode"
@@ -175,6 +180,7 @@ export default {
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       highlightSelectedNode: true,
+      collapseBrackets: true,
       selectOnClickNode: true,
       path: 'res',
       deep: 3,
