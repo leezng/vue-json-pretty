@@ -7,22 +7,25 @@ export default {
     data: {
       required: true
     },
-    showComma: Boolean
+    showComma: Boolean,
+    collapsedOnClickBrackets: Boolean
   },
   computed: {
-    dataVisiable: {
+    dataVisible: {
       get () {
         return this.visible
       },
       set (val) {
-        this.$emit('update:visible', val)
+        if (this.collapsedOnClickBrackets) {
+          this.$emit('update:visible', val)
+        }
       }
     }
   },
   methods: {
     // 切换括号展开|关闭
     toggleBrackets () {
-      this.dataVisiable = !this.dataVisiable
+      this.dataVisible = !this.dataVisible
     },
     // 括号优化函数, 若不是最后一项, 自动添加逗号
     bracketsFormatter (brackets) {

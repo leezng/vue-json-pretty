@@ -25,6 +25,10 @@
             <input type="checkbox" v-model="highlightMouseoverNode">
           </div>
           <div>
+            <label>collapsedOnClickBrackets</label>
+            <input type="checkbox" v-model="collapsedOnClickBrackets">
+          </div>
+          <div>
             <label>deep</label>
             <select v-model="deep">
               <option :value="2">2</option>
@@ -43,6 +47,7 @@
           :show-length="showLength"
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
+          :collapsed-on-click-brackets="collapsedOnClickBrackets"
           @click="handleClick">
         </vue-json-pretty>
       </div>
@@ -97,6 +102,10 @@
             <input type="checkbox" v-model="highlightSelectedNode">
           </div>
           <div>
+            <label>collapsedOnClickBrackets</label>
+            <input type="checkbox" v-model="collapsedOnClickBrackets">
+          </div>
+          <div>
             <label>deep</label>
             <select v-model="deep">
               <option :value="2">2</option>
@@ -124,6 +133,7 @@
           :show-length="showLength"
           :show-line="showLine"
           :select-on-click-node="selectOnClickNode"
+          :collapsed-on-click-brackets="collapsedOnClickBrackets"
           v-model="value"
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
@@ -176,6 +186,7 @@ export default {
       highlightMouseoverNode: true,
       highlightSelectedNode: true,
       selectOnClickNode: true,
+      collapsedOnClickBrackets: true,
       path: 'res',
       deep: 3,
       itemData: {},

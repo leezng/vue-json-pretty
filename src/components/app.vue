@@ -23,6 +23,7 @@
         :visible.sync="visible"
         :data="data"
         :show-length="showLength"
+        :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-comma="notLastKey">
         <span v-if="currentDeep > 1 && !Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
       </brackets-left>
@@ -51,6 +52,7 @@
           :selectable-type="selectableType"
           :show-select-controller="showSelectController"
           :select-on-click-node="selectOnClickNode"
+          :collapsed-on-click-brackets="collapsedOnClickBrackets"
           :current-key="key"
           :current-deep="currentDeep + 1"
           @click="handleItemClick"
@@ -62,6 +64,7 @@
       <brackets-right
         :visible.sync="visible"
         :data="data"
+        :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-comma="notLastKey">
       </brackets-right>
     </template>
@@ -161,6 +164,11 @@
       },
       // highlight current node when selected
       highlightSelectedNode: {
+        type: Boolean,
+        default: true
+      },
+      // collapsed control
+      collapsedOnClickBrackets: {
         type: Boolean,
         default: true
       },
