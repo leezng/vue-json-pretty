@@ -237,9 +237,6 @@ export default {
       console.log('newVal: ', newVal, ' oldVal: ', oldVal)
     },
     customLinkFormatter(data) {
-      console.log(data)
-      console.log(data.startsWith('http://'))
-      console.log(data.startsWith('http'))
       if (data.startsWith('http://')) {
         return `<a style="color:red;" href="${data}">"${data}"</a>`;
       } else {

@@ -38,7 +38,6 @@
 
       textFormatter (data) {
         if (this.customValueFormatter) {
-          console.log(this.customValueFormatter)
           return this.customValueFormatter(
             data, this.currentKey, this.parentData
           ) || this.defaultFormatter(data)
