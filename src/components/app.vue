@@ -55,6 +55,7 @@
           :collapsed-on-click-brackets="collapsedOnClickBrackets"
           :current-key="key"
           :current-deep="currentDeep + 1"
+          :custom-value-formatter="customValueFormatter"
           @click="handleItemClick"
           @change="handleItemChange">
         </vue-json-pretty>
@@ -71,6 +72,7 @@
 
     <simple-text
       v-else
+      :custom-value-formatter="customValueFormatter"
       :show-double-quotes="showDoubleQuotes"
       :show-comma="notLastKey"
       :parent-data="parentData"
@@ -171,6 +173,11 @@
       collapsedOnClickBrackets: {
         type: Boolean,
         default: true
+      },
+      // custom formatter for values
+      customValueFormatter: {
+        type: Function,
+        default: null
       },
       /* outer props */
 
