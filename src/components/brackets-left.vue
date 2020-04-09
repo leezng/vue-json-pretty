@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click.stop="toggleBrackets">
     <slot></slot>
 
     <!-- Expand -->
