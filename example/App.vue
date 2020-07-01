@@ -28,6 +28,10 @@
             <label>collapsedOnClickBrackets</label>
             <input type="checkbox" v-model="collapsedOnClickBrackets">
           </div>
+            <div>
+            <label>use custom link formatter</label>
+            <input type="checkbox" v-model="useCustomLinkFormatter">
+          </div>
           <div>
             <label>deep</label>
             <select v-model="deep">
@@ -48,6 +52,7 @@
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :collapsed-on-click-brackets="collapsedOnClickBrackets"
+          :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
           @click="handleClick">
         </vue-json-pretty>
       </div>
@@ -169,7 +174,8 @@ export default {
         }, {
           news_id: 51183,
           title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
-          source: 'Netease smart'
+          source: 'Netease smart',
+          link: 'http://netease.smart/traffic-paradise/1235'
         }, {
           news_id: 51182,
           title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
@@ -187,6 +193,7 @@ export default {
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
+      useCustomLinkFormatter: false,
       path: 'res',
       deep: 3,
       itemData: {},
@@ -228,6 +235,13 @@ export default {
     },
     handleChange (newVal, oldVal) {
       console.log('newVal: ', newVal, ' oldVal: ', oldVal)
+    },
+    customLinkFormatter(data) {
+      if (data.startsWith('http://')) {
+        return `<a style="color:red;" href="${data}">"${data}"</a>`;
+      } else {
+        return null;
+      }
     }
   }
 }
