@@ -1,7 +1,8 @@
 <template>
   <div>
     <slot></slot>
-    <span :class="`vjs-value vjs-value__${dataType}`" v-html="textFormatter(data)"/>
+    <span v-if="customValueFormatter" :class="valueClass" v-html="customFormatter(data)"/>
+    <span v-else :class="valueClass">{{ defaultFormatter(data) }}</span>
   </div>
 </template>
 
@@ -18,6 +19,10 @@
       customValueFormatter: Function
     },
     computed: {
+      valueClass () {
+        return `vjs-value vjs-value__${this.dataType}`
+      },
+
       // 当前数据类型
       dataType () {
         return getDataType(this.data)
@@ -36,14 +41,10 @@
         return text
       },
 
-      textFormatter (data) {
-        if (this.customValueFormatter) {
-          return this.customValueFormatter(
-            data, this.currentKey, this.parentData
-          ) || this.defaultFormatter(data)
-        } else {
-          return this.defaultFormatter(data)
-        }
+      customFormatter (data) {
+        return this.customValueFormatter(
+          data, this.currentKey, this.parentData
+        ) || this.defaultFormatter(data)
       }
     }
   }
