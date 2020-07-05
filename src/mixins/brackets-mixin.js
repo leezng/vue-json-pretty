@@ -7,7 +7,8 @@ export default {
     data: {
       required: true
     },
-    showComma: Boolean
+    showComma: Boolean,
+    collapsedOnClickBrackets: Boolean
   },
   computed: {
     dataVisiable: {
@@ -15,7 +16,9 @@ export default {
         return this.visible
       },
       set (val) {
-        this.$emit('update:visible', val)
+        if (this.collapsedOnClickBrackets) {
+          this.$emit('update:visible', val)
+        }
       }
     }
   },

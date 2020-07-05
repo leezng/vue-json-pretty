@@ -68,6 +68,7 @@ export default {
 | showSelectController | higher | whether to show the select controller at left | boolean | false |
 | selectOnClickNode | higher | whether to change selected value when click node | boolean | true |
 | highlightSelectedNode | higher | highlight current node when selected | boolean | true |
+| customValueFormatter | higher | a function that can return different html or strings to display for values in the data. If it returns null or empty, the default formatter is used  | Function | false |
 
 ## Events
 
