@@ -1,8 +1,9 @@
 <template>
-  <div v-show="dataVisible">
+  <div v-show="dataVisiable">
     <span
       class="vjs-tree__brackets"
-      @click.stop="toggleBrackets">
+      @click.stop="toggleBrackets"
+    >
       {{ bracketsFormatter(Array.isArray(data) ? ']' : '}') }}
     </span>
   </div>

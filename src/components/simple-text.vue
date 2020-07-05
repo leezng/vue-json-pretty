@@ -1,7 +1,17 @@
 <template>
   <div>
-    <slot></slot>
-    <span :class="`vjs-value vjs-value__${dataType}`" v-html="textFormatter(data)"/>
+    <slot />
+    <span
+      v-if="customValueFormatter"
+      :class="valueClass"
+      v-html="customFormatter(data)"
+    />
+    <span
+      v-else
+      :class="valueClass"
+    >
+      {{ defaultFormatter(data) }}
+    </span>
   </div>
 </template>
 
@@ -11,22 +21,33 @@
   export default {
     props: {
       showDoubleQuotes: Boolean,
-      parentData: {},
-      data: {},
+      parentData: {
+        type: [String, Number, Boolean, Array, Object],
+        default: null
+      },
+      data: {
+        type: [String, Number, Boolean],
+        default: ''
+      },
       showComma: Boolean,
-      currentKey: [Number, String],
-      customValueFormatter: Function
+      currentKey: {
+        type: [Number, String],
+        default: ''
+      },
+      customValueFormatter: {
+        type: Function,
+        default: null
+      },
     },
     computed: {
+      valueClass () {
+        return `vjs-value vjs-value__${this.dataType}`
+      },
+
       // 当前数据类型
       dataType () {
         return getDataType(this.data)
       },
-
-      // 父级数据类型
-      parentDataType () {
-        return getDataType(this.parentData)
-      }
     },
     methods: {
       defaultFormatter (data) {
@@ -36,14 +57,10 @@
         return text
       },
 
-      textFormatter (data) {
-        if (this.customValueFormatter) {
-          return this.customValueFormatter(
-            data, this.currentKey, this.parentData
-          ) || this.defaultFormatter(data)
-        } else {
-          return this.defaultFormatter(data)
-        }
+      customFormatter (data) {
+        return this.customValueFormatter
+          ? this.customValueFormatter(data, this.currentKey, this.parentData, this.defaultFormatter(data))
+          : this.defaultFormatter(data)
       }
     }
   }

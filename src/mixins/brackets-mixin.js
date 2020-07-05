@@ -11,7 +11,7 @@ export default {
     collapsedOnClickBrackets: Boolean
   },
   computed: {
-    dataVisible: {
+    dataVisiable: {
       get () {
         return this.visible
       },
@@ -25,7 +25,7 @@ export default {
   methods: {
     // 切换括号展开|关闭
     toggleBrackets () {
-      this.dataVisible = !this.dataVisible
+      this.dataVisiable = !this.dataVisiable
     },
     // 括号优化函数, 若不是最后一项, 自动添加逗号
     bracketsFormatter (brackets) {

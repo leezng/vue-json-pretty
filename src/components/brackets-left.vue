@@ -1,24 +1,29 @@
 <template>
   <div>
-    <slot></slot>
+    <slot />
 
     <!-- Expand -->
     <span
-      v-show="dataVisible"
+      v-show="dataVisiable"
       class="vjs-tree__brackets"
-      @click.stop="toggleBrackets">
+      @click.stop="toggleBrackets"
+    >
       {{ Array.isArray(data) ? '[' : '{' }}
     </span>
 
     <!-- Collapse -->
-    <span v-show="!dataVisible">
+    <span v-show="!dataVisiable">
       <span
         class="vjs-tree__brackets"
-        @click.stop="toggleBrackets">
+        @click.stop="toggleBrackets"
+      >
         {{ closedBracketsGenerator(data) }}
       </span>
 
-      <span v-if="showLength" class="vjs-comment">
+      <span
+        v-if="showLength"
+        class="vjs-comment"
+      >
         {{ lengthGenerator(data) }}
       </span>
     </span>
