@@ -1,6 +1,6 @@
 <template>
   <div>
-    <slot></slot>
+    <slot />
     <span :class="`vjs-value vjs-value__${dataType}`">
       {{ textFormatter(data) }}
     </span>
@@ -13,20 +13,16 @@
   export default {
     props: {
       showDoubleQuotes: Boolean,
-      parentData: {},
-      data: {},
-      showComma: Boolean,
-      currentKey: [Number, String]
+      data: {
+        type: [String, Number, Boolean],
+        default: ''
+      },
+      showComma: Boolean
     },
     computed: {
       // 当前数据类型
       dataType () {
         return getDataType(this.data)
-      },
-
-      // 父级数据类型
-      parentDataType () {
-        return getDataType(this.parentData)
       }
     },
     methods: {

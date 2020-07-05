@@ -1,22 +1,29 @@
 <template>
   <!-- click.stop 避免向上冒泡触发 tree.vue 的 click 事件-->
-  <label :class="[ 'vjs-radio', model === currentPath ? 'is-checked': '' ]" @click.stop>
-    <span class="vjs-radio__inner"></span>
+  <label
+    :class="[ 'vjs-radio', model === currentPath ? 'is-checked': '' ]"
+    @click.stop
+  >
+    <span class="vjs-radio__inner" />
     <input
+      v-model="model"
       class="vjs-radio__original"
       type="radio"
-      v-model="model"
       :value="currentPath"
       @change="change"
       @focus="focus = true"
-      @blur="focus = false">
+      @blur="focus = false"
+    >
   </label>
 </template>
 
 <script>
   export default {
     props: {
-      path: String,
+      path: {
+        type: String,
+        default: ''
+      },
       value: {
         type: String,
         default: ''

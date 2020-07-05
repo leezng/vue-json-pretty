@@ -11,10 +11,20 @@
     }"
     @click="handleClick"
     @mouseover.stop="handleMouseover"
-    @mouseout.stop="handleMouseout">
+    @mouseout.stop="handleMouseout"
+  >
     <template v-if="showSelectController && selectable">
-      <vue-checkbox v-if="isMultiple" v-model="currentCheckboxVal" @change="handleValueChange('checkbox')"></vue-checkbox>
-      <vue-radio v-else-if="isSingle" v-model="model" @change="handleValueChange('radio')" :path="path"></vue-radio>
+      <vue-checkbox
+        v-if="isMultiple"
+        v-model="currentCheckboxVal"
+        @change="handleValueChange('checkbox')"
+      />
+      <vue-radio
+        v-else-if="isSingle"
+        v-model="model"
+        :path="path"
+        @change="handleValueChange('radio')"
+      />
     </template>
 
     <template v-if="Array.isArray(data) || isObject(data)">
@@ -23,19 +33,24 @@
         :visible.sync="visible"
         :data="data"
         :show-length="showLength"
-        :show-comma="notLastKey">
-        <span v-if="currentDeep > 1 && !Array.isArray(parentData)" class="vjs-key">{{ keyFormatter(currentKey) }}:</span>
+        :show-comma="notLastKey"
+      >
+        <span
+          v-if="currentDeep > 1 && !Array.isArray(parentData)"
+          class="vjs-key"
+        >{{ keyFormatter(currentKey) }}:</span>
       </brackets-left>
 
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
       <div
         v-for="(item, key) in data"
         v-show="visible"
+        :key="key"
         :class="{
           'vjs-tree__content': true,
           'has-line': showLine
         }"
-        :key="key">
+      >
         <vue-json-pretty
           v-model="model"
           :parent-data="data"
@@ -54,16 +69,16 @@
           :current-key="key"
           :current-deep="currentDeep + 1"
           @click="handleItemClick"
-          @change="handleItemChange">
-        </vue-json-pretty>
+          @change="handleItemChange"
+        />
       </div>
 
       <!-- 右闭合 -->
       <brackets-right
         :visible.sync="visible"
         :data="data"
-        :show-comma="notLastKey">
-      </brackets-right>
+        :show-comma="notLastKey"
+      />
     </template>
 
     <simple-text
@@ -72,7 +87,8 @@
       :show-comma="notLastKey"
       :parent-data="parentData"
       :data="data"
-      :current-key="currentKey">
+      :current-key="currentKey"
+    >
       <span
         v-if="parentData && currentKey && !Array.isArray(parentData)"
         class="vjs-key"
@@ -92,7 +108,7 @@
   import { getDataType } from 'src/utils'
 
   export default {
-    name: 'vue-json-pretty',
+    name: 'VueJsonPretty',
     components: {
       SimpleText,
       VueCheckbox,
@@ -103,7 +119,10 @@
     props: {
       /* outer props */
       // 当前树的数据
-      data: {},
+      data: {
+        type: [String, Number, Boolean, Array, Object],
+        default: null
+      },
       // 定义树的深度, 大于该深度的子树将不被展开
       deep: {
         type: Number,
@@ -168,14 +187,20 @@
 
       /* inner props */
       // 当前树的父级数据
-      parentData: {},
+      parentData: {
+        type: [String, Number, Boolean, Array, Object],
+        default: null
+      },
       // 当前树的深度, 以根节点作为0开始, 所以第一层树的深度为1, 递归逐次递增
       currentDeep: {
         type: Number,
         default: 1
       },
       // 当前树的数据 data 为数组时 currentKey 表示索引, 为对象时表示键名
-      currentKey: [Number, String]
+      currentKey: {
+        type: [Number, String],
+        default: ''
+      }
       /* outer props */
     },
     data () {
@@ -204,6 +229,7 @@
           let arr = Object.keys(this.parentData)
           return arr[arr.length - 1]
         }
+        return ''
       },
 
       // 是否不是最后一项
@@ -239,6 +265,19 @@
       propsError () {
         const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
         return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
+      }
+    },
+    watch: {
+      deep (newVal) {
+        this.visible = this.currentDeep <= newVal
+      },
+      propsError: {
+        handler (message) {
+          if (message) {
+            throw new Error(`[vue-json-pretty] ${message}`)
+          }
+        },
+        immediate: true
       }
     },
     methods: {
@@ -319,19 +358,6 @@
     //    因为是递归组件，因此错误只对外暴露一次，子组件的错误不再对外传递
     errorCaptured () {
       return false
-    },
-    watch: {
-      deep (newVal) {
-        this.visible = this.currentDeep <= newVal
-      },
-      propsError: {
-        handler (message) {
-          if (message) {
-            throw new Error(`[vue-json-pretty] ${message}`)
-          }
-        },
-        immediate: true
-      }
     }
   }
 </script>
