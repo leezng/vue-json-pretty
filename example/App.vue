@@ -243,7 +243,7 @@ export default {
     },
     customLinkFormatter (data, key, parent, defaultFormatted) {
       if (data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}">"${data}"</a>`;
+        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
       } else {
         return defaultFormatted;
       }
