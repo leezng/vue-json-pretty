@@ -1,8 +1,17 @@
 <template>
   <div>
-    <slot></slot>
-    <span v-if="customValueFormatter" :class="valueClass" v-html="customFormatter(data)"/>
-    <span v-else :class="valueClass">{{ defaultFormatter(data) }}</span>
+    <slot />
+    <span
+      v-if="customValueFormatter"
+      :class="valueClass"
+      v-html="customFormatter(data)"
+    />
+    <span
+      v-else
+      :class="valueClass"
+    >
+      {{ defaultFormatter(data) }}
+    </span>
   </div>
 </template>
 
@@ -12,11 +21,23 @@
   export default {
     props: {
       showDoubleQuotes: Boolean,
-      parentData: {},
-      data: {},
+      parentData: {
+        type: [String, Number, Boolean, Array, Object],
+        default: null
+      },
+      data: {
+        type: [String, Number, Boolean],
+        default: ''
+      },
       showComma: Boolean,
-      currentKey: [Number, String],
-      customValueFormatter: Function
+      currentKey: {
+        type: [Number, String],
+        default: ''
+      },
+      customValueFormatter: {
+        type: Function,
+        default: null
+      },
     },
     computed: {
       valueClass () {
@@ -27,11 +48,6 @@
       dataType () {
         return getDataType(this.data)
       },
-
-      // 父级数据类型
-      parentDataType () {
-        return getDataType(this.parentData)
-      }
     },
     methods: {
       defaultFormatter (data) {
@@ -42,9 +58,9 @@
       },
 
       customFormatter (data) {
-        return this.customValueFormatter(
-          data, this.currentKey, this.parentData
-        ) || this.defaultFormatter(data)
+        return this.customValueFormatter
+          ? this.customValueFormatter(data, this.currentKey, this.parentData, this.defaultFormatter(data))
+          : this.defaultFormatter(data)
       }
     }
   }

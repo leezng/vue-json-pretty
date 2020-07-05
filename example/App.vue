@@ -28,8 +28,8 @@
             <label>collapsedOnClickBrackets</label>
             <input type="checkbox" v-model="collapsedOnClickBrackets">
           </div>
-            <div>
-            <label>use custom link formatter</label>
+          <div>
+            <label>use custom formatter</label>
             <input type="checkbox" v-model="useCustomLinkFormatter">
           </div>
           <div>
@@ -118,6 +118,10 @@
               <option :value="4">4</option>
             </select>
           </div>
+          <div>
+            <label>use custom formatter</label>
+            <input type="checkbox" v-model="useCustomLinkFormatter">
+          </div>
         </div>
         <h3>v-model:</h3>
         <div>{{value}}</div>
@@ -143,6 +147,7 @@
           :path-selectable="((path, data) => typeof data !== 'number')"
           :selectable-type="selectableType"
           :show-select-controller="showSelectController"
+          :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
           @click="handleClick(...arguments, 'complexTree')"
           @change="handleChange">
         </vue-json-pretty>
@@ -236,11 +241,11 @@ export default {
     handleChange (newVal, oldVal) {
       console.log('newVal: ', newVal, ' oldVal: ', oldVal)
     },
-    customLinkFormatter(data) {
+    customLinkFormatter (data, key, parent, defaultFormatted) {
       if (data.startsWith('http://')) {
         return `<a style="color:red;" href="${data}">"${data}"</a>`;
       } else {
-        return null;
+        return defaultFormatted;
       }
     }
   }

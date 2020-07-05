@@ -69,6 +69,7 @@ export default {
 | showSelectController | 高级 | 是否展示选择控制器 | boolean | false |
 | selectOnClickNode | 高级 | 是否在点击节点的时候触发v-model双向绑定 | boolean | true |
 | highlightSelectedNode | 高级 | 是否高亮已选项 | boolean | true |
+| customValueFormatter | 高级 | 可以进行值的自定义渲染 | Function(data, key, parent, defaultFormatted) | - |
 
 ## Events
 
