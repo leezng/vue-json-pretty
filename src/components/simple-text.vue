@@ -9,9 +9,7 @@
     <span
       v-else
       :class="valueClass"
-    >
-      {{ defaultFormatter(data) }}
-    </span>
+    >{{ defaultFormatter(data) }}</span>
   </div>
 </template>
 
