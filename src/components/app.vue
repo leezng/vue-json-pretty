@@ -27,6 +27,8 @@
       />
     </template>
 
+    <span v-if="showLineNumber" class="vjs-line-number">{{ lineNumber }}</span>
+
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
       <brackets-left
@@ -55,12 +57,14 @@
         }"
       >
         <vue-json-pretty
+          :ref="`vjs-${lineNumber}`"
           v-model="model"
           :parent-data="data"
           :data="item"
           :deep="deep"
           :show-length="showLength"
           :show-double-quotes="showDoubleQuotes"
+          :show-line-number="showLineNumber"
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
@@ -71,6 +75,8 @@
           :select-on-click-node="selectOnClickNode"
           :collapsed-on-click-brackets="collapsedOnClickBrackets"
           :current-key="key"
+          :line-count="lineCount"
+          :recursive-line-count="recursiveLineCount"
           :current-deep="currentDeep + 1"
           :custom-value-formatter="customValueFormatter"
           @click="handleItemClick"
@@ -78,12 +84,15 @@
         />
       </div>
 
+      <span v-if="showLineNumber" class="vjs-line-number">{{ getRecursiveLineNumber() }}</span>
+
       <!-- 右闭合 -->
       <brackets-right
         :visible.sync="visible"
         :data="data"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-comma="notLastKey"
+        v-on:rightBracketLoaded="handleRecursiveCount"
       />
     </template>
 
@@ -164,6 +173,10 @@
         type: Boolean,
         default: true
       },
+      showLineNumber: {
+        type: Boolean,
+        default: false
+      },
       // 是否在点击树的时候选中节点
       selectOnClickNode: {
         type: Boolean,
@@ -217,12 +230,25 @@
       currentKey: {
         type: [Number, String],
         default: ''
+      },
+      // hold line count as items are added to the stack
+      lineCount: {
+        type: [Array],
+        default: () => []
+      },
+      // hold line count for items popped off the stack
+      recursiveLineCount: {
+        type: [Array],
+        default: () => []
       }
       /* outer props */
     },
     data () {
       return {
         visible: this.currentDeep <= this.deep,
+        lineNumber: 1,
+        previousLineNumber: 1,
+        recursiveCount: 1,
         isMouseover: false,
         currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false
       }
@@ -369,7 +395,62 @@
 
       keyFormatter (key) {
         return this.showDoubleQuotes ? `"${key}"` : key
+      },
+
+      getRecursiveLineNumber () {
+        if (this.lineNumber >= this.recursiveLineCount.length) {
+          const diff = this.lineNumber - this.recursiveLineCount.length + 1
+          for (let i = 0; i <= diff; i++) {
+            this.recursiveLineCount.push('nl')
+          }
+        }
+
+        if (this.lineNumber > this.recursiveCount) {
+          return this.lineNumber + 1
+        }
+
+        return this.recursiveCount
+      },
+
+      handleRecursiveCount () {
+        // iterate stack line count to stay up to date
+        this.lineCount.push('nl')
+
+        // grab most recent referenced element
+        let el
+        Object.keys(this.$refs).forEach((key) => {
+          const last = this.$refs[key].length - 1
+          el = this.$refs[key][last]
+        })
+
+        // assign most recent referenced line number for start of recursive count
+        this.previousLineNumber = el.lineNumber + 1
+
+        const diff = this.previousLineNumber - this.recursiveLineCount.length
+
+        // handle edge case where json is one key and empty object
+        if (diff === 0) {
+          this.recursiveLineCount.push('nl')
+        }
+
+        // add recursive lines up to the previous one
+        if (diff > 0) {
+          for (let i = 0; i < diff; i++) {
+            this.recursiveLineCount.push('nl')
+          }
+        }
+
+        // assign new recursive count
+        this.recursiveCount = this.recursiveLineCount.length
+
+        // increment recursive count for multiple pops off the stack in a row
+        this.recursiveLineCount.push('nl')
       }
+    },
+    // increment and assign stack line count
+    created () {
+      this.lineCount.push('nl')
+      this.lineNumber = this.lineCount.length
     },
     // 捕获一个来自子组件的错误
     //    因为是递归组件，因此错误只对外暴露一次，子组件的错误不再对外传递
