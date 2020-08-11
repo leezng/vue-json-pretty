@@ -27,7 +27,13 @@
       />
     </template>
 
-    <span v-if="showLineNumber" class="vjs-line-number">{{ lineNumber }}</span>
+    <span v-if="showLineNumber" :class="{
+      'vjs-line-number': showLineNumber,
+      'vjs-line-number-selectable': selectable
+      }"
+    >
+      {{ lineNumber }}
+    </span>
 
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
@@ -84,7 +90,13 @@
         />
       </div>
 
-      <span v-if="showLineNumber" class="vjs-line-number">{{ getRecursiveLineNumber() }}</span>
+      <span v-if="showLineNumber && visible" :class="{
+        'vjs-line-number': showLineNumber,
+        'vjs-line-number-selectable': selectable
+      }"
+      >
+        {{ getRecursiveLineNumber() }}
+      </span>
 
       <!-- 右闭合 -->
       <brackets-right
