@@ -440,6 +440,11 @@
 
         const diff = this.previousLineNumber - this.recursiveLineCount.length
 
+        // handle edge case where json is one key and empty object
+        if (diff === 0 && this.recursiveLineCount.length <= 3) {
+          this.recursiveLineCount.push('nl')
+        }
+
         // add recursive lines up to the previous one
         if (diff > 0) {
           for (let i = 0; i < diff; i++) {
