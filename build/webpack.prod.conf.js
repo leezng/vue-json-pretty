@@ -54,6 +54,7 @@ if (isDist) {
   webpackConfig.output = {
     path: path.resolve(__dirname, distPath),
     filename: `${distPath}/[name].js`,
+    globalObject: 'this',
     library: 'VueJsonPretty',
     libraryTarget: 'umd'
   }
