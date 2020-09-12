@@ -59,6 +59,17 @@ if (isDist) {
     libraryTarget: 'umd'
   }
   webpackConfig.plugins.push(
+    // extract css into its own file
+    new MiniCssExtractPlugin({
+      filename: 'styles.css'
+    }),
+    // Compress extracted CSS. We are using this plugin so that possible
+    // duplicated CSS from different components can be deduped.
+    new OptimizeCSSPlugin({
+      cssProcessorOptions: {
+        safe: true
+      }
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {
