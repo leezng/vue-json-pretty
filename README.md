@@ -47,6 +47,29 @@ export default {
 }
 ```
 
+The CSS file is included separately and needs to be imported manually.
+
+You can either import CSS globally in your app (if supported by your framework) or directly from the component.
+
+Import using one of those ways:
+
+- from a `style` block if using a style preprocessor like `sass` or `less` (preferred style as it's compatible with server-side rendering also):
+
+```vue
+<style lang="scss">
+@import 'vue-json-pretty/styles.css';
+</style>
+```
+
+- directly from a component:
+
+```vue
+<script>
+import 'vue-json-pretty/styles.css';
+// ...
+</script>
+```
+
 ## Props
 
 - If you are using only the normal features (JSON pretty), just focus on the `base` properties.
