@@ -10,14 +10,11 @@ install:
   - npm i
 
 stages:
-  - lint
   - name: gh_pages
     if: branch = master
 
 jobs:
   include:
-    - stage: lint
-      script: npm run lint
     - stage: gh_pages
       script: npm run build:example
       after_script:

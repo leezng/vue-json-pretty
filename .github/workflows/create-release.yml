@@ -9,7 +9,7 @@ jobs:
   bump-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v7.1.0
