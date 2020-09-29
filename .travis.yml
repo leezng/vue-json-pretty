@@ -13,15 +13,13 @@ stages:
   - lint
   - name: gh_pages
     if: branch = master
-  - name: github_release
-    if: branch = master
 
 jobs:
   include:
     - stage: lint
       script: npm run lint
     - stage: gh_pages
-      script: npm run build
+      script: npm run build:example
       after_script:
         - git clone -b gh-pages "https://${GH_TOKEN}@${GH_REF}" gh-pages
         - rm -r gh-pages/*
@@ -32,20 +30,6 @@ jobs:
         - git add .
         - git commit -m "update gh-pages"
         - git push --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
-    - stage: github_release
-      script: echo "Deploying to GitHub releases ..."
-      deploy:
-        provider: releases
-        api_key: ${GH_TOKEN}
-        skip_cleanup: true
-        on:
-          tags: true
-    # - stage: npm_release
-    #   script: echo "Deploying to npm releases ..."
-    #   deploy:
-    #     provider: npm
-    #     email: ""
-    #     api_key: ""
 
 # branches:
 #   only:
