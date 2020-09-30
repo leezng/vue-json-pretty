@@ -1,0 +1,27 @@
+name: Gh Pages
+
+on:
+  push:
+    branches: 
+      - "master"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build:example
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./example-dist
+          user_name: ${{ secrets.CI_NAME }}
+          user_email: ${{ secrets.CI_EMAIL }}
