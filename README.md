@@ -40,7 +40,7 @@ The CSS file is included separately and needs to be imported manually. You can e
 
 <script>
 import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/styles.css';
+import 'vue-json-pretty/lib/styles.css';
 
 export default {
   components: {
@@ -65,7 +65,7 @@ Vue.component("vue-json-pretty", VueJsonPretty);
 
 ```js
 css: [
-  'vue-json-pretty/styles.css'
+  'vue-json-pretty/lib/styles.css'
 ],
 plugins: [
   '@/plugins/vue-json-pretty'
