@@ -9,7 +9,8 @@
     <span
       v-else
       :class="valueClass"
-    >{{ defaultFormatter(data) }}</span>
+    >{{ defaultFormatter(data) }}</span><!-- remove white space
+    --><span v-if="showComma">,</span>
   </div>
 </template>
 
@@ -51,7 +52,6 @@
       defaultFormatter (data) {
         let text = data + ''
         if (this.dataType === 'string') text = `"${text}"`
-        if (this.showComma) text += ','
         return text
       },
 
