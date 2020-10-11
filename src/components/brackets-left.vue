@@ -1,10 +1,7 @@
 <template>
-  <div style="display: inline-block;">
-    <slot />
-
-    <!-- Expand -->
+  <span>
     <span
-      v-show="dataVisiable"
+      v-show="visible"
       class="vjs-tree__brackets"
       @click.stop="toggleBrackets"
     >
@@ -12,7 +9,7 @@
     </span>
 
     <!-- Collapse -->
-    <span v-show="!dataVisiable">
+    <span v-show="!visible">
       <span
         class="vjs-tree__brackets"
         @click.stop="toggleBrackets"
@@ -27,7 +24,7 @@
         {{ lengthGenerator(data) }}
       </span>
     </span>
-  </div>
+  </span>
 </template>
 
 <script>

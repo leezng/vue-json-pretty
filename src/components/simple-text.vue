@@ -1,40 +1,42 @@
 <template>
   <div>
-    <div :style="{ display: 'inline-block', width: level * 1 + 'em' }" />
+    <div :style="{ flex: `0 0 ${level * 1}em` }" />
     <span
       v-if="currentKey"
       class="vjs-key"
     >
-      {{ currentKey }}:
+      {{ prettyKey }}:
     </span>
-    <template v-if="data === '[' || data === ']' || data === '{' || data === '}' ">
-      <brackets-left
-        v-if="data === '[' || data === '{'"
-        :visible.sync="visible"
-        :data="data"
-        :collapsed-on-click-brackets="true"
-        @click="onBracketsLeft"
-      />
-      <brackets-right
-        v-else
-        :visible.sync="visible"
-        :data="data"
-        :collapsed-on-click-brackets="true"
-        @click="onBracketsRight"
-      />
-    </template>
-    <template v-else>
-      <span
-        v-if="customValueFormatter"
-        :class="valueClass"
-        v-html="customFormatter(data)"
-      />
-      <span
-        v-else
-        :class="valueClass"
-      >{{ defaultFormatter(data) }}</span>
-    </template>
-    <span v-if="showComma">,</span>
+    <span>
+      <template v-if="data === '[' || data === ']' || data === '{' || data === '}' ">
+        <brackets-left
+          v-if="data === '[' || data === '{'"
+          :visible="visible"
+          :data="data"
+          :collapsed-on-click-brackets="true"
+          @click="onBracketsLeft"
+        />
+        <brackets-right
+          v-else
+          :visible="visible"
+          :data="data"
+          :collapsed-on-click-brackets="true"
+          @click="onBracketsRight"
+        />
+      </template>
+      <template v-else>
+        <span
+          v-if="customValueFormatter"
+          :class="valueClass"
+          v-html="customFormatter(data)"
+        />
+        <span
+          v-else
+          :class="valueClass"
+        >{{ defaultFormatter(data) }}</span>
+      </template>
+      <span v-if="showComma">,</span>
+    </span>
   </div>
 </template>
 
@@ -50,8 +52,14 @@
     },
     props: {
       defaultVisible: Boolean,
-      path: String,
-      level: Number,
+      path: {
+        type: String,
+        default: ''
+      },
+      level: {
+        type: Number,
+        default: 0,
+      },
       showDoubleQuotes: Boolean,
       parentData: {
         type: [String, Number, Boolean, Array, Object],
@@ -85,6 +93,15 @@
       dataType () {
         return getDataType(this.data)
       },
+
+      prettyKey () {
+        return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
+      },
+    },
+    watch: {
+      defaultVisible (newVal) {
+        this.visible = newVal
+      }
     },
     methods: {
       defaultFormatter (data) {
@@ -99,12 +116,12 @@
           : this.defaultFormatter(data)
       },
 
-      onBracketsLeft (val) {
-        this.$emit('brackets-click', 'left', val, this.path)
+      onBracketsLeft () {
+        this.$emit('brackets-click', 'left', !this.visible, this.path)
       },
 
-      onBracketsRight (val) {
-        this.$emit('brackets-click', 'right', val, this.path)
+      onBracketsRight () {
+        this.$emit('brackets-click', 'right', !this.visible, this.path)
       }
     }
   }

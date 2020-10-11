@@ -3,7 +3,6 @@
     :class="{
       'vjs-tree': true,
       'has-selectable-control': isMultiple || showSelectController,
-      'is-root': currentDeep === 1,
       'is-selectable': selectable,
       'is-selected': isSelected,
       'is-highlight-selected': isSelected && highlightSelectedNode,
@@ -56,7 +55,7 @@
         :default-visible="!hiddenPaths[item.path]"
         :custom-value-formatter="customValueFormatter"
         :show-double-quotes="showDoubleQuotes"
-        :show-comma="notLastKey"
+        :show-comma="item.showComma"
         :parent-data="parentData"
         :data="item.content"
         :current-key="item.key"
@@ -210,21 +209,10 @@
         type: [String, Number, Boolean, Array, Object],
         default: null
       },
-      // 当前树的深度, 以根节点作为0开始, 所以第一层树的深度为1, 递归逐次递增
-      currentDeep: {
-        type: Number,
-        default: 1
-      },
-      // 当前树的数据 data 为数组时 currentKey 表示索引, 为对象时表示键名
-      currentKey: {
-        type: [Number, String],
-        default: ''
-      }
       /* outer props */
     },
     data () {
       return {
-        visible: this.currentDeep <= this.deep,
         isMouseover: false,
         currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false,
         hiddenPaths: {},
@@ -232,6 +220,7 @@
     },
     computed: {
       flatData () {
+        // TODO 如何处理deep?
         let currentHiddenPath = ''
         const data = jsonFlat(this.data, this.path).filter(item => {
           const isHidden = this.hiddenPaths[item.path]
@@ -243,6 +232,7 @@
           }
           return !currentHiddenPath && !isHidden
         })
+        console.log(data);
         return data
       },
 
@@ -254,22 +244,6 @@
         set (val) {
           this.$emit('input', val)
         }
-      },
-
-      // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
-      lastKey () {
-        if (Array.isArray(this.parentData)) {
-          return this.parentData.length - 1
-        } else if (this.isObject(this.parentData)) {
-          let arr = Object.keys(this.parentData)
-          return arr[arr.length - 1]
-        }
-        return ''
-      },
-
-      // 是否不是最后一项
-      notLastKey () {
-        return this.currentKey !== this.lastKey
       },
 
       // 当前的树是否支持选中功能
@@ -297,19 +271,12 @@
         }
       },
 
-      prettyKey () {
-        return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
-      },
-
       propsError () {
         const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
         return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
       }
     },
     watch: {
-      deep (newVal) {
-        this.visible = this.currentDeep <= newVal
-      },
       propsError: {
         handler (message) {
           if (message) {

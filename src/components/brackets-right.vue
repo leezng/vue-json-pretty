@@ -1,12 +1,11 @@
 <template>
-  <div v-show="dataVisiable" style="display: inline-block;">
-    <span
-      class="vjs-tree__brackets"
-      @click.stop="toggleBrackets"
-    >
-      {{ bracketsFormatter(data) }}
-    </span>
-  </div>
+  <span
+    v-show="visible"
+    class="vjs-tree__brackets"
+    @click.stop="toggleBrackets"
+  >
+    {{ bracketsFormatter(data) }}
+  </span>
 </template>
 
 <script>
