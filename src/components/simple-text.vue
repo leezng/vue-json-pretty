@@ -8,7 +8,20 @@
       {{ currentKey }}:
     </span>
     <template v-if="data === '[' || data === ']' || data === '{' || data === '}' ">
-      {{ data }}
+      <brackets-left
+        v-if="data === '[' || data === '{'"
+        :visible.sync="visible"
+        :data="data"
+        :collapsed-on-click-brackets="true"
+        @click="onBracketsLeft"
+      />
+      <brackets-right
+        v-else
+        :visible.sync="visible"
+        :data="data"
+        :collapsed-on-click-brackets="true"
+        @click="onBracketsRight"
+      />
     </template>
     <template v-else>
       <span
@@ -26,10 +39,18 @@
 </template>
 
 <script>
+  import BracketsLeft from './brackets-left'
+  import BracketsRight from './brackets-right'
   import { getDataType } from 'src/utils'
 
   export default {
+    components: {
+      BracketsLeft,
+      BracketsRight
+    },
     props: {
+      defaultVisible: Boolean,
+      path: String,
       level: Number,
       showDoubleQuotes: Boolean,
       parentData: {
@@ -49,6 +70,11 @@
         type: Function,
         default: null
       },
+    },
+    data () {
+      return {
+        visible: this.defaultVisible
+      }
     },
     computed: {
       valueClass () {
@@ -71,6 +97,14 @@
         return this.customValueFormatter
           ? this.customValueFormatter(data, this.currentKey, this.parentData, this.defaultFormatter(data))
           : this.defaultFormatter(data)
+      },
+
+      onBracketsLeft (val) {
+        this.$emit('brackets-click', 'left', val, this.path)
+      },
+
+      onBracketsRight (val) {
+        this.$emit('brackets-click', 'right', val, this.path)
       }
     }
   }

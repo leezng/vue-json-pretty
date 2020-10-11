@@ -1,10 +1,10 @@
 <template>
-  <div v-show="dataVisiable">
+  <div v-show="dataVisiable" style="display: inline-block;">
     <span
       class="vjs-tree__brackets"
       @click.stop="toggleBrackets"
     >
-      {{ bracketsFormatter(Array.isArray(data) ? ']' : '}') }}
+      {{ bracketsFormatter(data) }}
     </span>
   </div>
 </template>

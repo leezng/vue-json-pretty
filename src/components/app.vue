@@ -46,19 +46,21 @@
 
       <simple-text
         v-for="(item, index) in flatData"
-        v-show="visible"
         :key="index"
         :class="{
           'vjs-tree__content': true,
           'has-line': showLine
         }"
         :level="item.level"
+        :path="item.path"
+        :default-visible="!hiddenPaths[item.path]"
         :custom-value-formatter="customValueFormatter"
         :show-double-quotes="showDoubleQuotes"
         :show-comma="notLastKey"
         :parent-data="parentData"
         :data="item.content"
         :current-key="item.key"
+        @brackets-click="onBracketsClick"
       />
 
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
@@ -224,13 +226,23 @@
       return {
         visible: this.currentDeep <= this.deep,
         isMouseover: false,
-        currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false
+        currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false,
+        hiddenPaths: {},
       }
     },
     computed: {
       flatData () {
-        const data = jsonFlat(this.data, this.path)
-        console.log(data)
+        let currentHiddenPath = ''
+        const data = jsonFlat(this.data, this.path).filter(item => {
+          const isHidden = this.hiddenPaths[item.path]
+          if (currentHiddenPath === item.path) {
+            currentHiddenPath = ''
+          } else if (isHidden && !currentHiddenPath) {
+            currentHiddenPath = item.path
+            return true
+          }
+          return !currentHiddenPath && !isHidden
+        })
         return data
       },
 
@@ -379,6 +391,19 @@
 
       getChildPath (key) {
         return this.path + (Array.isArray(this.data) ? `[${key}]` : key.includes('.') ? `["${key}"]` : `.${key}`)
+      },
+
+      onBracketsClick (type, value, path) {
+        if (!value) {
+          this.hiddenPaths = {
+            ...this.hiddenPaths,
+            [path]: 1
+          }
+        } else {
+          const newPaths = {...this.hiddenPaths}
+          delete newPaths[path]
+          this.hiddenPaths = newPaths
+        }
       }
     },
     // 捕获一个来自子组件的错误

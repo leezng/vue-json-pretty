@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="display: inline-block;">
     <slot />
 
     <!-- Expand -->
@@ -8,7 +8,7 @@
       class="vjs-tree__brackets"
       @click.stop="toggleBrackets"
     >
-      {{ Array.isArray(data) ? '[' : '{' }}
+      {{ data }}
     </span>
 
     <!-- Collapse -->
@@ -41,7 +41,7 @@
     methods: {
       // 关闭括号生成器
       closedBracketsGenerator (data) {
-        const brackets = Array.isArray(data) ? '[...]' : '{...}'
+        const brackets = data === '[' ? '[...]' : '{...}'
         return this.bracketsFormatter(brackets)
       },
 

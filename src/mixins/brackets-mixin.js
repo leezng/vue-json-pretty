@@ -18,6 +18,7 @@ export default {
       set (val) {
         if (this.collapsedOnClickBrackets) {
           this.$emit('update:visible', val)
+          this.$emit('click', val)
         }
       }
     }
@@ -27,6 +28,7 @@ export default {
     toggleBrackets () {
       this.dataVisiable = !this.dataVisiable
     },
+    
     // 括号优化函数, 若不是最后一项, 自动添加逗号
     bracketsFormatter (brackets) {
       return this.showComma ? `${brackets},` : brackets
