@@ -29,7 +29,7 @@
 
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
-      <brackets-left
+      <!-- <brackets-left
         :visible.sync="visible"
         :data="data"
         :show-length="showLength"
@@ -42,10 +42,27 @@
         >
           {{ prettyKey }}:
         </span>
-      </brackets-left>
+      </brackets-left> -->
+
+      <simple-text
+        v-for="(item, index) in flatData"
+        v-show="visible"
+        :key="index"
+        :class="{
+          'vjs-tree__content': true,
+          'has-line': showLine
+        }"
+        :level="item.level"
+        :custom-value-formatter="customValueFormatter"
+        :show-double-quotes="showDoubleQuotes"
+        :show-comma="notLastKey"
+        :parent-data="parentData"
+        :data="item.content"
+        :current-key="item.key"
+      />
 
       <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
-      <div
+      <!-- <div
         v-for="(item, key) in data"
         v-show="visible"
         :key="key"
@@ -76,33 +93,16 @@
           @click="handleItemClick"
           @change="handleItemChange"
         />
-      </div>
+      </div> -->
 
       <!-- 右闭合 -->
-      <brackets-right
+      <!-- <brackets-right
         :visible.sync="visible"
         :data="data"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-comma="notLastKey"
-      />
+      /> -->
     </template>
-
-    <simple-text
-      v-else
-      :custom-value-formatter="customValueFormatter"
-      :show-double-quotes="showDoubleQuotes"
-      :show-comma="notLastKey"
-      :parent-data="parentData"
-      :data="data"
-      :current-key="currentKey"
-    >
-      <span
-        v-if="parentData && currentKey && !Array.isArray(parentData)"
-        class="vjs-key"
-      >
-        {{ prettyKey }}:
-      </span>
-    </simple-text>
   </div>
 </template>
 
@@ -110,9 +110,9 @@
   import SimpleText from './simple-text'
   import VueCheckbox from './checkbox'
   import VueRadio from './radio'
-  import BracketsLeft from './brackets-left'
-  import BracketsRight from './brackets-right'
-  import { getDataType } from 'src/utils'
+  // import BracketsLeft from './brackets-left'
+  // import BracketsRight from './brackets-right'
+  import { getDataType, jsonFlat } from 'src/utils'
 
   export default {
     name: 'VueJsonPretty',
@@ -120,8 +120,8 @@
       SimpleText,
       VueCheckbox,
       VueRadio,
-      BracketsLeft,
-      BracketsRight
+      // BracketsLeft,
+      // BracketsRight
     },
     props: {
       /* outer props */
@@ -228,6 +228,12 @@
       }
     },
     computed: {
+      flatData () {
+        const data = jsonFlat(this.data, this.path)
+        console.log(data)
+        return data
+      },
+
       model: {
         get () {
           const defaultVal = this.selectableType === 'multiple' ? [] : this.selectableType === 'single' ? '' : null

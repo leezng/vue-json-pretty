@@ -1,8 +1,5 @@
 @import "./var.less";
 
-/* 树内容区域缩进2个英文字符, 此处1em为1个中文字符=2个英文字符 */
-@content-padding: 1em;
-
 .mixin-value-style(@color) {
   color: @color;
 }
@@ -28,7 +25,6 @@
   }
 
   .@{css-prefix}-tree__content {
-    padding-left: @content-padding;
     &.has-line {
       border-left: 1px dotted @border-color;
     }

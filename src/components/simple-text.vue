@@ -1,16 +1,27 @@
 <template>
   <div>
-    <slot />
+    <div :style="{ display: 'inline-block', width: level * 1 + 'em' }" />
     <span
-      v-if="customValueFormatter"
-      :class="valueClass"
-      v-html="customFormatter(data)"
-    />
-    <span
-      v-else
-      :class="valueClass"
-    >{{ defaultFormatter(data) }}</span><!-- remove white space
-    --><span v-if="showComma">,</span>
+      v-if="currentKey"
+      class="vjs-key"
+    >
+      {{ currentKey }}:
+    </span>
+    <template v-if="data === '[' || data === ']' || data === '{' || data === '}' ">
+      {{ data }}
+    </template>
+    <template v-else>
+      <span
+        v-if="customValueFormatter"
+        :class="valueClass"
+        v-html="customFormatter(data)"
+      />
+      <span
+        v-else
+        :class="valueClass"
+      >{{ defaultFormatter(data) }}</span>
+    </template>
+    <span v-if="showComma">,</span>
   </div>
 </template>
 
@@ -19,6 +30,7 @@
 
   export default {
     props: {
+      level: Number,
       showDoubleQuotes: Boolean,
       parentData: {
         type: [String, Number, Boolean, Array, Object],
