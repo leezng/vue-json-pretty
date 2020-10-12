@@ -57,6 +57,7 @@
         :show-length="showLength"
         :data="item.content"
         :current-key="item.key"
+        :collapsed-on-click-brackets="collapsedOnClickBrackets"
         @brackets-click="onBracketsClick"
       />
 
@@ -200,26 +201,19 @@
       return {
         isMouseover: false,
         currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false,
-        hiddenPaths: {},
+        hiddenPaths: jsonFlat(this.data, this.path).reduce((acc, item) => {
+          if ((item.content === '[' || item.content === '{') && item.level === this.deep) {
+            return {
+              ...acc,
+              [item.path]: 1
+            }
+          }
+          return acc
+        }, {})
       }
     },
     computed: {
       flatData () {
-        // TODO 如何处理deep?
-        // let currentHiddenPath = ''
-        // const data = jsonFlat(this.data, this.path).filter(item => {
-        //   const isHidden = this.hiddenPaths[item.path]
-        //   if (currentHiddenPath === item.path) {
-        //     currentHiddenPath = ''
-        //     return true
-        //   } else if (isHidden && !currentHiddenPath) {
-        //     currentHiddenPath = item.path
-        //     return true
-        //   }
-        //   return !currentHiddenPath
-        // })
-        // console.log(data);
-        // return data
         let startHiddenItem = null
         const data = jsonFlat(this.data, this.path).reduce((acc, item) => {
           const isHidden = this.hiddenPaths[item.path]

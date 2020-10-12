@@ -12,7 +12,7 @@
       <brackets
         v-if="data === '[' || data === ']' || data === '{' || data === '}' || data === '{...}' || data === '[...]'"
         :data="data"
-        :collapsed-on-click-brackets="true"
+        :collapsed-on-click-brackets="collapsedOnClickBrackets"
         @click="onBracketsClick"
       />
 
@@ -74,6 +74,7 @@
         type: Function,
         default: null
       },
+      collapsedOnClickBrackets: Boolean,
       showDoubleQuotes: Boolean,
       showComma: Boolean,
       showLength: Boolean,

@@ -241,8 +241,8 @@ export default {
     handleChange (newVal, oldVal) {
       console.log('newVal: ', newVal, ' oldVal: ', oldVal)
     },
-    customLinkFormatter (data, key, parent, defaultFormatted) {
-      if (data.startsWith('http://')) {
+    customLinkFormatter (data, key, path, defaultFormatted) {
+      if (typeof data === 'string' && data.startsWith('http://')) {
         return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
       } else {
         return defaultFormatted;
