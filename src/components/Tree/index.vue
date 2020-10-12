@@ -43,20 +43,18 @@
         </span>
       </brackets-left> -->
 
-      <simple-text
+      <leaf
         v-for="(item, index) in flatData"
         :key="index"
-        :class="{
-          'vjs-tree__content': true,
-          'has-line': showLine
-        }"
+        class="vjs-tree__content"
         :level="item.level"
         :path="item.path"
-        :default-visible="!hiddenPaths[item.path]"
+        :length="item.length"
+        :collapsed="!!hiddenPaths[item.path]"
         :custom-value-formatter="customValueFormatter"
         :show-double-quotes="showDoubleQuotes"
         :show-comma="item.showComma"
-        :parent-data="parentData"
+        :show-length="showLength"
         :data="item.content"
         :current-key="item.key"
         @brackets-click="onBracketsClick"
@@ -108,24 +106,20 @@
 </template>
 
 <script>
-  import SimpleText from './simple-text'
-  import VueCheckbox from './checkbox'
-  import VueRadio from './radio'
-  // import BracketsLeft from './brackets-left'
-  // import BracketsRight from './brackets-right'
+  import Leaf from 'src/components/Leaf'
+  import VueCheckbox from 'src/components/Checkbox'
+  import VueRadio from 'src/components/Radio'
   import { getDataType, jsonFlat } from 'src/utils'
+  import './styles.less'
 
   export default {
     name: 'VueJsonPretty',
     components: {
-      SimpleText,
+      Leaf,
       VueCheckbox,
       VueRadio,
-      // BracketsLeft,
-      // BracketsRight
     },
     props: {
-      /* outer props */
       // 当前树的数据
       data: {
         type: [String, Number, Boolean, Array, Object],
@@ -201,15 +195,6 @@
         type: Function,
         default: null
       },
-      /* outer props */
-
-      /* inner props */
-      // 当前树的父级数据
-      parentData: {
-        type: [String, Number, Boolean, Array, Object],
-        default: null
-      },
-      /* outer props */
     },
     data () {
       return {
@@ -221,17 +206,38 @@
     computed: {
       flatData () {
         // TODO 如何处理deep?
-        let currentHiddenPath = ''
-        const data = jsonFlat(this.data, this.path).filter(item => {
+        // let currentHiddenPath = ''
+        // const data = jsonFlat(this.data, this.path).filter(item => {
+        //   const isHidden = this.hiddenPaths[item.path]
+        //   if (currentHiddenPath === item.path) {
+        //     currentHiddenPath = ''
+        //     return true
+        //   } else if (isHidden && !currentHiddenPath) {
+        //     currentHiddenPath = item.path
+        //     return true
+        //   }
+        //   return !currentHiddenPath
+        // })
+        // console.log(data);
+        // return data
+        let startHiddenItem = null
+        const data = jsonFlat(this.data, this.path).reduce((acc, item) => {
           const isHidden = this.hiddenPaths[item.path]
-          if (currentHiddenPath === item.path) {
-            currentHiddenPath = ''
-          } else if (isHidden && !currentHiddenPath) {
-            currentHiddenPath = item.path
-            return true
+          if (startHiddenItem && startHiddenItem.path === item.path) {
+            const mergeItem = {
+              ...startHiddenItem,
+              ...item,
+              content: startHiddenItem.content === '{' ? '{...}' : '[...]'
+            }
+            startHiddenItem = null
+            return acc.concat(mergeItem)
+          } else if (isHidden && !startHiddenItem) {
+            startHiddenItem = item
+            return acc
           }
-          return !currentHiddenPath && !isHidden
-        })
+
+          return startHiddenItem ? acc : acc.concat(item)
+        }, [])
         console.log(data);
         return data
       },
@@ -356,12 +362,8 @@
         return getDataType(value) === 'object'
       },
 
-      getChildPath (key) {
-        return this.path + (Array.isArray(this.data) ? `[${key}]` : key.includes('.') ? `["${key}"]` : `.${key}`)
-      },
-
-      onBracketsClick (type, value, path) {
-        if (!value) {
+      onBracketsClick (collapsed, path) {
+        if (collapsed) {
           this.hiddenPaths = {
             ...this.hiddenPaths,
             [path]: 1
@@ -373,10 +375,5 @@
         }
       }
     },
-    // 捕获一个来自子组件的错误
-    //    因为是递归组件，因此错误只对外暴露一次，子组件的错误不再对外传递
-    errorCaptured () {
-      return false
-    }
   }
 </script>

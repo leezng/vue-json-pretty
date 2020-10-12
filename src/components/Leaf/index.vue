@@ -5,25 +5,17 @@
       v-if="currentKey"
       class="vjs-key"
     >
-      {{ prettyKey }}:
+      {{ prettyKey }}:&nbsp;
     </span>
+
     <span>
-      <template v-if="data === '[' || data === ']' || data === '{' || data === '}' ">
-        <brackets-left
-          v-if="data === '[' || data === '{'"
-          :visible="visible"
-          :data="data"
-          :collapsed-on-click-brackets="true"
-          @click="onBracketsLeft"
-        />
-        <brackets-right
-          v-else
-          :visible="visible"
-          :data="data"
-          :collapsed-on-click-brackets="true"
-          @click="onBracketsRight"
-        />
-      </template>
+      <brackets
+        v-if="data === '[' || data === ']' || data === '{' || data === '}' || data === '{...}' || data === '[...]'"
+        :data="data"
+        :collapsed-on-click-brackets="true"
+        @click="onBracketsClick"
+      />
+
       <template v-else>
         <span
           v-if="customValueFormatter"
@@ -35,41 +27,45 @@
           :class="valueClass"
         >{{ defaultFormatter(data) }}</span>
       </template>
+
       <span v-if="showComma">,</span>
+
+      <span
+        v-if="showLength && collapsed"
+        class="vjs-comment"
+      >
+        // {{ length }} items
+      </span>
     </span>
   </div>
 </template>
 
 <script>
-  import BracketsLeft from './brackets-left'
-  import BracketsRight from './brackets-right'
+  import Brackets from 'src/components/Brackets'
   import { getDataType } from 'src/utils'
 
   export default {
     components: {
-      BracketsLeft,
-      BracketsRight
+      Brackets
     },
     props: {
-      defaultVisible: Boolean,
+      collapsed: Boolean,
       path: {
-        type: String,
-        default: ''
+        required: true,
+        type: String
       },
       level: {
         type: Number,
         default: 0,
       },
-      showDoubleQuotes: Boolean,
-      parentData: {
-        type: [String, Number, Boolean, Array, Object],
-        default: null
+      length: {
+        type: Number,
+        default: 1,
       },
       data: {
+        required: true,
         type: [String, Number, Boolean],
-        default: ''
       },
-      showComma: Boolean,
       currentKey: {
         type: [Number, String],
         default: ''
@@ -78,11 +74,9 @@
         type: Function,
         default: null
       },
-    },
-    data () {
-      return {
-        visible: this.defaultVisible
-      }
+      showDoubleQuotes: Boolean,
+      showComma: Boolean,
+      showLength: Boolean,
     },
     computed: {
       valueClass () {
@@ -98,11 +92,6 @@
         return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
       },
     },
-    watch: {
-      defaultVisible (newVal) {
-        this.visible = newVal
-      }
-    },
     methods: {
       defaultFormatter (data) {
         let text = data + ''
@@ -112,17 +101,13 @@
 
       customFormatter (data) {
         return this.customValueFormatter
-          ? this.customValueFormatter(data, this.currentKey, this.parentData, this.defaultFormatter(data))
+          ? this.customValueFormatter(data, this.currentKey, this.path, this.defaultFormatter(data))
           : this.defaultFormatter(data)
       },
 
-      onBracketsLeft () {
-        this.$emit('brackets-click', 'left', !this.visible, this.path)
+      onBracketsClick () {
+        this.$emit('brackets-click', !this.collapsed, this.path)
       },
-
-      onBracketsRight () {
-        this.$emit('brackets-click', 'right', !this.visible, this.path)
-      }
     }
   }
 </script>
