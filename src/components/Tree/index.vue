@@ -2,123 +2,45 @@
   <div
     :class="{
       'vjs-tree': true,
-      'has-selectable-control': isMultiple || showSelectController,
-      'is-selectable': selectable,
-      'is-selected': isSelected,
-      'is-highlight-selected': isSelected && highlightSelectedNode,
-      'is-mouseover': isMouseover
+      'is-mouseover': isMouseover,
+      'has-selectable-control': showSelectController
     }"
-    @click="handleClick"
     @mouseover.stop="handleMouseover"
     @mouseout.stop="handleMouseout"
   >
-    <template v-if="showSelectController && selectable">
-      <vue-checkbox
-        v-if="isMultiple"
-        v-model="currentCheckboxVal"
-        @change="handleValueChange('checkbox')"
-      />
-      <vue-radio
-        v-else-if="isSingle"
-        v-model="model"
-        :path="path"
-        @change="handleValueChange('radio')"
-      />
-    </template>
-
-    <template v-if="Array.isArray(data) || isObject(data)">
-      <!-- 左闭合 -->
-      <!-- <brackets-left
-        :visible.sync="visible"
-        :data="data"
-        :show-length="showLength"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :show-comma="notLastKey"
-      >
-        <span
-          v-if="currentDeep > 1 && !Array.isArray(parentData)"
-          class="vjs-key"
-        >
-          {{ prettyKey }}:
-        </span>
-      </brackets-left> -->
-
-      <leaf
-        v-for="(item, index) in flatData"
-        :key="index"
-        class="vjs-tree__content"
-        :level="item.level"
-        :path="item.path"
-        :length="item.length"
-        :collapsed="!!hiddenPaths[item.path]"
-        :custom-value-formatter="customValueFormatter"
-        :show-double-quotes="showDoubleQuotes"
-        :show-comma="item.showComma"
-        :show-length="showLength"
-        :data="item.content"
-        :current-key="item.key"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        @brackets-click="onBracketsClick"
-      />
-
-      <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
-      <!-- <div
-        v-for="(item, key) in data"
-        v-show="visible"
-        :key="key"
-        :class="{
-          'vjs-tree__content': true,
-          'has-line': showLine
-        }"
-      >
-        <vue-json-pretty
-          v-model="model"
-          :parent-data="data"
-          :data="item"
-          :deep="deep"
-          :show-length="showLength"
-          :show-double-quotes="showDoubleQuotes"
-          :show-line="showLine"
-          :highlight-mouseover-node="highlightMouseoverNode"
-          :highlight-selected-node="highlightSelectedNode"
-          :path="getChildPath(key)"
-          :path-selectable="pathSelectable"
-          :selectable-type="selectableType"
-          :show-select-controller="showSelectController"
-          :select-on-click-node="selectOnClickNode"
-          :collapsed-on-click-brackets="collapsedOnClickBrackets"
-          :current-key="key"
-          :current-deep="currentDeep + 1"
-          :custom-value-formatter="customValueFormatter"
-          @click="handleItemClick"
-          @change="handleItemChange"
-        />
-      </div> -->
-
-      <!-- 右闭合 -->
-      <!-- <brackets-right
-        :visible.sync="visible"
-        :data="data"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :show-comma="notLastKey"
-      /> -->
-    </template>
+    <tree-node
+      v-for="(item, index) in flatData"
+      :key="index"
+      :node="item"
+      :collapsed="!!hiddenPaths[item.path]"
+      :custom-value-formatter="customValueFormatter"
+      :show-double-quotes="showDoubleQuotes"
+      :show-length="showLength"
+      :collapsed-on-click-brackets="collapsedOnClickBrackets"
+      :checked="selectedPaths.includes(item.path)"
+      :selectable-type="selectableType"
+      :show-line="showLine"
+      :show-select-controller="showSelectController"
+      :select-on-click-node="selectOnClickNode"
+      :path-selectable="pathSelectable"
+      :highlight-mouseover-node="highlightMouseoverNode"
+      :highlight-selected-node="highlightSelectedNode"
+      @tree-node-click="onTreeNodeClick"
+      @brackets-click="onBracketsClick"
+      @selected-change="onSelectedChange"
+    />
   </div>
 </template>
 
 <script>
-  import Leaf from 'src/components/Leaf'
-  import VueCheckbox from 'src/components/Checkbox'
-  import VueRadio from 'src/components/Radio'
-  import { getDataType, jsonFlat } from 'src/utils'
+  import TreeNode from 'src/components/TreeNode'
+  import { getDataType, jsonFlatten } from 'src/utils'
   import './styles.less'
 
   export default {
     name: 'VueJsonPretty',
     components: {
-      Leaf,
-      VueCheckbox,
-      VueRadio,
+      TreeNode,
     },
     props: {
       // 当前树的数据
@@ -131,6 +53,11 @@
         type: Number,
         default: Infinity
       },
+      // 数据层级顶级路径
+      path: {
+        type: String,
+        default: 'root'
+      },
       // 是否显示数组|对象的长度
       showLength: {
         type: Boolean,
@@ -141,15 +68,10 @@
         type: Boolean,
         default: true
       },
-      // 数据层级顶级路径
-      path: {
-        type: String,
-        default: 'root'
-      },
       // 定义数据层级支持的选中方式, 默认无该功能
       selectableType: {
         type: String,
-        default: '' // ''|multiple|single    radio, checkbox
+        default: '' // ''|multiple|single
       },
       // 是否展示左侧选择控件
       showSelectController: {
@@ -181,7 +103,7 @@
         type: Boolean,
         default: false
       },
-      // highlight current node when selected
+      // highlight current node when checked
       highlightSelectedNode: {
         type: Boolean,
         default: true
@@ -200,8 +122,7 @@
     data () {
       return {
         isMouseover: false,
-        currentCheckboxVal: Array.isArray(this.value) ? this.value.includes(this.path) : false,
-        hiddenPaths: jsonFlat(this.data, this.path).reduce((acc, item) => {
+        hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
           if ((item.content === '[' || item.content === '{') && item.level === this.deep) {
             return {
               ...acc,
@@ -215,7 +136,7 @@
     computed: {
       flatData () {
         let startHiddenItem = null
-        const data = jsonFlat(this.data, this.path).reduce((acc, item) => {
+        const data = jsonFlatten(this.data, this.path).reduce((acc, item) => {
           const isHidden = this.hiddenPaths[item.path]
           if (startHiddenItem && startHiddenItem.path === item.path) {
             const mergeItem = {
@@ -236,38 +157,15 @@
         return data
       },
 
-      model: {
+      selectedPaths: {
         get () {
-          const defaultVal = this.selectableType === 'multiple' ? [] : this.selectableType === 'single' ? '' : null
-          return this.value || defaultVal
+          if (this.value && this.selectableType === 'single') {
+            return [this.value]
+          }
+          return this.value || []
         },
         set (val) {
           this.$emit('input', val)
-        }
-      },
-
-      // 当前的树是否支持选中功能
-      selectable () {
-        return this.pathSelectable(this.path, this.data) && (this.isMultiple || this.isSingle)
-      },
-
-      // 多选模式
-      isMultiple () {
-        return this.selectableType === 'multiple'
-      },
-
-      // 单选模式
-      isSingle () {
-        return this.selectableType === 'single'
-      },
-
-      isSelected () {
-        if (this.isMultiple) {
-          return this.model.includes(this.path)
-        } else if (this.isSingle) {
-          return this.model === this.path
-        } else {
-          return false
         }
       },
 
@@ -280,80 +178,46 @@
       propsError: {
         handler (message) {
           if (message) {
-            throw new Error(`[vue-json-pretty] ${message}`)
+            throw new Error(`[VueJsonPretty] ${message}`)
           }
         },
         immediate: true
       }
     },
     methods: {
-      handleValueChange (emitType) {
-        if (this.isMultiple && (emitType === 'checkbox' || emitType === 'tree')) {
-          // handle multiple
-          const index = this.model.findIndex(item => item === this.path)
-          const oldVal = [...this.model]
+      onSelectedChange ({ path }) {
+        const type = this.selectableType
+        if (type === 'multiple') {
+          const index = this.selectedPaths.findIndex(item => item === path)
+          const oldVal = [...this.selectedPaths]
           if (index !== -1) {
-            this.model.splice(index, 1)
+            this.selectedPaths.splice(index, 1)
           } else {
-            this.model.push(this.path)
+            this.selectedPaths.push(path)
           }
 
-          if (emitType !== 'checkbox') {
-            this.currentCheckboxVal = !this.currentCheckboxVal
-          }
-          this.$emit('change', this.model, oldVal)
-        } else if (this.isSingle && (emitType === 'radio' || emitType === 'tree')) {
-          // handle single
-          if (this.model !== this.path) {
-            const oldVal = this.model
-            const newVal = this.path
-            this.model = newVal
+          this.$emit('change', this.selectedPaths, oldVal)
+        } else if (type === 'single') {
+          if (this.selectedPaths !== path) {
+            const oldVal = this.selectedPaths
+            const newVal = path
+            this.selectedPaths = newVal
             this.$emit('change', newVal, oldVal)
           }
         }
       },
 
-      /**
-       * emit click event
-       * @param  {string} emitType tree/checkbox/radio
-       */
-      handleClick (e) {
-        // Event can not be stopPropagation, because user may be listening the click event.
-        // So use _uid to simulated.
-        if (e._uid && e._uid !== this._uid) return
-        e._uid = this._uid
-
-        this.$emit('click', this.path, this.data)
-        if (this.selectable && this.selectOnClickNode) {
-          this.handleValueChange('tree')
-        }
-      },
-
-      // handle children's click, and propagation
-      handleItemClick (path, data) {
-        this.$emit('click', path, data)
-      },
-
-      // handle children's change, and propagation
-      handleItemChange (newVal, oldVal) {
-        // 可选的时候change事件才有意义
-        if (this.selectable) {
-          this.$emit('change', newVal, oldVal)
-        }
+      onTreeNodeClick ({ content, path }) {
+        this.$emit('click', path, content)
       },
 
       handleMouseover () {
         // 可选择的树|普通展示树, 都支持mouseover
-        this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = true)
+        this.highlightMouseoverNode && (this.isMouseover = true)
       },
 
       handleMouseout () {
-        this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = false)
-      },
-
-      // 是否对象
-      isObject (value) {
-        return getDataType(value) === 'object'
+        this.highlightMouseoverNode && (this.isMouseover = false)
       },
 
       onBracketsClick (collapsed, path) {

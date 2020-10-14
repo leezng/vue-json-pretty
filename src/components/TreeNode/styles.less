@@ -1,0 +1,34 @@
+@import '~src/themes.less';
+
+.gen-value-style(@color) {
+  color: @color;
+}
+
+.@{css-prefix}-tree__content {
+  display: flex;
+  position: relative;
+
+  &.has-line {
+    border-left: 1px solid @border-color;
+  }
+}
+
+.@{css-prefix}-comment {
+  color: @comment-color;
+}
+
+.@{css-prefix}-value__null {
+  .gen-value-style(@color-null);
+}
+
+.@{css-prefix}-value__number {
+  .gen-value-style(@color-number);
+}
+
+.@{css-prefix}-value__boolean {
+  .gen-value-style(@color-boolean);
+}
+
+.@{css-prefix}-value__string {
+  .gen-value-style(@color-string);
+}

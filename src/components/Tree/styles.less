@@ -1,19 +1,11 @@
 @import '~src/themes.less';
 
-.mixin-value-style(@color) {
-  color: @color;
-}
-
 .@{css-prefix}-tree {
   font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono", monospace;
   font-size: 14px;
 
-  &.is-root {
-    position: relative;
-
-    &.has-selectable-control {
-      margin-left: @selectabl-span;
-    }
+  &.has-selectable-control {
+    margin-left: @selectabl-span;
   }
 
   &.is-mouseover {
@@ -22,36 +14,5 @@
 
   &.is-highlight-selected {
     background-color: darken(@highlight-bg-color, 5%);
-  }
-
-  .@{css-prefix}-tree__content {
-    display: flex;
-  }
-
-  .@{css-prefix}-tree__brackets {
-    cursor: pointer;
-    &:hover {
-      color: @color-primary;
-    }
-  }
-
-  .@{css-prefix}-comment {
-    color: @comment-color;
-  }
-
-  .@{css-prefix}-value__null {
-    .mixin-value-style(@color-null);
-  }
-
-  .@{css-prefix}-value__number {
-    .mixin-value-style(@color-number);
-  }
-
-  .@{css-prefix}-value__boolean {
-    .mixin-value-style(@color-boolean);
-  }
-
-  .@{css-prefix}-value__string {
-    .mixin-value-style(@color-string);
   }
 }

@@ -1,14 +1,14 @@
 <template>
   <!-- click.stop 避免向上冒泡触发 tree.vue 的 click 事件-->
   <label
-    :class="[ 'vjs-checkbox', value ? 'is-checked': '' ]"
+    :class="[ `vjs-${uiType}`, checked ? 'is-checked': '' ]"
     @click.stop
   >
-    <span class="vjs-checkbox__inner" />
+    <span :class="`vjs-${uiType}__inner`" />
     <input
       v-model="model"
-      class="vjs-checkbox__original"
-      type="checkbox"
+      :class="`vjs-${uiType}__original`"
+      :type="uiType"
       @change="$emit('change', model)"
       @focus="focus = true"
       @blur="focus = false"
@@ -21,10 +21,11 @@
   
   export default {
     props: {
-      value: {
+      checked: {
         type: Boolean,
         default: false
-      }
+      },
+      isMultiple: Boolean
     },
     data () {
       return {
@@ -32,9 +33,13 @@
       }
     },
     computed: {
+      uiType () {
+        return this.isMultiple ? 'checkbox' : 'radio'
+      },
+
       model: {
         get () {
-          return this.value
+          return this.checked
         },
         set (val) {
           this.$emit('input', val)
