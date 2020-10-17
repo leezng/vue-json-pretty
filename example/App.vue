@@ -71,7 +71,7 @@
       <div class="block">
         <h3>vue-json-pretty:</h3>
         <vue-json-pretty
-          :data="json"
+          :data="data"
           :deep="deep"
           :show-double-quotes="showDoubleQuotes"
           :show-length="showLength"
@@ -198,7 +198,7 @@
         <vue-json-pretty
           v-if="renderOK"
           v-model="value"
-          :data="json"
+          :data="data"
           :path="path"
           :deep="deep"
           :show-double-quotes="showDoubleQuotes"
@@ -233,6 +233,26 @@
 <script>
 import VueJsonPretty from 'src'
 
+const defaultData = {
+  status: 200,
+  error: '',
+  data: [{
+    news_id: 51184,
+    title: 'iPhone X Review: Innovative future with real black technology',
+    source: 'Netease phone'
+  }, {
+    news_id: 51183,
+    title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
+    source: 'Netease smart',
+    link: 'http://netease.smart/traffic-paradise/1235'
+  }, {
+    news_id: 51182,
+    title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
+    source: 'AI Finance',
+    members: ['Daniel', 'Mike', 'John']
+  }]
+}
+
 export default {
   name: 'App',
   components: {
@@ -241,26 +261,8 @@ export default {
   data () {
     return {
       renderOK: true,
-      val: '',
-      data: {
-        status: 200,
-        error: '',
-        data: [{
-          news_id: 51184,
-          title: 'iPhone X Review: Innovative future with real black technology',
-          source: 'Netease phone'
-        }, {
-          news_id: 51183,
-          title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
-          source: 'Netease smart',
-          link: 'http://netease.smart/traffic-paradise/1235'
-        }, {
-          news_id: 51182,
-          title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
-          source: 'AI Finance',
-          members: ['Daniel', 'Mike', 'John']
-        }]
-      },
+      val: JSON.stringify(defaultData),
+      data: defaultData,
       value: 'res.error',
       selectableType: 'single',
       showSelectController: true,
@@ -276,13 +278,12 @@ export default {
       deep: 3,
       itemData: {},
       itemPath: '',
-      json: {},
     }
   },
   watch: {
     val(newVal) {
       try {
-        this.json = JSON.parse(this.val)
+        this.data = JSON.parse(this.val)
       } catch (err) {
         console.log('JSON ERROR')
       }
@@ -299,9 +300,6 @@ export default {
         this.renderOK = true
       })
     }
-  },
-  created () {
-    this.val = JSON.stringify(this.data)
   },
   methods: {
     handleClick (path, data, treeName = '') {
