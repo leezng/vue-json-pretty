@@ -281,7 +281,6 @@ export default {
   },
   watch: {
     val(newVal) {
-      debugger;
     try {
         this.json = JSON.parse(this.val)
       } catch (err) {
