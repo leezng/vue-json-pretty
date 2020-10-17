@@ -1,9 +1,6 @@
 <template>
   <div
-    :class="{
-      'vjs-tree__content': true,
-      'has-line': showLine,
-    }"
+    class="vjs-tree__node"
     @click="onTreeNodeClick"
   >
     <template v-if="showSelectController && selectable">
@@ -14,7 +11,14 @@
       />
     </template>
 
-    <div :style="{ flex: `0 0 ${node.level * 1}em` }" />
+    <div
+      v-for="(item, index) in node.level"
+      :key="index"
+      :class="{
+        'vjs-tree__indent': true,
+        'has-line': showLine
+      }"
+    />
     <span
       v-if="node.key"
       class="vjs-key"
@@ -24,7 +28,7 @@
 
     <span>
       <brackets
-        v-if="node.content === '[' || node.content === ']' || node.content === '{' || node.content === '}' || node.content === '{...}' || node.content === '[...]'"
+        v-if="node.type !== 'content'"
         :data="node.content"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         @click="onBracketsClick"

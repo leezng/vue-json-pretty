@@ -123,7 +123,7 @@
       return {
         isMouseover: false,
         hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
-          if ((item.content === '[' || item.content === '{') && item.level === this.deep) {
+          if ((item.type === 'objectStart' || item.type === 'arrayStart') && item.level === this.deep) {
             return {
               ...acc,
               [item.path]: 1
@@ -139,10 +139,12 @@
         const data = jsonFlatten(this.data, this.path).reduce((acc, item) => {
           const isHidden = this.hiddenPaths[item.path]
           if (startHiddenItem && startHiddenItem.path === item.path) {
+            const isObject = startHiddenItem.type === 'objectStart'
             const mergeItem = {
               ...startHiddenItem,
               ...item,
-              content: startHiddenItem.content === '{' ? '{...}' : '[...]'
+              content: isObject ? '{...}' : '[...]',
+              type: isObject ? 'objectCollapsed' : 'arrayCollapsed'
             }
             startHiddenItem = null
             return acc.concat(mergeItem)

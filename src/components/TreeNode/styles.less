@@ -4,12 +4,16 @@
   color: @color;
 }
 
-.@{css-prefix}-tree__content {
+.@{css-prefix}-tree__node {
   display: flex;
   position: relative;
 
-  &.has-line {
-    border-left: 1px solid @border-color;
+  .@{css-prefix}-tree__indent {
+    flex: 0 0 1em;
+
+    &.has-line {
+      border-left: 1px dashed @border-color;
+    }
   }
 }
 
