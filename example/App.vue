@@ -281,9 +281,10 @@ export default {
   },
   watch: {
     val(newVal) {
-    try {
+      try {
         this.json = JSON.parse(this.val)
       } catch (err) {
+        console.log('JSON ERROR')
       }
     },
     selectableType (newVal) {
