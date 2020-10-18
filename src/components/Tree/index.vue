@@ -9,8 +9,8 @@
     @mouseout.stop="handleMouseout"
   >
     <tree-node
-      v-for="(item, index) in flatData"
-      :key="index"
+      v-for="(item) in flatData"
+      :key="item.id"
       :node="item"
       :collapsed="!!hiddenPaths[item.path]"
       :custom-value-formatter="customValueFormatter"
@@ -136,7 +136,11 @@
     computed: {
       flatData () {
         let startHiddenItem = null
-        const data = jsonFlatten(this.data, this.path).reduce((acc, item) => {
+        const data = jsonFlatten(this.data, this.path).reduce((acc, cur, index) => {
+          const item = {
+            ...cur,
+            id: index,
+          }
           const isHidden = this.hiddenPaths[item.path]
           if (startHiddenItem && startHiddenItem.path === item.path) {
             const isObject = startHiddenItem.type === 'objectStart'

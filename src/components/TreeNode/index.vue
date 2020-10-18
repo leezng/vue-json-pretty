@@ -3,7 +3,7 @@
     class="vjs-tree__node"
     @click="onTreeNodeClick"
   >
-    <template v-if="showSelectController && selectable">
+    <template v-if="showSelectController && selectable && node.type !== 'objectEnd' && node.type !== 'arrayEnd'">
       <check-controller
         :is-multiple="isMultiple"
         :checked="checked"
