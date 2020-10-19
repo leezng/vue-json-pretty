@@ -18,20 +18,13 @@ jobs:
           GITHUB_USER: ${{ secrets.CI_NAME }}
           GITHUB_EMAIL: ${{ secrets.CI_EMAIL }}
 
-  publish-npm:
-    needs: bump-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
 
-      - name: Publish
+      - name: Publish NPM
         run: |
           npm ci
           npm run build
@@ -39,23 +32,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  publish-gpr:
-    needs: bump-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 12
           registry-url: https://npm.pkg.github.com/
 
-      - name: Publish
+      - name: Publish GPR
         run: |
-          npm ci
-          npm run build
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
