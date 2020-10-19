@@ -26,7 +26,7 @@
         @change="handleValueChange('radio')"
       />
     </template>
-
+    <line-number style="color: red;" :number="currentDeep" @hook:mounted="test"></line-number>
     <template v-if="Array.isArray(data) || isObject(data)">
       <!-- 左闭合 -->
       <brackets-left
@@ -77,7 +77,7 @@
           @change="handleItemChange"
         />
       </div>
-
+      <line-number style="color: green;" :number="1" @hook:mounted="test"></line-number>
       <!-- 右闭合 -->
       <brackets-right
         :visible.sync="visible"
@@ -112,6 +112,7 @@
   import VueRadio from './radio'
   import BracketsLeft from './brackets-left'
   import BracketsRight from './brackets-right'
+  import LineNumber from './line-number'
   import { getDataType } from 'src/utils'
 
   export default {
@@ -121,7 +122,8 @@
       VueCheckbox,
       VueRadio,
       BracketsLeft,
-      BracketsRight
+      BracketsRight,
+      LineNumber
     },
     props: {
       /* outer props */
