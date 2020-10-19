@@ -40,7 +40,7 @@
           v-if="currentDeep > 1 && !Array.isArray(parentData)"
           class="vjs-key"
         >
-          {{ keyFormatter(currentKey) }}:
+          {{ prettyKey }}:
         </span>
       </brackets-left>
 
@@ -64,7 +64,7 @@
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
-          :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
+          :path="getChildPath(key)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
           :show-select-controller="showSelectController"
@@ -100,7 +100,7 @@
         v-if="parentData && currentKey && !Array.isArray(parentData)"
         class="vjs-key"
       >
-        {{ keyFormatter(currentKey) }}:
+        {{ prettyKey }}:
       </span>
     </simple-text>
   </div>
@@ -279,6 +279,10 @@
         }
       },
 
+      prettyKey () {
+        return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
+      },
+
       propsError () {
         const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
         return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
@@ -367,8 +371,8 @@
         return getDataType(value) === 'object'
       },
 
-      keyFormatter (key) {
-        return this.showDoubleQuotes ? `"${key}"` : key
+      getChildPath (key) {
+        return this.path + (Array.isArray(this.data) ? `[${key}]` : key.includes('.') ? `["${key}"]` : `.${key}`)
       }
     },
     // 捕获一个来自子组件的错误

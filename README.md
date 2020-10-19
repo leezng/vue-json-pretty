@@ -40,7 +40,7 @@ The CSS file is included separately and needs to be imported manually. You can e
 
 <script>
 import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/lib/styles.css';
+import 'vue-json-pretty/lib/styles.css'
 
 export default {
   components: {
@@ -58,7 +58,7 @@ export default {
 import Vue from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 
-Vue.component("vue-json-pretty", VueJsonPretty);
+Vue.component("vue-json-pretty", VueJsonPretty)
 ```
 
 2. In `nuxt.config.js`

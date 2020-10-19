@@ -10,7 +10,7 @@
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/e2e/specs example"
   },
   "repository": {
     "type": "git",
@@ -79,7 +79,7 @@
   },
   "browserslist": [
     "> 1%",
-    "last 5 versions",
+    "last 10 versions",
     "not ie <= 11"
   ],
   "files": [
