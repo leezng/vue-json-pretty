@@ -1,12 +1,6 @@
 <template>
   <div
-    :class="{
-      'vjs-tree': true,
-      'is-mouseover': isMouseover,
-      'has-selectable-control': showSelectController
-    }"
-    @mouseover.stop="handleMouseover"
-    @mouseout.stop="handleMouseout"
+    class="vjs-tree"
   >
     <tree-node
       v-for="(item) in flatData"
@@ -98,11 +92,6 @@
         type: Function,
         default: () => true
       },
-      // highlight current node when mouseover
-      highlightMouseoverNode: {
-        type: Boolean,
-        default: false
-      },
       // highlight current node when checked
       highlightSelectedNode: {
         type: Boolean,
@@ -121,7 +110,6 @@
     },
     data () {
       return {
-        isMouseover: false,
         hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
           if ((item.type === 'objectStart' || item.type === 'arrayStart') && item.level === this.deep) {
             return {
@@ -215,15 +203,6 @@
 
       onTreeNodeClick ({ content, path }) {
         this.$emit('click', path, content)
-      },
-
-      handleMouseover () {
-        // 可选择的树|普通展示树, 都支持mouseover
-        this.highlightMouseoverNode && (this.isMouseover = true)
-      },
-
-      handleMouseout () {
-        this.highlightMouseoverNode && (this.isMouseover = false)
       },
 
       onBracketsClick (collapsed, path) {

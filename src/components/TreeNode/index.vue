@@ -1,6 +1,9 @@
 <template>
   <div
-    class="vjs-tree__node"
+    :class="{
+      'vjs-tree__node': true,
+      'is-highlight': highlightSelectedNode && checked
+    }"
     @click="onTreeNodeClick"
   >
     <template v-if="showSelectController && selectable && node.type !== 'objectEnd' && node.type !== 'arrayEnd'">
@@ -102,11 +105,6 @@
       pathSelectable: {
         type: Function,
         default: () => true
-      },
-      // highlight current node when mouseover
-      highlightMouseoverNode: {
-        type: Boolean,
-        default: false
       },
       // highlight current node when checked
       highlightSelectedNode: {

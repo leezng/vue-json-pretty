@@ -8,6 +8,11 @@
   display: flex;
   position: relative;
 
+  &.is-highlight,
+  &:hover {
+    background-color: @highlight-bg-color;
+  }
+
   .@{css-prefix}-tree__indent {
     flex: 0 0 1em;
 
