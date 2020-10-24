@@ -1,16 +1,16 @@
 {
   "name": "vue-json-pretty",
-  "version": "1.6.7",
+  "version": "1.7.1",
   "description": "A JSON tree view component that is easy to use and also supports data selection.",
   "author": "leezng <im.leezng@gmail.com>",
-  "main": "vue-json-pretty.js",
+  "main": "lib/vue-json-pretty.js",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "dist": "cross-env DIST_ENV=true node build/build.js",
+    "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/e2e/specs example"
   },
   "repository": {
     "type": "git",
@@ -79,8 +79,11 @@
   },
   "browserslist": [
     "> 1%",
-    "last 5 versions",
-    "not ie <= 10"
+    "last 10 versions",
+    "not ie <= 11"
+  ],
+  "files": [
+    "lib"
   ],
   "dependencies": {}
 }

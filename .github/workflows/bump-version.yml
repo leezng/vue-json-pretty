@@ -1,0 +1,44 @@
+name: Create Release
+
+on:
+  push:
+    branches: 
+      - "master"
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Automated Version Bump
+        uses: phips28/gh-action-bump-version@v7.1.0
+        env:
+          GITHUB_USER: ${{ secrets.CI_NAME }}
+          GITHUB_EMAIL: ${{ secrets.CI_EMAIL }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+
+      - name: Publish NPM
+        run: |
+          npm ci
+          npm run build
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Publish GPR
+        run: |
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

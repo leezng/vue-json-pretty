@@ -48,7 +48,7 @@
           v-if="currentDeep > 1 && !Array.isArray(parentData)"
           class="vjs-key"
         >
-          {{ keyFormatter(currentKey) }}:
+          {{ prettyKey }}:
         </span>
       </brackets-left>
 
@@ -74,7 +74,7 @@
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
-          :path="path + (Array.isArray(data) ? `[${key}]` : `.${key}`)"
+          :path="getChildPath(key)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
           :show-select-controller="showSelectController"
@@ -121,7 +121,7 @@
         v-if="parentData && currentKey && !Array.isArray(parentData)"
         class="vjs-key"
       >
-        {{ keyFormatter(currentKey) }}:
+        {{ prettyKey }}:
       </span>
     </simple-text>
   </div>
@@ -317,6 +317,10 @@
         }
       },
 
+      prettyKey () {
+        return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
+      },
+
       propsError () {
         const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
         return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
@@ -457,6 +461,10 @@
 
         // increment recursive count for multiple pops off the stack in a row
         this.recursiveLineCount.push('nl')
+      },
+
+      getChildPath (key) {
+        return this.path + (Array.isArray(this.data) ? `[${key}]` : key.includes('.') ? `["${key}"]` : `.${key}`)
       }
     },
     // increment and assign stack line count

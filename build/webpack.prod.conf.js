@@ -10,8 +10,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
-const isDist = !!process.env.DIST_ENV
-const distPath = '../dist'
+const isExampleEnv = process.env.EXAMPLE_ENV
+const distPath = '../lib'
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -36,35 +36,31 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': env
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, '../README.md'),
-          to: isDist ? path.resolve(__dirname, distPath) : config.build.assetsRoot
-        }
-      ],
-    }),
   ]
 })
 
-if (isDist) {
+if (!isExampleEnv) {
   webpackConfig.entry = {
     'vue-json-pretty': './src/index.js'
   }
   webpackConfig.output = {
     path: path.resolve(__dirname, distPath),
     filename: `${distPath}/[name].js`,
+    globalObject: 'this',
     library: 'VueJsonPretty',
     libraryTarget: 'umd'
   }
   webpackConfig.plugins.push(
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, '../package.json'),
-          to: path.resolve(__dirname, distPath)
-        }
-      ],
+    // extract css into its own file
+    new MiniCssExtractPlugin({
+      filename: 'styles.css'
+    }),
+    // Compress extracted CSS. We are using this plugin so that possible
+    // duplicated CSS from different components can be deduped.
+    new OptimizeCSSPlugin({
+      cssProcessorOptions: {
+        safe: true
+      }
     }),
   )
 } else {

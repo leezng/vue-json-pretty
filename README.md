@@ -18,13 +18,15 @@ A vue 2.x component for rendering JSON data as a tree structure.
 
 ## Install
 
-```js
-npm install vue-json-pretty
+```bash
+npm install vue-json-pretty --save
 ```
 
 ## Usage
 
-```html
+The CSS file is included separately and needs to be imported manually. You can either import CSS globally in your app (if supported by your framework) or directly from the component.
+
+```vue
 <template>
   <div>
     ...
@@ -35,16 +37,39 @@ npm install vue-json-pretty
     </vue-json-pretty>
   </div>
 </template>
-```
 
-```js
+<script>
 import VueJsonPretty from 'vue-json-pretty'
+import 'vue-json-pretty/lib/styles.css'
 
 export default {
   components: {
     VueJsonPretty
   }
 }
+</script>
+```
+
+## Nuxt.js
+
+1. In `plugins/vue-json-pretty.js`
+
+```
+import Vue from 'vue'
+import VueJsonPretty from 'vue-json-pretty'
+
+Vue.component("vue-json-pretty", VueJsonPretty)
+```
+
+2. In `nuxt.config.js`
+
+```js
+css: [
+  'vue-json-pretty/lib/styles.css'
+],
+plugins: [
+  '@/plugins/vue-json-pretty'
+],
 ```
 
 ## Props
@@ -68,6 +93,7 @@ export default {
 | showSelectController | higher | whether to show the select controller at left | boolean | false |
 | selectOnClickNode | higher | whether to change selected value when click node | boolean | true |
 | highlightSelectedNode | higher | highlight current node when selected | boolean | true |
+| collapsedOnClickBrackets | higher | collapsed control | boolean | true |
 | customValueFormatter | higher | a function that can return different html or strings to display for values in the data. | Function(data, key, parent, defaultFormatted) | - |
 
 ## Events
@@ -76,3 +102,8 @@ export default {
 |---------- |-------- |---------- |
 | click  | triggered when a data item is clicked | (path, data) |
 | change  | triggered when the selected value changed (only the selectableType not null) | (newVal, oldVal) |
+
+## Major Contributors
+
+[![](https://avatars3.githubusercontent.com/u/153197?v=3&s=50)](https://github.com/rchl)
+[![](https://avatars1.githubusercontent.com/u/445616?v=3&s=50)](https://github.com/blackmad)
