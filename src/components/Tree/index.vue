@@ -1,28 +1,36 @@
 <template>
   <div
-    class="vjs-tree"
+    ref="tree"
+    :class="{
+      'vjs-tree': true,
+      'is-virtual': virtual
+    }"
+    @scroll="onTreeScroll"
   >
-    <tree-node
-      v-for="(item) in flatData"
-      :key="item.id"
-      :node="item"
-      :collapsed="!!hiddenPaths[item.path]"
-      :custom-value-formatter="customValueFormatter"
-      :show-double-quotes="showDoubleQuotes"
-      :show-length="showLength"
-      :collapsed-on-click-brackets="collapsedOnClickBrackets"
-      :checked="selectedPaths.includes(item.path)"
-      :selectable-type="selectableType"
-      :show-line="showLine"
-      :show-select-controller="showSelectController"
-      :select-on-click-node="selectOnClickNode"
-      :path-selectable="pathSelectable"
-      :highlight-mouseover-node="highlightMouseoverNode"
-      :highlight-selected-node="highlightSelectedNode"
-      @tree-node-click="onTreeNodeClick"
-      @brackets-click="onBracketsClick"
-      @selected-change="onSelectedChange"
-    />
+    <div :style="virtual && { height: `${flatData.length * itemHeight}px` }">
+      <div :style="virtual && { transform: `translateY(${translateY}px)` }">
+        <tree-node
+          v-for="(item) in visibleData"
+          :key="item.id"
+          :node="item"
+          :collapsed="!!hiddenPaths[item.path]"
+          :custom-value-formatter="customValueFormatter"
+          :show-double-quotes="showDoubleQuotes"
+          :show-length="showLength"
+          :collapsed-on-click-brackets="collapsedOnClickBrackets"
+          :checked="selectedPaths.includes(item.path)"
+          :selectable-type="selectableType"
+          :show-line="showLine"
+          :show-select-controller="showSelectController"
+          :select-on-click-node="selectOnClickNode"
+          :path-selectable="pathSelectable"
+          :highlight-selected-node="highlightSelectedNode"
+          @tree-node-click="onTreeNodeClick"
+          @brackets-click="onBracketsClick"
+          @selected-change="onSelectedChange"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -51,6 +59,14 @@
       path: {
         type: String,
         default: 'root'
+      },
+      virtual: {
+        type: Boolean,
+        default: false
+      },
+      itemHeight: {
+        type: Number,
+        default: 20
       },
       // 是否显示数组|对象的长度
       showLength: {
@@ -110,6 +126,8 @@
     },
     data () {
       return {
+        translateY: 0,
+        visibleData: null,
         hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
           if ((item.type === 'objectStart' || item.type === 'arrayStart') && item.level === this.deep) {
             return {
@@ -147,7 +165,6 @@
 
           return startHiddenItem ? acc : acc.concat(item)
         }, [])
-        console.log(data);
         return data
       },
 
@@ -176,9 +193,33 @@
           }
         },
         immediate: true
+      },
+
+      flatData: {
+        handler () {
+          this.onTreeScroll()
+        },
+        immediate: true
       }
     },
     methods: {
+      onTreeScroll() {
+        if (this.virtual) {
+          const visibleCount = 10;
+          const scrollTop = this.$refs.tree && this.$refs.tree.scrollTop || 0
+          const scrollCount = Math.floor(scrollTop / this.itemHeight)
+          let start = scrollCount < 0 ? 0 : scrollCount + visibleCount > this.flatData.length ? this.flatData.length - visibleCount : scrollCount;
+          if (start < 0) {
+            start = 0
+          }
+          const end = start + visibleCount;
+          this.translateY = start * this.itemHeight;
+          this.visibleData = this.flatData.filter((item, index) => index >= start && index < end)
+        } else {
+          this.visibleData = this.flatData
+        }
+      },
+
       onSelectedChange ({ path }) {
         const type = this.selectableType
         if (type === 'multiple') {

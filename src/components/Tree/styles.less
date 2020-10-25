@@ -3,4 +3,12 @@
 .@{css-prefix}-tree {
   font-family: "Monaco", "Menlo", "Consolas", "Bitstream Vera Sans Mono", monospace;
   font-size: 14px;
+
+  &.is-virtual {
+    overflow: auto;
+
+    .@{css-prefix}-tree__node {
+      white-space: nowrap;
+    }
+  }
 }
