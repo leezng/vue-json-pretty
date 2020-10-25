@@ -2,7 +2,7 @@
   <div
     :class="{
       'vjs-tree__node': true,
-      'has-selecter': showSelectController,
+      'has-selector': showSelectController,
       'is-highlight': highlightSelectedNode && checked
     }"
     @click="onTreeNodeClick"

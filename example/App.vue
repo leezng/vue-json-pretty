@@ -16,7 +16,7 @@
 
     <div class="example-box">
       <h2 class="title">
-        Selecter
+        Selector
       </h2>
       <select-control />
     </div>
