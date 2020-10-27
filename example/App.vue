@@ -138,6 +138,13 @@
             >
           </div>
           <div>
+            <label>showLineNumber</label>
+            <input
+              v-model="showLineNumber"
+              type="checkbox"
+            >
+          </div>
+          <div>
             <label>showDoubleQuotes</label>
             <input
               v-model="showDoubleQuotes"
@@ -206,6 +213,7 @@
           :highlight-selected-node="highlightSelectedNode"
           :show-length="showLength"
           :show-line="showLine"
+          :show-line-number="showLineNumber"
           :select-on-click-node="selectOnClickNode"
           :collapsed-on-click-brackets="collapsedOnClickBrackets"
           :path-selectable="((path, data) => typeof data !== 'number')"
@@ -268,6 +276,7 @@ export default {
       showSelectController: true,
       showLength: false,
       showLine: true,
+      showLineNumber: false,
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       highlightSelectedNode: true,

@@ -27,9 +27,11 @@
       />
     </template>
 
-    <span v-if="showLineNumber" :class="{
-      'vjs-line-number': showLineNumber,
-      'vjs-line-number-selectable': selectable
+    <span
+      v-if="showLineNumber"
+      :class="{
+        'vjs-line-number': showLineNumber,
+        'vjs-line-number-selectable': showSelectController
       }"
     >
       {{ lineNumber }}
@@ -90,10 +92,12 @@
         />
       </div>
 
-      <span v-if="showLineNumber && visible" :class="{
-        'vjs-line-number': showLineNumber,
-        'vjs-line-number-selectable': selectable
-      }"
+      <span
+        v-if="showLineNumber && visible"
+        :class="{
+          'vjs-line-number': showLineNumber,
+          'vjs-line-number-selectable': showSelectController
+        }"
       >
         {{ getRecursiveLineNumber() }}
       </span>
@@ -104,7 +108,7 @@
         :data="data"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-comma="notLastKey"
-        v-on:rightBracketLoaded="handleRecursiveCount"
+        @rightBracketLoaded="handleRecursiveCount"
       />
     </template>
 
