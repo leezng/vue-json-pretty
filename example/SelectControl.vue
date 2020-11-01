@@ -9,7 +9,6 @@
         <div>
           <label>selectableType</label>
           <select v-model="selectableType">
-            <option label="-" />
             <option>single</option>
             <option>multiple</option>
           </select>

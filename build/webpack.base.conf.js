@@ -30,7 +30,7 @@ module.exports = {
     publicPath: isProd ? config.build.assetsPublicPath : config.dev.assetsPublicPath,
   },
   resolve: {
-    extensions: ['.js', '.vue', '.json'],
+    extensions: ['.js', '.jsx', '.vue', '.json'],
     alias: {
       vue: 'vue/dist/vue.esm.js',
       src: resolve('src'),
@@ -42,7 +42,7 @@ module.exports = {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
-        include: [resolve('src'), resolve('test'), resolve('test')],
+        include: [resolve('src'), resolve('example'), resolve('test')],
         options: {
           formatter: require('eslint-friendly-formatter'),
         },
@@ -52,9 +52,9 @@ module.exports = {
         loader: 'vue-loader',
       },
       {
-        test: /\.js$/,
+        test: /\.js[x]$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('test')],
+        include: [resolve('src'), resolve('example'), resolve('test')],
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
