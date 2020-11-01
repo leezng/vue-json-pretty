@@ -1,21 +1,23 @@
 @import '~src/themes.less';
 
-.@{css-prefix}-checkbox {
+.@{css-prefix}-check-controller {
   position: absolute;
   left: 0;
-  color: #1f2d3d;
-  user-select: none;
 
-  &.is-checked .@{css-prefix}-checkbox__inner {
+  &.is-checked .@{css-prefix}-check-controller__inner {
     background-color: @color-primary;
     border-color: darken(@color-primary, 10%);
 
-    &:after {
+    &.is-checkbox:after {
       transform: rotate(45deg) scaleY(1);
+    }
+
+    &.is-radio:after {
+      transform: translate(-50%, -50%) scale(1);
     }
   }
 
-  .@{css-prefix}-checkbox__inner {
+  .@{css-prefix}-check-controller__inner {
     display: inline-block;
     position: relative;
     border: 1px solid @border-color;
@@ -45,63 +47,21 @@
       transition: transform 0.15s cubic-bezier(0.71, -0.46, 0.88, 0.6) 0.05s;
       transform-origin: center;
     }
-  }
 
-  .@{css-prefix}-checkbox__original {
-    opacity: 0;
-    outline: none;
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-  }
-}
-
-.@{css-prefix}-radio {
-  position: absolute;
-  left: 0;
-  color: #1f2d3d;
-  user-select: none;
-
-  &.is-checked .@{css-prefix}-radio__inner {
-    background-color: @color-primary;
-    border-color: darken(@color-primary, 10%);
-
-    &:after {
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-
-  .@{css-prefix}-radio__inner {
-    border: 1px solid @border-color;
-    border-radius: 100%;
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
-    background-color: #fff;
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    box-sizing: border-box;
-
-    &:after {
-      width: 4px;
-      height: 4px;
+    &.is-radio {
       border-radius: 100%;
-      background-color: #fff;
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      transition: transform 0.15s ease-in;
+
+      &:after {
+        border-radius: 100%;
+        height: 4px;
+        background-color: #fff;
+        left: 50%;
+        top: 50%;
+      }
     }
   }
 
-  .@{css-prefix}-radio__original {
+  .@{css-prefix}-check-controller__original {
     opacity: 0;
     outline: none;
     position: absolute;
