@@ -15,8 +15,8 @@ export function jsonFlatten(data, path = 'root', level = 0, { key, index, type =
         type
       }))
       .flat();
-    return [jsonFlatten('[', path, level, { key, length: data.length, type: 'arrayStart' })]
-      .concat(inner, jsonFlatten(']', path, level, { showComma, length: data.length, type: 'arrayEnd' }))
+    return [jsonFlatten('[', path, level, { key, length: data.length, type: 'arrayStart' })[0]]
+      .concat(inner, jsonFlatten(']', path, level, { showComma, length: data.length, type: 'arrayEnd' })[0])
   } else if (dataType === 'object') {
     const keys = Object.keys(data);
     const inner = keys
@@ -34,11 +34,11 @@ export function jsonFlatten(data, path = 'root', level = 0, { key, index, type =
         ),
       )
       .flat();
-    return [jsonFlatten('{', path, level, { key, index, length: keys.length, type: 'objectStart' })]
-      .concat(inner, jsonFlatten('}', path, level, { showComma, length: keys.length, type: 'objectEnd' }))
+    return [jsonFlatten('{', path, level, { key, index, length: keys.length, type: 'objectStart' })[0]]
+      .concat(inner, jsonFlatten('}', path, level, { showComma, length: keys.length, type: 'objectEnd' })[0])
   }
 
-  return Object.entries({
+  const output = Object.entries({
     content: data,
     level,
     key,
@@ -56,4 +56,6 @@ export function jsonFlatten(data, path = 'root', level = 0, { key, index, type =
     }
     return acc;
   }, {});
+
+  return getDataType(output) === 'object' ? [output] : output
 }
