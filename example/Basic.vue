@@ -8,45 +8,27 @@
       <div class="options">
         <div>
           <label>showLength</label>
-          <input
-            v-model="showLength"
-            type="checkbox"
-          >
+          <input v-model="showLength" type="checkbox" />
         </div>
         <div>
           <label>showLine</label>
-          <input
-            v-model="showLine"
-            type="checkbox"
-          >
+          <input v-model="showLine" type="checkbox" />
         </div>
         <div>
           <label>showDoubleQuotes</label>
-          <input
-            v-model="showDoubleQuotes"
-            type="checkbox"
-          >
+          <input v-model="showDoubleQuotes" type="checkbox" />
         </div>
         <div>
           <label>highlightMouseoverNode</label>
-          <input
-            v-model="highlightMouseoverNode"
-            type="checkbox"
-          >
+          <input v-model="highlightMouseoverNode" type="checkbox" />
         </div>
         <div>
           <label>collapsedOnClickBrackets</label>
-          <input
-            v-model="collapsedOnClickBrackets"
-            type="checkbox"
-          >
+          <input v-model="collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
           <label>use custom formatter</label>
-          <input
-            v-model="useCustomLinkFormatter"
-            type="checkbox"
-          >
+          <input v-model="useCustomLinkFormatter" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
@@ -81,34 +63,40 @@
 </template>
 
 <script>
-import VueJsonPretty from 'src'
+import VueJsonPretty from 'src';
 
 const defaultData = {
   status: 200,
   error: '',
-  data: [{
-    news_id: 51184,
-    title: 'iPhone X Review: Innovative future with real black technology',
-    source: 'Netease phone'
-  }, {
-    news_id: 51183,
-    title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
-    source: 'Netease smart',
-    link: 'http://netease.smart/traffic-paradise/1235'
-  }, {
-    news_id: 51182,
-    title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
-    source: 'AI Finance',
-    members: ['Daniel', 'Mike', 'John']
-  }]
-}
+  data: [
+    {
+      news_id: 51184,
+      title: 'iPhone X Review: Innovative future with real black technology',
+      source: 'Netease phone',
+    },
+    {
+      news_id: 51183,
+      title:
+        'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
+      source: 'Netease smart',
+      link: 'http://netease.smart/traffic-paradise/1235',
+    },
+    {
+      news_id: 51182,
+      title:
+        "Teslamask's American Business Relations: The government does not pay billions to build factories",
+      source: 'AI Finance',
+      members: ['Daniel', 'Mike', 'John'],
+    },
+  ],
+};
 
 export default {
   name: 'App',
   components: {
-    VueJsonPretty
+    VueJsonPretty,
   },
-  data () {
+  data() {
     return {
       val: JSON.stringify(defaultData),
       data: defaultData,
@@ -119,25 +107,25 @@ export default {
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
       deep: 3,
-    }
+    };
   },
   watch: {
     val(newVal) {
       try {
-        this.data = JSON.parse(this.val)
+        this.data = JSON.parse(this.val);
       } catch (err) {
-        console.log('JSON ERROR')
+        console.log('JSON ERROR');
       }
     },
   },
   methods: {
-    customLinkFormatter (data, key, path, defaultFormatted) {
+    customLinkFormatter(data, key, path, defaultFormatted) {
       if (typeof data === 'string' && data.startsWith('http://')) {
         return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
       } else {
         return defaultFormatted;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

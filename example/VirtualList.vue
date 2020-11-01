@@ -8,17 +8,11 @@
       <div class="options">
         <div>
           <label>showLine</label>
-          <input
-            v-model="showLine"
-            type="checkbox"
-          >
+          <input v-model="showLine" type="checkbox" />
         </div>
         <div>
           <label>collapsedOnClickBrackets</label>
-          <input
-            v-model="collapsedOnClickBrackets"
-            type="checkbox"
-          >
+          <input v-model="collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
@@ -51,7 +45,7 @@
 </template>
 
 <script>
-import VueJsonPretty from 'src'
+import VueJsonPretty from 'src';
 
 const defaultData = {
   status: 200,
@@ -59,32 +53,32 @@ const defaultData = {
   data: Array.from(Array(1000)).map((item, index) => ({
     news_id: index,
     title: 'iPhone X Review: Innovative future with real black technology',
-    source: 'Netease phone'
-  }))
-}
+    source: 'Netease phone',
+  })),
+};
 
 export default {
   name: 'App',
   components: {
-    VueJsonPretty
+    VueJsonPretty,
   },
-  data () {
+  data() {
     return {
       val: JSON.stringify(defaultData),
       data: defaultData,
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
-    }
+    };
   },
   watch: {
     val(newVal) {
       try {
-        this.data = JSON.parse(this.val)
+        this.data = JSON.parse(this.val);
       } catch (err) {
-        console.log('JSON ERROR')
+        console.log('JSON ERROR');
       }
     },
-  }
-}
+  },
+};
 </script>

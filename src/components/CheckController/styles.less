@@ -27,12 +27,12 @@
     background-color: #fff;
     z-index: 1;
     cursor: pointer;
-    transition: border-color .25s cubic-bezier(.71, -.46, .29, 1.46),
-                background-color .25s cubic-bezier(.71, -.46, .29, 1.46);
-                
+    transition: border-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46),
+      background-color 0.25s cubic-bezier(0.71, -0.46, 0.29, 1.46);
+
     &:after {
       box-sizing: content-box;
-      content: "";
+      content: '';
       border: 2px solid #fff;
       border-left: 0;
       border-top: 0;
@@ -42,7 +42,7 @@
       top: 1px;
       transform: rotate(45deg) scaleY(0);
       width: 4px;
-      transition: transform .15s cubic-bezier(.71, -.46, .88, .6) .05s;
+      transition: transform 0.15s cubic-bezier(0.71, -0.46, 0.88, 0.6) 0.05s;
       transform-origin: center;
     }
   }
@@ -86,18 +86,18 @@
     cursor: pointer;
     display: inline-block;
     box-sizing: border-box;
-                
+
     &:after {
       width: 4px;
       height: 4px;
       border-radius: 100%;
       background-color: #fff;
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%) scale(0);
-      transition: transform .15s ease-in;
+      transition: transform 0.15s ease-in;
     }
   }
 

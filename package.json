@@ -57,6 +57,7 @@
     "mini-css-extract-plugin": "^1.2.1",
     "open": "^7.3.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "prettier": "^2.1.2",
     "selenium-server": "^3.0.1",
     "semver": "^7.3.2",
     "shelljs": "^0.8.4",
