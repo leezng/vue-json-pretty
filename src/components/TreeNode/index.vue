@@ -9,10 +9,17 @@
   >
     <template
       v-if="
-        showSelectController && selectable && node.type !== 'objectEnd' && node.type !== 'arrayEnd'
+        showSelectController &&
+        state.selectable &&
+        node.type !== 'objectEnd' &&
+        node.type !== 'arrayEnd'
       "
     >
-      <check-controller :is-multiple="isMultiple" :checked="checked" @change="onCheckedChange" />
+      <check-controller
+        :is-multiple="state.isMultiple"
+        :checked="checked"
+        @change="onCheckedChange"
+      />
     </template>
 
     <div
@@ -23,23 +30,18 @@
         'has-line': showLine,
       }"
     />
-    <span v-if="node.key" class="vjs-key"> {{ prettyKey }}:&nbsp; </span>
+    <span v-if="node.key" class="vjs-key"> {{ state.prettyKey }}:&nbsp; </span>
 
     <span>
-      <brackets
-        v-if="node.type !== 'content'"
-        :data="node.content"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        @click="onBracketsClick"
-      />
+      <brackets v-if="node.type !== 'content'" :data="node.content" @click="onBracketsClick" />
 
       <template v-else>
         <span
           v-if="customValueFormatter"
-          :class="valueClass"
+          :class="state.valueClass"
           v-html="customFormatter(node.content)"
         />
-        <span v-else :class="valueClass">{{ defaultFormatter(node.content) }}</span>
+        <span v-else :class="state.valueClass">{{ defaultFormatter(node.content) }}</span>
       </template>
 
       <span v-if="node.showComma">,</span>
@@ -50,6 +52,7 @@
 </template>
 
 <script>
+import { reactive, computed } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import { getDataType } from 'src/utils';
@@ -105,69 +108,73 @@ export default {
       default: null,
     },
   },
-  computed: {
-    valueClass() {
-      return `vjs-value vjs-value__${this.dataType}`;
-    },
-
+  setup(props, { emit }) {
     // 当前数据类型
-    dataType() {
-      return getDataType(this.node.content);
-    },
+    const dataType = computed(() => getDataType(props.node.content));
 
-    prettyKey() {
-      return this.showDoubleQuotes ? `"${this.node.key}"` : this.node.key;
-    },
+    const valueClass = computed(() => `vjs-value vjs-value__${dataType.value}`);
 
-    // 当前的树是否支持选中功能
-    selectable() {
-      return (
-        this.pathSelectable(this.node.path, this.node.content) && (this.isMultiple || this.isSingle)
-      );
-    },
+    const prettyKey = computed(() =>
+      props.showDoubleQuotes ? `"${props.node.key}"` : props.node.key,
+    );
 
     // 多选模式
-    isMultiple() {
-      return this.selectableType === 'multiple';
-    },
+    const isMultiple = computed(() => props.selectableType === 'multiple');
 
     // 单选模式
-    isSingle() {
-      return this.selectableType === 'single';
-    },
-  },
-  methods: {
-    defaultFormatter(data) {
+    const isSingle = computed(() => props.selectableType === 'single');
+
+    // 当前节点是否支持选中功能
+    const selectable = computed(
+      () =>
+        props.pathSelectable(props.node.path, props.node.content) &&
+        (isMultiple.value || isSingle.value),
+    );
+
+    const defaultFormatter = (data) => {
       let text = data + '';
-      if (this.dataType === 'string') text = `"${text}"`;
+      if (dataType.value === 'string') text = `"${text}"`;
       return text;
-    },
+    };
 
-    customFormatter(data) {
-      return this.customValueFormatter
-        ? this.customValueFormatter(
-            data,
-            this.node.key,
-            this.node.path,
-            this.defaultFormatter(data),
-          )
-        : this.defaultFormatter(data);
-    },
+    const customFormatter = (data) => {
+      return props.customValueFormatter
+        ? props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
+        : defaultFormatter(data);
+    };
 
-    onBracketsClick() {
-      this.$emit('brackets-click', !this.collapsed, this.node.path);
-    },
-
-    onCheckedChange() {
-      this.$emit('selected-change', this.node);
-    },
-
-    onTreeNodeClick() {
-      this.$emit('tree-node-click', this.node);
-      if (this.selectable && this.selectOnClickNode) {
-        this.$emit('selected-change', this.node);
+    const onBracketsClick = () => {
+      if (props.collapsedOnClickBrackets) {
+        emit('brackets-click', !props.collapsed, props.node.path);
       }
-    },
+    };
+
+    const onCheckedChange = () => {
+      emit('selected-change', props.node);
+    };
+
+    const onTreeNodeClick = () => {
+      emit('tree-node-click', props.node);
+      if (selectable.value && props.selectOnClickNode) {
+        emit('selected-change', props.node);
+      }
+    };
+
+    const state = reactive({
+      valueClass,
+      prettyKey,
+      isMultiple,
+      selectable,
+    });
+
+    return {
+      state,
+      defaultFormatter,
+      customFormatter,
+      onBracketsClick,
+      onCheckedChange,
+      onTreeNodeClick,
+    };
   },
 };
 </script>

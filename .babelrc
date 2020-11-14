@@ -5,10 +5,9 @@
       "targets": {
         "browsers": ["> 1%", "last 10 versions", "not ie <= 11"]
       }
-    }],
-    '@vue/babel-preset-jsx'
+    }]
   ],
-  "plugins": ["@babel/plugin-transform-runtime"],
+  "plugins": ["@babel/plugin-transform-runtime", "@vue/babel-plugin-jsx"],
   "env": {
     "test": {
       "presets": ["@babel/preset-env"],

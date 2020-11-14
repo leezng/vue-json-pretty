@@ -2,21 +2,21 @@
   <div>
     <div class="block">
       <h3>JSON:</h3>
-      <textarea v-model="val" />
+      <textarea v-model="state.val" />
 
       <h3>Options:</h3>
       <div class="options">
         <div>
           <label>showLine</label>
-          <input v-model="showLine" type="checkbox" />
+          <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
           <label>collapsedOnClickBrackets</label>
-          <input v-model="collapsedOnClickBrackets" type="checkbox" />
+          <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
-          <select v-model="deep">
+          <select v-model="state.deep">
             <option :value="2">
               2
             </option>
@@ -33,18 +33,19 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        style="height: 200px"
+        style="height: 200px;"
         :virtual="true"
-        :data="data"
-        :deep="deep"
-        :show-line="showLine"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
+        :data="state.data"
+        :deep="state.deep"
+        :show-line="state.showLine"
+        :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
       />
     </div>
   </div>
 </template>
 
 <script>
+import { reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -62,23 +63,29 @@ export default {
   components: {
     VueJsonPretty,
   },
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       val: JSON.stringify(defaultData),
       data: defaultData,
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
+    });
+
+    watch(
+      () => state.val,
+      (newVal) => {
+        try {
+          state.data = JSON.parse(state.val);
+        } catch (err) {
+          console.log('JSON ERROR');
+        }
+      },
+    );
+
+    return {
+      state,
     };
-  },
-  watch: {
-    val(newVal) {
-      try {
-        this.data = JSON.parse(this.val);
-      } catch (err) {
-        console.log('JSON ERROR');
-      }
-    },
   },
 };
 </script>

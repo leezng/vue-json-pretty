@@ -2,37 +2,37 @@
   <div>
     <div class="block">
       <h3>JSON:</h3>
-      <textarea v-model="val" />
+      <textarea v-model="state.val" />
 
       <h3>Options:</h3>
       <div class="options">
         <div>
           <label>showLength</label>
-          <input v-model="showLength" type="checkbox" />
+          <input v-model="state.showLength" type="checkbox" />
         </div>
         <div>
           <label>showLine</label>
-          <input v-model="showLine" type="checkbox" />
+          <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
           <label>showDoubleQuotes</label>
-          <input v-model="showDoubleQuotes" type="checkbox" />
+          <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
         <div>
           <label>highlightMouseoverNode</label>
-          <input v-model="highlightMouseoverNode" type="checkbox" />
+          <input v-model="state.highlightMouseoverNode" type="checkbox" />
         </div>
         <div>
           <label>collapsedOnClickBrackets</label>
-          <input v-model="collapsedOnClickBrackets" type="checkbox" />
+          <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
           <label>use custom formatter</label>
-          <input v-model="useCustomLinkFormatter" type="checkbox" />
+          <input v-model="state.useCustomLinkFormatter" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
-          <select v-model="deep">
+          <select v-model="state.deep">
             <option :value="2">
               2
             </option>
@@ -49,20 +49,21 @@
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        :data="data"
-        :deep="deep"
-        :show-double-quotes="showDoubleQuotes"
-        :show-length="showLength"
-        :show-line="showLine"
-        :highlight-mouseover-node="highlightMouseoverNode"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
+        :data="state.data"
+        :deep="state.deep"
+        :show-double-quotes="state.showDoubleQuotes"
+        :show-length="state.showLength"
+        :show-line="state.showLine"
+        :highlight-mouseover-node="state.highlightMouseoverNode"
+        :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
+        :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
       />
     </div>
   </div>
 </template>
 
 <script>
+import { reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -96,8 +97,8 @@ export default {
   components: {
     VueJsonPretty,
   },
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       val: JSON.stringify(defaultData),
       data: defaultData,
       showLength: false,
@@ -107,25 +108,31 @@ export default {
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
       deep: 3,
-    };
-  },
-  watch: {
-    val(newVal) {
-      try {
-        this.data = JSON.parse(this.val);
-      } catch (err) {
-        console.log('JSON ERROR');
-      }
-    },
-  },
-  methods: {
-    customLinkFormatter(data, key, path, defaultFormatted) {
+    });
+
+    const customLinkFormatter = (data, key, path, defaultFormatted) => {
       if (typeof data === 'string' && data.startsWith('http://')) {
         return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
       } else {
         return defaultFormatted;
       }
-    },
+    };
+
+    watch(
+      () => state.val,
+      (newVal) => {
+        try {
+          state.data = JSON.parse(state.val);
+        } catch (err) {
+          console.log('JSON ERROR');
+        }
+      },
+    );
+
+    return {
+      state,
+      customLinkFormatter,
+    };
   },
 };
 </script>

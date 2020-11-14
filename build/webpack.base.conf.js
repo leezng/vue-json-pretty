@@ -1,5 +1,5 @@
 const path = require('path');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const utils = require('./utils');
 const config = require('../config');
@@ -32,7 +32,6 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx', '.vue', '.json'],
     alias: {
-      vue: 'vue/dist/vue.esm.js',
       src: resolve('src'),
     },
   },

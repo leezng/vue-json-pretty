@@ -1,6 +1,6 @@
 <template>
   <!-- click.stop 避免向上冒泡触发 tree.vue 的 click 事件-->
-  <label :class="[`vjs-check-controller`, checked ? 'is-checked' : '']" @click.stop>
+  <label :class="[`vjs-check-controller`, model ? 'is-checked' : '']" @click.stop>
     <span :class="`vjs-check-controller__inner is-${uiType}`" />
     <input
       v-model="model"
@@ -14,9 +14,11 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import './styles.less';
 
 export default {
+  emits: ['change', 'update:modelValue'],
   props: {
     checked: {
       type: Boolean,
@@ -29,19 +31,18 @@ export default {
       focus: false,
     };
   },
-  computed: {
-    uiType() {
-      return this.isMultiple ? 'checkbox' : 'radio';
-    },
+  setup(props, { emit }) {
+    const uiType = computed(() => (props.isMultiple ? 'checkbox' : 'radio'));
 
-    model: {
-      get() {
-        return this.checked;
-      },
-      set(val) {
-        this.$emit('input', val);
-      },
-    },
+    let model = computed({
+      get: () => props.checked,
+      set: (val) => emit('update:modelValue', val),
+    });
+
+    return {
+      uiType,
+      model,
+    };
   },
 };
 </script>

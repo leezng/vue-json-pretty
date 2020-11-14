@@ -8,12 +8,12 @@
     @scroll="onTreeScroll"
   >
     <div :style="virtual && { height: `${flatData.length * itemHeight}px` }">
-      <div :style="virtual && { transform: `translateY(${translateY}px)` }">
+      <div :style="virtual && { transform: `translateY(${state.translateY}px)` }">
         <tree-node
-          v-for="item in visibleData"
+          v-for="item in state.visibleData"
           :key="item.id"
           :node="item"
-          :collapsed="!!hiddenPaths[item.path]"
+          :collapsed="!!state.hiddenPaths[item.path]"
           :custom-value-formatter="customValueFormatter"
           :show-double-quotes="showDoubleQuotes"
           :show-length="showLength"
@@ -35,12 +35,14 @@
 </template>
 
 <script>
+import { reactive, computed, watchEffect, ref } from 'vue';
 import TreeNode from 'src/components/TreeNode';
 import { getDataType, jsonFlatten } from 'src/utils';
 import './styles.less';
 
 export default {
   name: 'VueJsonPretty',
+  emits: ['click', 'change', 'update:modelValue'],
   components: {
     TreeNode,
   },
@@ -99,7 +101,7 @@ export default {
     },
     // 存在选择功能时, 定义已选中的数据层级
     //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
-    value: {
+    modelValue: {
       type: [Array, String],
       default: () => '',
     },
@@ -124,14 +126,16 @@ export default {
       default: null,
     },
   },
-  data() {
-    return {
+  setup(props, { emit }) {
+    const tree = ref(null);
+
+    const state = reactive({
       translateY: 0,
       visibleData: null,
-      hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
+      hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
-          item.level === this.deep
+          item.level === props.deep
         ) {
           return {
             ...acc,
@@ -140,17 +144,16 @@ export default {
         }
         return acc;
       }, {}),
-    };
-  },
-  computed: {
-    flatData() {
+    });
+
+    const flatData = computed(() => {
       let startHiddenItem = null;
-      const data = jsonFlatten(this.data, this.path).reduce((acc, cur, index) => {
+      const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
         const item = {
           ...cur,
           id: index,
         };
-        const isHidden = this.hiddenPaths[item.path];
+        const isHidden = state.hiddenPaths[item.path];
         if (startHiddenItem && startHiddenItem.path === item.path) {
           const isObject = startHiddenItem.type === 'objectStart';
           const mergeItem = {
@@ -169,105 +172,106 @@ export default {
         return startHiddenItem ? acc : acc.concat(item);
       }, []);
       return data;
-    },
+    });
 
-    selectedPaths: {
-      get() {
-        if (this.value && this.selectableType === 'single') {
-          return [this.value];
+    let selectedPaths = computed({
+      get: () => {
+        if (props.modelValue && props.selectableType === 'single') {
+          return [props.modelValue];
         }
-        return this.value || [];
+        return props.modelValue || [];
       },
-      set(val) {
-        this.$emit('input', val);
-      },
-    },
+      set: val => emit('update:modelValue', val),
+    });
 
-    propsError() {
-      const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController;
+    const propsErrorMessage = computed(() => {
+      const error = props.selectableType && !props.selectOnClickNode && !props.showSelectController;
       return error
         ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.'
         : '';
-    },
-  },
-  watch: {
-    propsError: {
-      handler(message) {
-        if (message) {
-          throw new Error(`[VueJsonPretty] ${message}`);
-        }
-      },
-      immediate: true,
-    },
+    });
 
-    flatData: {
-      handler() {
-        this.onTreeScroll();
-      },
-      immediate: true,
-    },
-  },
-  methods: {
-    onTreeScroll() {
-      if (this.virtual) {
+    const onTreeScroll = () => {
+      const flatDataValue = flatData.value;
+      if (props.virtual) {
+        const treeRefValue = tree && tree.value;
         const visibleCount = 10;
-        const scrollTop = (this.$refs.tree && this.$refs.tree.scrollTop) || 0;
-        const scrollCount = Math.floor(scrollTop / this.itemHeight);
+        const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
+        const scrollCount = Math.floor(scrollTop / props.itemHeight);
         let start =
           scrollCount < 0
             ? 0
-            : scrollCount + visibleCount > this.flatData.length
-            ? this.flatData.length - visibleCount
+            : scrollCount + visibleCount > flatDataValue.length
+            ? flatDataValue.length - visibleCount
             : scrollCount;
         if (start < 0) {
           start = 0;
         }
         const end = start + visibleCount;
-        this.translateY = start * this.itemHeight;
-        this.visibleData = this.flatData.filter((item, index) => index >= start && index < end);
+        state.translateY = start * props.itemHeight;
+        state.visibleData = flatDataValue.filter((item, index) => index >= start && index < end);
       } else {
-        this.visibleData = this.flatData;
+        state.visibleData = flatDataValue;
       }
-    },
+    };
 
-    onSelectedChange({ path }) {
-      const type = this.selectableType;
+    const onSelectedChange = ({ path }) => {
+      const type = props.selectableType;
       if (type === 'multiple') {
-        const index = this.selectedPaths.findIndex(item => item === path);
-        const oldVal = [...this.selectedPaths];
+        const index = selectedPaths.value.findIndex(item => item === path);
+        const oldVal = [...selectedPaths.value];
         if (index !== -1) {
-          this.selectedPaths.splice(index, 1);
+          selectedPaths.value.splice(index, 1);
         } else {
-          this.selectedPaths.push(path);
+          selectedPaths.value.push(path);
         }
 
-        this.$emit('change', this.selectedPaths, oldVal);
+        emit('change', [...selectedPaths.value], oldVal);
       } else if (type === 'single') {
-        if (this.selectedPaths !== path) {
-          const oldVal = this.selectedPaths;
+        if (selectedPaths.value !== path) {
+          const [oldVal] = selectedPaths.value;
           const newVal = path;
-          this.selectedPaths = newVal;
-          this.$emit('change', newVal, oldVal);
+          selectedPaths.value = newVal;
+          emit('change', newVal, oldVal);
         }
       }
-    },
+    };
 
-    onTreeNodeClick({ content, path }) {
-      this.$emit('click', path, content);
-    },
+    const onTreeNodeClick = ({ content, path }) => {
+      emit('click', path, content);
+    };
 
-    onBracketsClick(collapsed, path) {
+    const onBracketsClick = (collapsed, path) => {
       if (collapsed) {
-        this.hiddenPaths = {
-          ...this.hiddenPaths,
+        state.hiddenPaths = {
+          ...state.hiddenPaths,
           [path]: 1,
         };
       } else {
-        const newPaths = { ...this.hiddenPaths };
+        const newPaths = { ...state.hiddenPaths };
         delete newPaths[path];
-        this.hiddenPaths = newPaths;
+        state.hiddenPaths = newPaths;
       }
-    },
+    };
+
+    watchEffect(() => {
+      if (propsErrorMessage && propsErrorMessage.value) {
+        throw new Error(`[VueJsonPretty] ${propsErrorMessage.value}`);
+      }
+    });
+
+    watchEffect(flatData => onTreeScroll());
+
+    return {
+      tree,
+      state,
+      flatData,
+      selectedPaths,
+      onTreeScroll,
+      onSelectedChange,
+      onTreeNodeClick,
+      onBracketsClick,
+    };
   },
 };
 </script>
