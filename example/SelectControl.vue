@@ -38,10 +38,6 @@
           <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
         <div>
-          <label>highlightMouseoverNode</label>
-          <input v-model="state.highlightMouseoverNode" type="checkbox" />
-        </div>
-        <div>
           <label>highlightSelectedNode</label>
           <input v-model="state.highlightSelectedNode" type="checkbox" />
         </div>
@@ -80,7 +76,6 @@
         :path="state.path"
         :deep="state.deep"
         :show-double-quotes="state.showDoubleQuotes"
-        :highlight-mouseover-node="state.highlightMouseoverNode"
         :highlight-selected-node="state.highlightSelectedNode"
         :show-length="state.showLength"
         :show-line="state.showLine"
@@ -143,7 +138,6 @@ export default defineComponent({
       showLength: false,
       showLine: true,
       showDoubleQuotes: true,
-      highlightMouseoverNode: true,
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,

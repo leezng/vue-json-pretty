@@ -19,10 +19,6 @@
           <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
         <div>
-          <label>highlightMouseoverNode</label>
-          <input v-model="state.highlightMouseoverNode" type="checkbox" />
-        </div>
-        <div>
           <label>collapsedOnClickBrackets</label>
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
@@ -48,7 +44,6 @@
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
-        :highlight-mouseover-node="state.highlightMouseoverNode"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
         :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
       />
@@ -98,7 +93,6 @@ export default defineComponent({
       showLength: false,
       showLine: true,
       showDoubleQuotes: true,
-      highlightMouseoverNode: true,
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
       deep: 3,
