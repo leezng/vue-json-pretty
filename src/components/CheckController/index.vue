@@ -13,11 +13,11 @@
   </label>
 </template>
 
-<script>
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
 import './styles.less';
 
-export default {
+export default defineComponent({
   emits: ['change', 'update:modelValue'],
   props: {
     checked: {
@@ -35,8 +35,8 @@ export default {
     const uiType = computed(() => (props.isMultiple ? 'checkbox' : 'radio'));
 
     let model = computed({
-      get: () => props.checked,
-      set: (val) => emit('update:modelValue', val),
+      get: (): boolean => props.checked,
+      set: val => emit('update:modelValue', val),
     });
 
     return {
@@ -44,5 +44,5 @@ export default {
       model,
     };
   },
-};
+});
 </script>

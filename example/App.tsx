@@ -1,9 +1,10 @@
+import { defineComponent } from 'vue';
 import Basic from './Basic';
 import VirtualList from './VirtualList';
 import SelectControl from './SelectControl';
 import './styles.less';
 
-export default {
+export default defineComponent({
   render() {
     const list = [
       {
@@ -47,4 +48,4 @@ export default {
       </div>
     );
   },
-};
+});

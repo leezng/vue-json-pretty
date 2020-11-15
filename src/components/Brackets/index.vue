@@ -5,14 +5,15 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue';
 import './styles.less';
 
-export default {
+export default defineComponent({
   props: {
     data: {
       required: true,
       type: String,
     },
   },
-};
+});
 </script>

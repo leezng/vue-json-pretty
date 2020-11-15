@@ -33,15 +33,9 @@
         <div>
           <label>deep</label>
           <select v-model="state.deep">
-            <option :value="2">
-              2
-            </option>
-            <option :value="3">
-              3
-            </option>
-            <option :value="4">
-              4
-            </option>
+            <option :value="2">2</option>
+            <option :value="3">3</option>
+            <option :value="4">4</option>
           </select>
         </div>
       </div>
@@ -63,7 +57,7 @@
 </template>
 
 <script>
-import { reactive, watch } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -92,8 +86,8 @@ const defaultData = {
   ],
 };
 
-export default {
-  name: 'App',
+export default defineComponent({
+  name: 'Basic',
   components: {
     VueJsonPretty,
   },
@@ -120,9 +114,9 @@ export default {
 
     watch(
       () => state.val,
-      (newVal) => {
+      newVal => {
         try {
-          state.data = JSON.parse(state.val);
+          state.data = JSON.parse(newVal);
         } catch (err) {
           console.log('JSON ERROR');
         }
@@ -134,5 +128,5 @@ export default {
       customLinkFormatter,
     };
   },
-};
+});
 </script>

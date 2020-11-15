@@ -17,15 +17,9 @@
         <div>
           <label>deep</label>
           <select v-model="state.deep">
-            <option :value="2">
-              2
-            </option>
-            <option :value="3">
-              3
-            </option>
-            <option :value="4">
-              4
-            </option>
+            <option :value="2">2</option>
+            <option :value="3">3</option>
+            <option :value="4">4</option>
           </select>
         </div>
       </div>
@@ -33,7 +27,7 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        style="height: 200px;"
+        style="height: 200px"
         :virtual="true"
         :data="state.data"
         :deep="state.deep"
@@ -45,7 +39,7 @@
 </template>
 
 <script>
-import { reactive, watch } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -58,8 +52,8 @@ const defaultData = {
   })),
 };
 
-export default {
-  name: 'App',
+export default defineComponent({
+  name: 'VirtualList',
   components: {
     VueJsonPretty,
   },
@@ -74,9 +68,9 @@ export default {
 
     watch(
       () => state.val,
-      (newVal) => {
+      newVal => {
         try {
-          state.data = JSON.parse(state.val);
+          state.data = JSON.parse(newVal);
         } catch (err) {
           console.log('JSON ERROR');
         }
@@ -87,5 +81,5 @@ export default {
       state,
     };
   },
-};
+});
 </script>

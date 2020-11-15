@@ -33,7 +33,7 @@ const webpackConfig = merge(baseWebpackConfig, {
 
 if (!isExampleEnv) {
   webpackConfig.entry = {
-    'vue-json-pretty': './src/index.js',
+    'vue-json-pretty': './src/index.ts',
   };
   webpackConfig.output = {
     path: path.resolve(__dirname, distPath),

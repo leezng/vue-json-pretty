@@ -1,21 +1,43 @@
-// 获取数据类型
-export function getDataType(value) {
+interface JsonFlattenOptions {
+  key?: string;
+  index?: number;
+  showComma: boolean;
+  length: number;
+  type:
+    | 'content'
+    | 'objectStart'
+    | 'objectEnd'
+    | 'objectCollapsed'
+    | 'arrayStart'
+    | 'arrayEnd'
+    | 'arrayCollapsed';
+}
+
+interface JsonFlattenReturnType extends JsonFlattenOptions {
+  content: string;
+  level: number;
+  path: string;
+}
+
+export function getDataType(value: unknown): string {
   return Object.prototype.toString
     .call(value)
     .slice(8, -1)
     .toLowerCase();
 }
 
-// type enum: content | objectStart | objectEnd | objectCollapsed | arrayStart | arrayEnd | arrayCollapsed
 export function jsonFlatten(
-  data,
+  data: string | number | boolean | unknown[] | Record<string, unknown> | null,
   path = 'root',
   level = 0,
-  { key, index, type = 'content', showComma = false, length = 1 } = {},
-) {
+  options: JsonFlattenOptions,
+): JsonFlattenReturnType[] {
+  const { key, index, type = 'content', showComma = false, length = 1 } =
+    options || ({} as JsonFlattenOptions);
   const dataType = getDataType(data);
+
   if (dataType === 'array') {
-    const inner = data
+    const inner = (data as unknown[])
       .map((item, idx, arr) =>
         jsonFlatten(item, `${path}[${idx}]`, level + 1, {
           index: idx,
@@ -26,10 +48,19 @@ export function jsonFlatten(
       )
       .flat();
     return [
-      jsonFlatten('[', path, level, { key, length: data.length, type: 'arrayStart' })[0],
+      jsonFlatten('[', path, level, {
+        showComma: false,
+        key,
+        length: (data as unknown[]).length,
+        type: 'arrayStart',
+      })[0],
     ].concat(
       inner,
-      jsonFlatten(']', path, level, { showComma, length: data.length, type: 'arrayEnd' })[0],
+      jsonFlatten(']', path, level, {
+        showComma,
+        length: (data as unknown[]).length,
+        type: 'arrayEnd',
+      })[0],
     );
   } else if (dataType === 'object') {
     const keys = Object.keys(data);
@@ -49,7 +80,13 @@ export function jsonFlatten(
       )
       .flat();
     return [
-      jsonFlatten('{', path, level, { key, index, length: keys.length, type: 'objectStart' })[0],
+      jsonFlatten('{', path, level, {
+        showComma: false,
+        key,
+        index,
+        length: keys.length,
+        type: 'objectStart',
+      })[0],
     ].concat(
       inner,
       jsonFlatten('}', path, level, { showComma, length: keys.length, type: 'objectEnd' })[0],
@@ -73,7 +110,7 @@ export function jsonFlatten(
       };
     }
     return acc;
-  }, {});
+  }, {}) as JsonFlattenReturnType;
 
-  return getDataType(output) === 'object' ? [output] : output;
+  return [output];
 }

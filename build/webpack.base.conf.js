@@ -1,6 +1,7 @@
 const path = require('path');
 const { VueLoaderPlugin } = require('vue-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const utils = require('./utils');
 const config = require('../config');
 
@@ -30,7 +31,7 @@ module.exports = {
     publicPath: isProd ? config.build.assetsPublicPath : config.dev.assetsPublicPath,
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.vue', '.json'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue', '.json'],
     alias: {
       src: resolve('src'),
     },
@@ -38,20 +39,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: [resolve('src'), resolve('example'), resolve('test')],
-        options: {
-          formatter: require('eslint-friendly-formatter'),
-        },
-      },
-      {
         test: /\.vue$/,
         loader: 'vue-loader',
       },
       {
-        test: /\.js[x]$/,
+        test: /\.[t|j]s[x]?$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('example'), resolve('test')],
       },
@@ -84,5 +76,12 @@ module.exports = {
       },
     ],
   },
-  plugins: [new VueLoaderPlugin()],
+  plugins: [
+    new ESLintPlugin({
+      extensions: ['js', 'jsx', 'ts', 'tsx', 'vue'],
+      emitError: true,
+      emitWarning: true,
+    }),
+    new VueLoaderPlugin(),
+  ],
 };

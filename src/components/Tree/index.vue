@@ -35,14 +35,13 @@
 </template>
 
 <script>
-import { reactive, computed, watchEffect, ref } from 'vue';
+import { defineComponent, reactive, computed, watchEffect, ref } from 'vue';
 import TreeNode from 'src/components/TreeNode';
-import { getDataType, jsonFlatten } from 'src/utils';
+import { jsonFlatten } from 'src/utils';
 import './styles.less';
 
-export default {
-  name: 'VueJsonPretty',
-  emits: ['click', 'change', 'update:modelValue'],
+export default defineComponent({
+  name: 'Tree',
   components: {
     TreeNode,
   },
@@ -126,6 +125,7 @@ export default {
       default: null,
     },
   },
+  emits: ['click', 'change', 'update:modelValue'],
   setup(props, { emit }) {
     const tree = ref(null);
 
@@ -191,10 +191,9 @@ export default {
         : '';
     });
 
-    const onTreeScroll = () => {
-      const flatDataValue = flatData.value;
+    const updateVisibleData = flatDataValue => {
       if (props.virtual) {
-        const treeRefValue = tree && tree.value;
+        const treeRefValue = tree.value;
         const visibleCount = 10;
         const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
         const scrollCount = Math.floor(scrollTop / props.itemHeight);
@@ -213,6 +212,10 @@ export default {
       } else {
         state.visibleData = flatDataValue;
       }
+    };
+
+    const onTreeScroll = () => {
+      updateVisibleData(flatData.value);
     };
 
     const onSelectedChange = ({ path }) => {
@@ -255,12 +258,16 @@ export default {
     };
 
     watchEffect(() => {
-      if (propsErrorMessage && propsErrorMessage.value) {
+      if (propsErrorMessage.value) {
         throw new Error(`[VueJsonPretty] ${propsErrorMessage.value}`);
       }
     });
 
-    watchEffect(flatData => onTreeScroll());
+    watchEffect(() => {
+      if (flatData.value) {
+        updateVisibleData(flatData.value);
+      }
+    });
 
     return {
       tree,
@@ -273,5 +280,5 @@ export default {
       onBracketsClick,
     };
   },
-};
+});
 </script>

@@ -10,9 +10,9 @@
     <template
       v-if="
         showSelectController &&
-        state.selectable &&
-        node.type !== 'objectEnd' &&
-        node.type !== 'arrayEnd'
+          state.selectable &&
+          node.type !== 'objectEnd' &&
+          node.type !== 'arrayEnd'
       "
     >
       <check-controller
@@ -52,13 +52,13 @@
 </template>
 
 <script>
-import { reactive, computed } from 'vue';
+import { defineComponent, reactive, computed } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import { getDataType } from 'src/utils';
 import './styles.less';
 
-export default {
+export default defineComponent({
   components: {
     Brackets,
     CheckController,
@@ -131,13 +131,13 @@ export default {
         (isMultiple.value || isSingle.value),
     );
 
-    const defaultFormatter = (data) => {
+    const defaultFormatter = data => {
       let text = data + '';
       if (dataType.value === 'string') text = `"${text}"`;
       return text;
     };
 
-    const customFormatter = (data) => {
+    const customFormatter = data => {
       return props.customValueFormatter
         ? props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
         : defaultFormatter(data);
@@ -176,5 +176,5 @@ export default {
       onTreeNodeClick,
     };
   },
-};
+});
 </script>
