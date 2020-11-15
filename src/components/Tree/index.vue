@@ -34,10 +34,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, reactive, computed, watchEffect, ref } from 'vue';
 import TreeNode from 'src/components/TreeNode';
-import { jsonFlatten } from 'src/utils';
+import { jsonFlatten, JsonFlattenReturnType } from 'src/utils';
 import './styles.less';
 
 export default defineComponent({
@@ -127,11 +127,11 @@ export default defineComponent({
   },
   emits: ['click', 'change', 'update:modelValue'],
   setup(props, { emit }) {
-    const tree = ref(null);
+    const tree = ref<HTMLElement>();
 
     const state = reactive({
       translateY: 0,
-      visibleData: null,
+      visibleData: null as JsonFlattenReturnType[] | null,
       hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
@@ -143,11 +143,11 @@ export default defineComponent({
           };
         }
         return acc;
-      }, {}),
+      }, {}) as Record<string, 1>,
     });
 
     const flatData = computed(() => {
-      let startHiddenItem = null;
+      let startHiddenItem: null | JsonFlattenReturnType = null;
       const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
         const item = {
           ...cur,
@@ -161,7 +161,7 @@ export default defineComponent({
             ...item,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
-          };
+          } as JsonFlattenReturnType;
           startHiddenItem = null;
           return acc.concat(mergeItem);
         } else if (isHidden && !startHiddenItem) {
@@ -170,18 +170,16 @@ export default defineComponent({
         }
 
         return startHiddenItem ? acc : acc.concat(item);
-      }, []);
+      }, [] as JsonFlattenReturnType[]);
       return data;
     });
 
-    let selectedPaths = computed({
-      get: () => {
-        if (props.modelValue && props.selectableType === 'single') {
-          return [props.modelValue];
-        }
-        return props.modelValue || [];
-      },
-      set: val => emit('update:modelValue', val),
+    const selectedPaths = computed(() => {
+      const value = props.modelValue;
+      if (value && props.selectableType === 'multiple' && Array.isArray(value)) {
+        return value;
+      }
+      return [value];
     });
 
     const propsErrorMessage = computed(() => {
@@ -191,7 +189,7 @@ export default defineComponent({
         : '';
     });
 
-    const updateVisibleData = flatDataValue => {
+    const updateVisibleData = (flatDataValue: JsonFlattenReturnType[]) => {
       if (props.virtual) {
         const treeRefValue = tree.value;
         const visibleCount = 10;
@@ -218,33 +216,33 @@ export default defineComponent({
       updateVisibleData(flatData.value);
     };
 
-    const onSelectedChange = ({ path }) => {
+    const onSelectedChange = ({ path }: JsonFlattenReturnType) => {
       const type = props.selectableType;
       if (type === 'multiple') {
         const index = selectedPaths.value.findIndex(item => item === path);
-        const oldVal = [...selectedPaths.value];
+        const newVal = [...selectedPaths.value];
         if (index !== -1) {
-          selectedPaths.value.splice(index, 1);
+          newVal.splice(index, 1);
         } else {
-          selectedPaths.value.push(path);
+          newVal.push(path);
         }
-
-        emit('change', [...selectedPaths.value], oldVal);
+        emit('update:modelValue', newVal);
+        emit('change', newVal, [...selectedPaths.value]);
       } else if (type === 'single') {
-        if (selectedPaths.value !== path) {
+        if (selectedPaths.value[0] !== path) {
           const [oldVal] = selectedPaths.value;
           const newVal = path;
-          selectedPaths.value = newVal;
+          emit('update:modelValue', newVal);
           emit('change', newVal, oldVal);
         }
       }
     };
 
-    const onTreeNodeClick = ({ content, path }) => {
+    const onTreeNodeClick = ({ content, path }: JsonFlattenReturnType) => {
       emit('click', path, content);
     };
 
-    const onBracketsClick = (collapsed, path) => {
+    const onBracketsClick = (collapsed: boolean, path: string) => {
       if (collapsed) {
         state.hiddenPaths = {
           ...state.hiddenPaths,

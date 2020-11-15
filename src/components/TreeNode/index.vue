@@ -51,7 +51,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, reactive, computed } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
@@ -131,13 +131,13 @@ export default defineComponent({
         (isMultiple.value || isSingle.value),
     );
 
-    const defaultFormatter = data => {
+    const defaultFormatter = (data: string) => {
       let text = data + '';
       if (dataType.value === 'string') text = `"${text}"`;
       return text;
     };
 
-    const customFormatter = data => {
+    const customFormatter = (data: string) => {
       return props.customValueFormatter
         ? props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
         : defaultFormatter(data);

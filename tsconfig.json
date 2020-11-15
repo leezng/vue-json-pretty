@@ -11,8 +11,8 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "types": ["webpack-env"],
+    "resolveJsonModule": true,
+    "baseUrl": "./",
     "paths": {
       "src/*": ["src/*"]
     },
@@ -26,5 +26,6 @@
     "example/**/*.tsx",
     "example/**/*.vue"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "files": ["shims-vue.d.ts"]
 }

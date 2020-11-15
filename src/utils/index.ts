@@ -13,7 +13,7 @@ interface JsonFlattenOptions {
     | 'arrayCollapsed';
 }
 
-interface JsonFlattenReturnType extends JsonFlattenOptions {
+export interface JsonFlattenReturnType extends JsonFlattenOptions {
   content: string;
   level: number;
   path: string;
@@ -30,7 +30,7 @@ export function jsonFlatten(
   data: string | number | boolean | unknown[] | Record<string, unknown> | null,
   path = 'root',
   level = 0,
-  options: JsonFlattenOptions,
+  options?: JsonFlattenOptions,
 ): JsonFlattenReturnType[] {
   const { key, index, type = 'content', showComma = false, length = 1 } =
     options || ({} as JsonFlattenOptions);
