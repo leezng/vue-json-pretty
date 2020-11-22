@@ -1,57 +1,3 @@
-<template>
-  <div
-    :class="{
-      'vjs-tree__node': true,
-      'has-selector': showSelectController,
-      'is-highlight': highlightSelectedNode && checked,
-    }"
-    @click="onTreeNodeClick"
-  >
-    <template
-      v-if="
-        showSelectController &&
-          state.selectable &&
-          node.type !== 'objectEnd' &&
-          node.type !== 'arrayEnd'
-      "
-    >
-      <check-controller
-        :is-multiple="state.isMultiple"
-        :checked="checked"
-        @change="onCheckedChange"
-      />
-    </template>
-
-    <div
-      v-for="(item, index) in node.level"
-      :key="index"
-      :class="{
-        'vjs-tree__indent': true,
-        'has-line': showLine,
-      }"
-    />
-    <span v-if="node.key" class="vjs-key"> {{ state.prettyKey }}:&nbsp; </span>
-
-    <span>
-      <brackets v-if="node.type !== 'content'" :data="node.content" @click="onBracketsClick" />
-
-      <template v-else>
-        <span
-          v-if="customValueFormatter"
-          :class="state.valueClass"
-          v-html="customFormatter(node.content)"
-        />
-        <span v-else :class="state.valueClass">{{ defaultFormatter(node.content) }}</span>
-      </template>
-
-      <span v-if="node.showComma">,</span>
-
-      <span v-if="showLength && collapsed" class="vjs-comment"> // {{ node.length }} items </span>
-    </span>
-  </div>
-</template>
-
-<script lang="ts">
 import { defineComponent, reactive, computed } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
@@ -59,10 +5,6 @@ import { getDataType } from 'src/utils';
 import './styles.less';
 
 export default defineComponent({
-  components: {
-    Brackets,
-    CheckController,
-  },
   props: {
     node: {
       required: true,
@@ -107,7 +49,17 @@ export default defineComponent({
       type: Function,
       default: null,
     },
+    onTreeNodeClick: {
+      type: Function,
+    },
+    onBracketsClick: {
+      type: Function,
+    },
+    onSelectedChange: {
+      type: Function,
+    },
   },
+
   setup(props, { emit }) {
     // 当前数据类型
     const dataType = computed(() => getDataType(props.node.content));
@@ -143,7 +95,7 @@ export default defineComponent({
         : defaultFormatter(data);
     };
 
-    const onBracketsClick = () => {
+    const onBracketsClickHandler = () => {
       if (props.collapsedOnClickBrackets) {
         emit('brackets-click', !props.collapsed, props.node.path);
       }
@@ -153,7 +105,7 @@ export default defineComponent({
       emit('selected-change', props.node);
     };
 
-    const onTreeNodeClick = () => {
+    const onNodeClick = () => {
       emit('tree-node-click', props.node);
       if (selectable.value && props.selectOnClickNode) {
         emit('selected-change', props.node);
@@ -171,10 +123,79 @@ export default defineComponent({
       state,
       defaultFormatter,
       customFormatter,
-      onBracketsClick,
+      onBracketsClickHandler,
       onCheckedChange,
-      onTreeNodeClick,
+      onNodeClick,
     };
   },
+
+  render() {
+    const {
+      state,
+      node,
+      showSelectController,
+      highlightSelectedNode,
+      checked,
+      showLength,
+      collapsed,
+      showLine,
+    } = this;
+
+    const {
+      customValueFormatter,
+      defaultFormatter,
+      customFormatter,
+      onNodeClick,
+      onCheckedChange,
+      onBracketsClickHandler,
+    } = this;
+
+    return (
+      <div
+        class={{
+          'vjs-tree__node': true,
+          'has-selector': showSelectController,
+          'is-highlight': highlightSelectedNode && checked,
+        }}
+        onClick={onNodeClick}
+      >
+        {showSelectController &&
+          state.selectable &&
+          node.type !== 'objectEnd' &&
+          node.type !== 'arrayEnd' && (
+            <CheckController
+              isMultiple={state.isMultiple}
+              checked={checked}
+              onChange={onCheckedChange}
+            />
+          )}
+
+        {Array.from(Array(node.level)).map((item, index) => (
+          <div
+            key={index}
+            class={{
+              'vjs-tree__indent': true,
+              'has-line': showLine,
+            }}
+          />
+        ))}
+
+        {node.key && <span class="vjs-key"> {state.prettyKey}:&nbsp; </span>}
+
+        <span>
+          {node.type !== 'content' ? (
+            <Brackets data={node.content} onClick={onBracketsClickHandler} />
+          ) : customValueFormatter ? (
+            <span class={state.valueClass} v-html={customFormatter(node.content)} />
+          ) : (
+            <span class={state.valueClass}>{defaultFormatter(node.content)}</span>
+          )}
+
+          {node.showComma && <span>,</span>}
+
+          {showLength && collapsed && <span class="vjs-comment"> // {node.length} items </span>}
+        </span>
+      </div>
+    );
+  },
 });
-</script>

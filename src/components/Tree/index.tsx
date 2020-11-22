@@ -1,50 +1,22 @@
-<template>
-  <div
-    ref="tree"
-    :class="{
-      'vjs-tree': true,
-      'is-virtual': virtual,
-    }"
-    @scroll="onTreeScroll"
-  >
-    <div :style="virtual && { height: `${flatData.length * itemHeight}px` }">
-      <div :style="virtual && { transform: `translateY(${state.translateY}px)` }">
-        <tree-node
-          v-for="item in state.visibleData"
-          :key="item.id"
-          :node="item"
-          :collapsed="!!state.hiddenPaths[item.path]"
-          :custom-value-formatter="customValueFormatter"
-          :show-double-quotes="showDoubleQuotes"
-          :show-length="showLength"
-          :collapsed-on-click-brackets="collapsedOnClickBrackets"
-          :checked="selectedPaths.includes(item.path)"
-          :selectable-type="selectableType"
-          :show-line="showLine"
-          :show-select-controller="showSelectController"
-          :select-on-click-node="selectOnClickNode"
-          :path-selectable="pathSelectable"
-          :highlight-selected-node="highlightSelectedNode"
-          @tree-node-click="onTreeNodeClick"
-          @brackets-click="onBracketsClick"
-          @selected-change="onSelectedChange"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
-<script lang="ts">
 import { defineComponent, reactive, computed, watchEffect, ref } from 'vue';
 import TreeNode from 'src/components/TreeNode';
 import { jsonFlatten, JsonFlattenReturnType } from 'src/utils';
 import './styles.less';
 
+interface FlatDataItemType extends JsonFlattenReturnType {
+  id: number;
+}
+[];
+
+type FlatDataType = FlatDataItemType[];
+
 export default defineComponent({
   name: 'Tree',
+
   components: {
     TreeNode,
   },
+
   props: {
     // 当前树的数据
     data: {
@@ -125,13 +97,15 @@ export default defineComponent({
       default: null,
     },
   },
+
   emits: ['click', 'change', 'update:modelValue'],
+
   setup(props, { emit }) {
     const tree = ref<HTMLElement>();
 
     const state = reactive({
       translateY: 0,
-      visibleData: null as JsonFlattenReturnType[] | null,
+      visibleData: null as FlatDataType | null,
       hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
@@ -147,7 +121,7 @@ export default defineComponent({
     });
 
     const flatData = computed(() => {
-      let startHiddenItem: null | JsonFlattenReturnType = null;
+      let startHiddenItem: null | FlatDataItemType = null;
       const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
         const item = {
           ...cur,
@@ -161,7 +135,7 @@ export default defineComponent({
             ...item,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
-          } as JsonFlattenReturnType;
+          } as FlatDataItemType;
           startHiddenItem = null;
           return acc.concat(mergeItem);
         } else if (isHidden && !startHiddenItem) {
@@ -170,7 +144,7 @@ export default defineComponent({
         }
 
         return startHiddenItem ? acc : acc.concat(item);
-      }, [] as JsonFlattenReturnType[]);
+      }, [] as FlatDataType);
       return data;
     });
 
@@ -189,7 +163,7 @@ export default defineComponent({
         : '';
     });
 
-    const updateVisibleData = (flatDataValue: JsonFlattenReturnType[]) => {
+    const updateVisibleData = (flatDataValue: FlatDataType) => {
       if (props.virtual) {
         const treeRefValue = tree.value;
         const visibleCount = 10;
@@ -216,7 +190,7 @@ export default defineComponent({
       updateVisibleData(flatData.value);
     };
 
-    const onSelectedChange = ({ path }: JsonFlattenReturnType) => {
+    const onSelectedChange = ({ path }: FlatDataItemType) => {
       const type = props.selectableType;
       if (type === 'multiple') {
         const index = selectedPaths.value.findIndex(item => item === path);
@@ -238,7 +212,7 @@ export default defineComponent({
       }
     };
 
-    const onTreeNodeClick = ({ content, path }: JsonFlattenReturnType) => {
+    const onTreeNodeClick = ({ content, path }: FlatDataItemType) => {
       emit('click', path, content);
     };
 
@@ -278,5 +252,69 @@ export default defineComponent({
       onBracketsClick,
     };
   },
+
+  render() {
+    const {
+      virtual,
+      itemHeight,
+      customValueFormatter,
+      showDoubleQuotes,
+      showLength,
+      showLine,
+      showSelectController,
+      selectOnClickNode,
+      pathSelectable,
+      highlightSelectedNode,
+      collapsedOnClickBrackets,
+      state,
+      flatData,
+      selectedPaths,
+      selectableType,
+    } = this;
+
+    const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll } = this;
+
+    const nodeContent =
+      state.visibleData &&
+      state.visibleData.map(item => (
+        <TreeNode
+          key={item.id}
+          node={item}
+          collapsed={!!state.hiddenPaths[item.path]}
+          custom-value-formatter={customValueFormatter}
+          show-double-quotes={showDoubleQuotes}
+          show-length={showLength}
+          collapsed-on-click-brackets={collapsedOnClickBrackets}
+          checked={selectedPaths.includes(item.path)}
+          selectable-type={selectableType}
+          show-line={showLine}
+          show-select-controller={showSelectController}
+          select-on-click-node={selectOnClickNode}
+          path-selectable={pathSelectable}
+          highlight-selected-node={highlightSelectedNode}
+          onTreeNodeClick={onTreeNodeClick}
+          onBracketsClick={onBracketsClick}
+          onSelectedChange={onSelectedChange}
+        />
+      ));
+
+    return (
+      <div
+        ref="tree"
+        class={{
+          'vjs-tree': true,
+          'is-virtual': virtual,
+        }}
+        onScroll={onTreeScroll}
+      >
+        {virtual ? (
+          <div style={{ height: `${flatData.length * itemHeight}px` }}>
+            <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+          </div>
+        ) : (
+          nodeContent
+        )}
+      </div>
+    );
+  },
 });
-</script>
