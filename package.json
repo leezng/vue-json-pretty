@@ -9,7 +9,7 @@
     "build": "node build/build.js",
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "test": "cypress open",
-    "lint": "eslint --ext .js,.vue src example"
+    "lint": "eslint --ext .ts,.tsx,.vue src example"
   },
   "repository": {
     "type": "git",

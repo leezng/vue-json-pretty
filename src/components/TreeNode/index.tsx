@@ -1,54 +1,68 @@
-import { defineComponent, reactive, computed } from 'vue';
+import { defineComponent, reactive, computed, PropType } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import { getDataType } from 'src/utils';
 import './styles.less';
 
+export const treeNodePropsPass = {
+  // 是否显示数组|对象的长度
+  showLength: {
+    type: Boolean,
+    default: false,
+  },
+  // key名是否显示双引号
+  showDoubleQuotes: {
+    type: Boolean,
+    default: true,
+  },
+  // custom formatter for values
+  customValueFormatter: Function as PropType<
+    (data: string, key: string, path: string, defaultFormatResult: string) => unknown
+  >,
+  // 定义数据层级支持的选中方式, 默认无该功能
+  selectableType: String as PropType<'multiple' | 'single' | ''>,
+  // 是否展示左侧选择控件
+  showSelectController: {
+    type: Boolean,
+    default: false,
+  },
+  showLine: {
+    type: Boolean,
+    default: true,
+  },
+  // 是否在点击树的时候选中节点
+  selectOnClickNode: {
+    type: Boolean,
+    default: true,
+  },
+  // collapsed control
+  collapsedOnClickBrackets: {
+    type: Boolean,
+    default: true,
+  },
+  // 定义某个数据层级是否支持选中操作
+  pathSelectable: {
+    type: Function as PropType<() => boolean>,
+    default: (): boolean => true,
+  },
+  // highlight current node when checked
+  highlightSelectedNode: {
+    type: Boolean,
+    default: true,
+  },
+};
+
 export default defineComponent({
+  name: 'TreeNode',
+
   props: {
+    ...treeNodePropsPass,
     node: {
       required: true,
       type: Object,
     },
     collapsed: Boolean,
-    collapsedOnClickBrackets: Boolean,
-    showDoubleQuotes: Boolean,
-    showLength: Boolean,
     checked: Boolean,
-    // 定义数据层级支持的选中方式, 默认无该功能
-    selectableType: {
-      type: String,
-      default: '', // ''|multiple|single
-    },
-    // 是否展示左侧选择控件
-    showSelectController: {
-      type: Boolean,
-      default: false,
-    },
-    showLine: {
-      type: Boolean,
-      default: true,
-    },
-    // 是否在点击树的时候选中节点
-    selectOnClickNode: {
-      type: Boolean,
-      default: true,
-    },
-    // 定义某个数据层级是否支持选中操作
-    pathSelectable: {
-      type: Function,
-      default: () => true,
-    },
-    // highlight current node when checked
-    highlightSelectedNode: {
-      type: Boolean,
-      default: true,
-    },
-    // custom formatter for values
-    customValueFormatter: {
-      type: Function,
-      default: null,
-    },
     onTreeNodeClick: {
       type: Function,
     },

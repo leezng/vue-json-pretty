@@ -13,21 +13,24 @@ interface JsonFlattenOptions {
     | 'arrayCollapsed';
 }
 
+export type JSONDataType = string | number | boolean | unknown[] | Record<string, unknown> | null;
+
 export interface JsonFlattenReturnType extends JsonFlattenOptions {
   content: string;
   level: number;
   path: string;
 }
 
+export function emitError(message: string): void {
+  throw new Error(`[VueJsonPretty] ${message}`);
+}
+
 export function getDataType(value: unknown): string {
-  return Object.prototype.toString
-    .call(value)
-    .slice(8, -1)
-    .toLowerCase();
+  return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
 export function jsonFlatten(
-  data: string | number | boolean | unknown[] | Record<string, unknown> | null,
+  data: JSONDataType,
   path = 'root',
   level = 0,
   options?: JsonFlattenOptions,

@@ -1,12 +1,11 @@
-import { defineComponent, reactive, computed, watchEffect, ref } from 'vue';
-import TreeNode from 'src/components/TreeNode';
-import { jsonFlatten, JsonFlattenReturnType } from 'src/utils';
+import { defineComponent, reactive, computed, watchEffect, ref, PropType } from 'vue';
+import TreeNode, { treeNodePropsPass } from 'src/components/TreeNode';
+import { emitError, jsonFlatten, JsonFlattenReturnType } from 'src/utils';
 import './styles.less';
 
 interface FlatDataItemType extends JsonFlattenReturnType {
   id: number;
 }
-[];
 
 type FlatDataType = FlatDataItemType[];
 
@@ -18,6 +17,7 @@ export default defineComponent({
   },
 
   props: {
+    ...treeNodePropsPass,
     // 当前树的数据
     data: {
       type: [String, Number, Boolean, Array, Object],
@@ -41,60 +41,11 @@ export default defineComponent({
       type: Number,
       default: 20,
     },
-    // 是否显示数组|对象的长度
-    showLength: {
-      type: Boolean,
-      default: false,
-    },
-    // key名是否显示双引号
-    showDoubleQuotes: {
-      type: Boolean,
-      default: true,
-    },
-    // 定义数据层级支持的选中方式, 默认无该功能
-    selectableType: {
-      type: String,
-      default: '', // ''|multiple|single
-    },
-    // 是否展示左侧选择控件
-    showSelectController: {
-      type: Boolean,
-      default: false,
-    },
-    showLine: {
-      type: Boolean,
-      default: true,
-    },
-    // 是否在点击树的时候选中节点
-    selectOnClickNode: {
-      type: Boolean,
-      default: true,
-    },
     // 存在选择功能时, 定义已选中的数据层级
     //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
     modelValue: {
-      type: [Array, String],
+      type: [String, Array] as PropType<string | string[]>,
       default: () => '',
-    },
-    // 定义某个数据层级是否支持选中操作
-    pathSelectable: {
-      type: Function,
-      default: () => true,
-    },
-    // highlight current node when checked
-    highlightSelectedNode: {
-      type: Boolean,
-      default: true,
-    },
-    // collapsed control
-    collapsedOnClickBrackets: {
-      type: Boolean,
-      default: true,
-    },
-    // custom formatter for values
-    customValueFormatter: {
-      type: Function,
-      default: null,
     },
   },
 
@@ -231,7 +182,7 @@ export default defineComponent({
 
     watchEffect(() => {
       if (propsErrorMessage.value) {
-        throw new Error(`[VueJsonPretty] ${propsErrorMessage.value}`);
+        emitError(propsErrorMessage.value);
       }
     });
 
