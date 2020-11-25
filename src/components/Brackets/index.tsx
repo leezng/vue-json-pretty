@@ -15,6 +15,10 @@ export default defineComponent({
 
     const { onClick } = this;
 
-    return <span class="vjs-tree__brackets" onClick={onClick}>{data}</span>;
+    return (
+      <span class="vjs-tree__brackets" onClick={onClick}>
+        {data}
+      </span>
+    );
   },
 });

@@ -1,48 +1,42 @@
 import { defineComponent, reactive, computed, watchEffect, ref, PropType } from 'vue';
-import TreeNode, { treeNodePropsPass } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, JsonFlattenReturnType } from 'src/utils';
+import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
+import { emitError, jsonFlatten, JSONDataType } from 'src/utils';
 import './styles.less';
 
-interface FlatDataItemType extends JsonFlattenReturnType {
-  id: number;
-}
-
-type FlatDataType = FlatDataItemType[];
+type FlatDataType = NodeDataType[];
 
 export default defineComponent({
   name: 'Tree',
 
-  components: {
-    TreeNode,
-  },
-
   props: {
     ...treeNodePropsPass,
-    // 当前树的数据
+    // JSONLike data.
     data: {
-      type: [String, Number, Boolean, Array, Object],
+      type: Object as PropType<JSONDataType>,
       default: null,
     },
-    // 定义树的深度, 大于该深度的子树将不被展开
+    // Define the depth of the tree, nodes greater than this depth will not be expanded.
     deep: {
       type: Number,
       default: Infinity,
     },
-    // 数据层级顶级路径
+    // Data root path.
     path: {
       type: String,
       default: 'root',
     },
+    // Whether to use virtual scroll, usually applied to big data.
     virtual: {
       type: Boolean,
       default: false,
     },
+    // When using virtual scroll, define the height of each row.
     itemHeight: {
       type: Number,
       default: 20,
     },
-    // 存在选择功能时, 定义已选中的数据层级
-    //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
+    // When there is a selection function, define the selected path.
+    // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
     modelValue: {
       type: [String, Array] as PropType<string | string[]>,
       default: () => '',
@@ -72,7 +66,7 @@ export default defineComponent({
     });
 
     const flatData = computed(() => {
-      let startHiddenItem: null | FlatDataItemType = null;
+      let startHiddenItem: null | NodeDataType = null;
       const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
         const item = {
           ...cur,
@@ -86,7 +80,7 @@ export default defineComponent({
             ...item,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
-          } as FlatDataItemType;
+          } as NodeDataType;
           startHiddenItem = null;
           return acc.concat(mergeItem);
         } else if (isHidden && !startHiddenItem) {
@@ -141,7 +135,7 @@ export default defineComponent({
       updateVisibleData(flatData.value);
     };
 
-    const onSelectedChange = ({ path }: FlatDataItemType) => {
+    const onSelectedChange = ({ path }: NodeDataType) => {
       const type = props.selectableType;
       if (type === 'multiple') {
         const index = selectedPaths.value.findIndex(item => item === path);
@@ -163,7 +157,7 @@ export default defineComponent({
       }
     };
 
-    const onTreeNodeClick = ({ content, path }: FlatDataItemType) => {
+    const onTreeNodeClick = ({ content, path }: NodeDataType) => {
       emit('click', path, content);
     };
 

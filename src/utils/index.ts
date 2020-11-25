@@ -1,4 +1,4 @@
-interface JsonFlattenOptions {
+interface JSONFlattenOptions {
   key?: string;
   index?: number;
   showComma: boolean;
@@ -15,14 +15,14 @@ interface JsonFlattenOptions {
 
 export type JSONDataType = string | number | boolean | unknown[] | Record<string, unknown> | null;
 
-export interface JsonFlattenReturnType extends JsonFlattenOptions {
+export interface JSONFlattenReturnType extends JSONFlattenOptions {
   content: string;
   level: number;
   path: string;
 }
 
 export function emitError(message: string): void {
-  throw new Error(`[VueJsonPretty] ${message}`);
+  throw new Error(`[VueJSONPretty] ${message}`);
 }
 
 export function getDataType(value: unknown): string {
@@ -33,14 +33,14 @@ export function jsonFlatten(
   data: JSONDataType,
   path = 'root',
   level = 0,
-  options?: JsonFlattenOptions,
-): JsonFlattenReturnType[] {
+  options?: JSONFlattenOptions,
+): JSONFlattenReturnType[] {
   const { key, index, type = 'content', showComma = false, length = 1 } =
-    options || ({} as JsonFlattenOptions);
+    options || ({} as JSONFlattenOptions);
   const dataType = getDataType(data);
 
   if (dataType === 'array') {
-    const inner = (data as unknown[])
+    const inner = (data as JSONDataType[])
       .map((item, idx, arr) =>
         jsonFlatten(item, `${path}[${idx}]`, level + 1, {
           index: idx,
@@ -66,11 +66,11 @@ export function jsonFlatten(
       })[0],
     );
   } else if (dataType === 'object') {
-    const keys = Object.keys(data);
+    const keys = Object.keys(data as Record<string, JSONDataType>);
     const inner = keys
       .map((objKey, idx, arr) =>
         jsonFlatten(
-          data[objKey],
+          (data as Record<string, JSONDataType>)[objKey],
           objKey.includes('.') ? `${path}["${objKey}"]` : `${path}.${objKey}`,
           level + 1,
           {
@@ -113,7 +113,7 @@ export function jsonFlatten(
       };
     }
     return acc;
-  }, {}) as JsonFlattenReturnType;
+  }, {}) as JSONFlattenReturnType;
 
   return [output];
 }

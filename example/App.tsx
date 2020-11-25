@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue';
-import Basic from './Basic';
-import VirtualList from './VirtualList';
-import SelectControl from './SelectControl';
+import Basic from './Basic.vue';
+import VirtualList from './VirtualList.vue';
+import SelectControl from './SelectControl.vue';
 import './styles.less';
 
 export default defineComponent({

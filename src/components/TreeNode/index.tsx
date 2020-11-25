@@ -1,51 +1,57 @@
 import { defineComponent, reactive, computed, PropType } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
-import { getDataType } from 'src/utils';
+import { getDataType, JSONFlattenReturnType } from 'src/utils';
 import './styles.less';
 
+export interface NodeDataType extends JSONFlattenReturnType {
+  id: number;
+}
+
+// The props here will be exposed to the user through the topmost component.
 export const treeNodePropsPass = {
-  // 是否显示数组|对象的长度
+  // Whether to display the length of (array|object).
   showLength: {
     type: Boolean,
     default: false,
   },
-  // key名是否显示双引号
+  // Whether the key name uses double quotes.
   showDoubleQuotes: {
     type: Boolean,
     default: true,
   },
-  // custom formatter for values
+  // Custom formatter for values.
   customValueFormatter: Function as PropType<
-    (data: string, key: string, path: string, defaultFormatResult: string) => unknown
+    (data: string, key: NodeDataType['key'], path: string, defaultFormatResult: string) => unknown
   >,
-  // 定义数据层级支持的选中方式, 默认无该功能
+  // Define the selection method supported by the data level, which is not available by default.
   selectableType: String as PropType<'multiple' | 'single' | ''>,
-  // 是否展示左侧选择控件
+  // Whether to display the selection control.
   showSelectController: {
     type: Boolean,
     default: false,
   },
+  // Whether to display the data level connection.
   showLine: {
     type: Boolean,
     default: true,
   },
-  // 是否在点击树的时候选中节点
+  // Whether to trigger selection when clicking on the node.
   selectOnClickNode: {
     type: Boolean,
     default: true,
   },
-  // collapsed control
+  // Collapsed control.
   collapsedOnClickBrackets: {
     type: Boolean,
     default: true,
   },
-  // 定义某个数据层级是否支持选中操作
+  // When using the selectableType, define whether current path/content is enabled.
   pathSelectable: {
-    type: Function as PropType<() => boolean>,
+    type: Function as PropType<(path: string, content: string) => boolean>,
     default: (): boolean => true,
   },
-  // highlight current node when checked
+  // Highlight current node when selected.
   highlightSelectedNode: {
     type: Boolean,
     default: true,
@@ -57,25 +63,27 @@ export default defineComponent({
 
   props: {
     ...treeNodePropsPass,
+    // Current node data.
     node: {
+      type: Object as PropType<NodeDataType>,
       required: true,
-      type: Object,
     },
+    // Whether the current node is collapsed.
     collapsed: Boolean,
+    // Whether the current node is checked(When using the selection function).
     checked: Boolean,
     onTreeNodeClick: {
-      type: Function,
+      type: Function as PropType<(node: NodeDataType) => void>,
     },
     onBracketsClick: {
-      type: Function,
+      type: Function as PropType<(collapsed: boolean, path: string) => void>,
     },
     onSelectedChange: {
-      type: Function,
+      type: Function as PropType<(node: NodeDataType) => void>,
     },
   },
 
   setup(props, { emit }) {
-    // 当前数据类型
     const dataType = computed(() => getDataType(props.node.content));
 
     const valueClass = computed(() => `vjs-value vjs-value__${dataType.value}`);
@@ -84,13 +92,11 @@ export default defineComponent({
       props.showDoubleQuotes ? `"${props.node.key}"` : props.node.key,
     );
 
-    // 多选模式
     const isMultiple = computed(() => props.selectableType === 'multiple');
 
-    // 单选模式
     const isSingle = computed(() => props.selectableType === 'single');
 
-    // 当前节点是否支持选中功能
+    // Whether the current node supports the selected function.
     const selectable = computed(
       () =>
         props.pathSelectable(props.node.path, props.node.content) &&
