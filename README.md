@@ -10,7 +10,8 @@
 
 <div align="center">
 
-A Vue component for rendering JSON data as a tree structure.
+<p>A Vue component for rendering JSON data as a tree structure.</p>
+<p>Now it supports Vue3 at least. If you still use Vue2, see <a href="https://github.com/leezng/vue-json-pretty/tree/1.x">1.x</a>.</p>
 
 [![Build Status](https://travis-ci.org/leezng/vue-json-pretty.svg?branch=master)](https://travis-ci.org/leezng/vue-json-pretty)
 [![npm package](https://img.shields.io/npm/v/vue-json-pretty.svg)](https://www.npmjs.org/package/vue-json-pretty)
@@ -110,15 +111,15 @@ plugins: [
 | showDoubleQuotes         | normal | Whether to show doublequotes on key                                                     | boolean                                        | true     |
 | virtual                  | normal | Whether to use virtual scrolling, usually used for big data                             | boolean                                        | false    |
 | itemHeight               | normal | The height of each item when using virtual scrolling                                    | number                                         | auto     |
-| v-model                  | higher | Defines value when the tree can be selected                                             | string, array                                  | -, []    |
-| path                     | higher | root data path                                                                          | string                                         | root     |
-| pathSelectable           | higher | Defines whether a data path supports selection                                          | Function(path, content)                        | -        |
+| v-model                  | higher | Defines value when the tree can be selected                                             | string, array                                  | -        |
+| path                     | higher | Root data path                                                                          | string                                         | root     |
+| pathSelectable           | higher | Defines whether a data path supports selection                                          | function(path, content)                        | -        |
 | selectableType           | higher | Defines the selected type, this feature is not supported by default                     | multiple, single                               | -        |
 | showSelectController     | higher | Whether to show the select controller at left                                           | boolean                                        | false    |
 | selectOnClickNode        | higher | Whether to change selected value when click node                                        | boolean                                        | true     |
 | highlightSelectedNode    | higher | Highlight current node when selected                                                    | boolean                                        | true     |
 | collapsedOnClickBrackets | higher | Collapsed control                                                                       | boolean                                        | true     |
-| customValueFormatter     | higher | A function that can return different html or strings to display for values in the data. | Function(data, key, path, defaultFormatResult) | -        |
+| customValueFormatter     | higher | A function that can return different html or strings to display for values in the data. | function(data, key, path, defaultFormatResult) | -        |
 
 ## Events
 
