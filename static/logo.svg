@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="139px" height="138px" viewBox="0 0 139 138" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>vue-json-pretty</title>
+    <defs>
+        <polyline id="path-1" points="69.5 7 69.5 67 129.5 67"></polyline>
+        <polyline id="path-3" points="99.5 67 99.5 127 129.5 127"></polyline>
+        <path d="M9,7 L129,7" id="path-5"></path>
+    </defs>
+    <g id="page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="path">
+            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+            <use stroke="#6699FF" stroke-width="10" xlink:href="#path-1"></use>
+        </g>
+        <g id="path">
+            <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+            <use stroke="#6699FF" stroke-width="10" xlink:href="#path-3"></use>
+        </g>
+        <g id="path-2">
+            <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-5"></use>
+            <use stroke="#6699FF" stroke-width="10" xlink:href="#path-5"></use>
+        </g>
+    </g>
+</svg>
