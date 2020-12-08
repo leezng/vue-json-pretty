@@ -58,7 +58,6 @@ The CSS file is included separately and needs to be imported manually. You can e
 ```vue
 <template>
   <div>
-    ...
     <vue-json-pretty :path="'res'" :data="{ key: 'value' }" @click="handleClick"> </vue-json-pretty>
   </div>
 </template>
