@@ -1,12 +1,21 @@
-// http://eslint.org/docs/user-guide/configuring
-
 module.exports = {
+  root: true,
+  env: {
+    node: true,
+  },
   extends: [
-    'plugin:vue/recommended'
+    'plugin:vue/vue3-essential',
+    'eslint:recommended',
+    '@vue/typescript/recommended',
+    // '@vue/prettier',
+    // '@vue/prettier/@typescript-eslint',
   ],
-  // add your custom rules here
-  'rules': {
-    // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
-  }
-}
+  parserOptions: {
+    ecmaVersion: 2020,
+  },
+  rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    // 'prettier/prettier': [1, { arrowParens: 'avoid' }],
+  },
+};

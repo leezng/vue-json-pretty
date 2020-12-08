@@ -1,17 +1,20 @@
 {
   "presets": [
-    ["env", {
+    ["@babel/preset-env", {
       "modules": false,
       "targets": {
-        "browsers": ["> 1%", "last 5 versions", "not ie <= 10"]
+        "browsers": ["> 1%", "last 10 versions", "not ie <= 11"]
       }
     }],
-    "stage-2"
+    ["@babel/preset-typescript", {
+      "allExtensions": true,
+      "isTSX": true
+    }]
   ],
-  "plugins": ["transform-runtime"],
+  "plugins": ["@babel/plugin-transform-runtime", "@vue/babel-plugin-jsx"],
   "env": {
     "test": {
-      "presets": ["env", "stage-2"],
+      "presets": ["@babel/preset-env"],
       "plugins": ["istanbul"]
     }
   }
