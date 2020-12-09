@@ -200,7 +200,7 @@ export default defineComponent({
           />
         ))}
 
-        {node.key && <span class="vjs-key"> {state.prettyKey}:&nbsp; </span>}
+        {node.key && <span class="vjs-key">{`${state.prettyKey}: `}</span>}
 
         <span>
           {node.type !== 'content' ? (
@@ -211,7 +211,7 @@ export default defineComponent({
             <span class={state.valueClass}>{defaultFormatter(node.content)}</span>
           )}
 
-          {node.showComma && <span>,</span>}
+          {node.showComma && <span>{','}</span>}
 
           {showLength && collapsed && <span class="vjs-comment"> // {node.length} items </span>}
         </span>

@@ -22,6 +22,8 @@
 
 </div>
 
+[![](./static/screenshot.png)](https://github.com/leezng/vue-json-pretty)
+
 English | [简体中文](./README.zh_CN.md)
 
 ## Features
