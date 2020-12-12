@@ -42,6 +42,9 @@ if (!isExampleEnv) {
     library: 'VueJsonPretty',
     libraryTarget: 'umd',
   };
+  webpackConfig.externals = {
+    vue: 'vue',
+  };
   webpackConfig.plugins.push(
     // extract css into its own file
     new MiniCssExtractPlugin({
