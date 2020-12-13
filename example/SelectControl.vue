@@ -149,13 +149,13 @@ export default defineComponent({
     });
 
     const handleClick = (path, data) => {
-      console.log('click: ', path, data);
+      // console.log('click: ', path, data);
       state.itemPath = path;
       state.itemData = !data ? data + '' : data; // 处理 data = null 的情况
     };
 
     const handleChange = (newVal, oldVal) => {
-      console.log('newVal: ', newVal, ' oldVal: ', oldVal);
+      // console.log('newVal: ', newVal, ' oldVal: ', oldVal);
     };
 
     const customLinkFormatter = (data, key, path, defaultFormatted) => {
@@ -172,7 +172,7 @@ export default defineComponent({
         try {
           state.data = JSON.parse(newVal);
         } catch (err) {
-          console.log('JSON ERROR');
+          // console.log('JSON ERROR');
         }
       },
     );
