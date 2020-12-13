@@ -112,7 +112,7 @@ export default defineComponent({
         try {
           state.data = JSON.parse(newVal);
         } catch (err) {
-          console.log('JSON ERROR');
+          // console.log('JSON ERROR');
         }
       },
     );

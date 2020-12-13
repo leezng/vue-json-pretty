@@ -14,8 +14,6 @@ jobs:
 
       - name: Automated Version Bump
         uses: phips28/gh-action-bump-version@v7.1.0
-        with:
-          major-wording: MAJOR
         env:
           GITHUB_USER: ${{ secrets.CI_NAME }}
           GITHUB_EMAIL: ${{ secrets.CI_EMAIL }}
