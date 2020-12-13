@@ -3,7 +3,7 @@ name: Gh Pages
 on:
   push:
     branches:
-      - 'dev'
+      - 'master'
 
 jobs:
   build-and-deploy:
