@@ -44,12 +44,7 @@ webpack(webpackConfig, (err, stats) => {
     });
 
     buildTypesProcess.on('close', () => {
-      console.log(chalk.cyan('Build types complete.\n'));
-
-      fs.copyFile('types/components/Tree/index.d.ts', 'lib/vue-json-pretty.d.ts', err => {
-        if (err) throw err;
-        console.log(chalk.cyan('Build major d.ts complete.\n'));
-      });
+      console.log(chalk.cyan('Build types(.d.ts) complete.\n'));
     });
   }
 });
