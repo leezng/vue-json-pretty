@@ -2,8 +2,8 @@ name: Gh Pages
 
 on:
   push:
-    branches: 
-      - "master"
+    branches:
+      - 'master'
 
 jobs:
   build-and-deploy:

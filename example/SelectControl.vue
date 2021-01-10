@@ -154,7 +154,7 @@ export default defineComponent({
       state.itemData = !data ? data + '' : data; // 处理 data = null 的情况
     };
 
-    const handleChange = (newVal, oldVal) => {
+    const handleChange = () => {
       // console.log('newVal: ', newVal, ' oldVal: ', oldVal);
     };
 

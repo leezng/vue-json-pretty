@@ -9,8 +9,8 @@
     "declarationDir": "types"
   },
   "include": [
-    "src/components/**/*.ts",
-    "src/components/**/*.tsx",
-    "src/components/**/*.vue"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
   ],
 }

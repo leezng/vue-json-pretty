@@ -12,6 +12,7 @@
     "test": "cypress open",
     "lint": "eslint --ext .ts,.tsx,.vue src example"
   },
+  "typings": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:leezng/vue-json-pretty.git"
