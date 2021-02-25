@@ -30,10 +30,20 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    //When using virtual scroll, set the number of items there can be
+    virtualLines: {
+      type: Number,
+      default: 10,
+    },
     // When using virtual scroll, define the height of each row.
     itemHeight: {
       type: Number,
       default: 20,
+    },
+    //Calculate the container height based on number of items
+    autoHeight: {
+      type: Boolean,
+      default: true
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
@@ -111,7 +121,7 @@ export default defineComponent({
     const updateVisibleData = (flatDataValue: FlatDataType) => {
       if (props.virtual) {
         const treeRefValue = tree.value;
-        const visibleCount = 10;
+        const visibleCount = props.virtualLines;
         const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
         const scrollCount = Math.floor(scrollTop / props.itemHeight);
         let start =
@@ -202,6 +212,8 @@ export default defineComponent({
     const {
       virtual,
       itemHeight,
+      virtualLines,
+      autoHeight,
       customValueFormatter,
       showDoubleQuotes,
       showLength,
@@ -246,6 +258,7 @@ export default defineComponent({
     return (
       <div
         ref="tree"
+        style={{height: autoHeight ? `${itemHeight * virtualLines}px` : 'initial'}}
         class={{
           'vjs-tree': true,
           'is-virtual': virtual,
