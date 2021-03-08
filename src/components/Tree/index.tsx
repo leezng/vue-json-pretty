@@ -40,11 +40,6 @@ export default defineComponent({
       type: Number,
       default: 20,
     },
-    //Calculate the container height based on number of items
-    autoHeight: {
-      type: Boolean,
-      default: true
-    },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
     modelValue: {
@@ -213,7 +208,6 @@ export default defineComponent({
       virtual,
       itemHeight,
       virtualLines,
-      autoHeight,
       customValueFormatter,
       showDoubleQuotes,
       showLength,
@@ -258,8 +252,7 @@ export default defineComponent({
     return (
       <div
         ref="tree"
-        style={{height: autoHeight ? `${itemHeight * virtualLines}px` : 'initial'}}
-        class={{
+          class={{
           'vjs-tree': true,
           'is-virtual': virtual,
         }}

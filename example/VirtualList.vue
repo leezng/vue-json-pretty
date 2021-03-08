@@ -10,11 +10,7 @@
           <label>virtualLines</label>
           <input v-model="state.virtualLines" type="number" />
         </div>
-              <div>
-          <label>autoHeight</label>
-          <input v-model="state.autoHeight" type="checkbox" />
-        </div>
-        <div>
+          <div>
           <label>showLine</label>
           <input v-model="state.showLine" type="checkbox" />
         </div>
@@ -35,9 +31,9 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
+        style="height:400px"
         :virtual="true"
         :virtualLines="state.virtualLines"
-        :autoHeight="state.autoHeight"
         :data="state.data"
         :deep="state.deep"
         :show-line="state.showLine"
@@ -73,9 +69,8 @@ export default defineComponent({
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
-      virtualLines: 15,
-      autoHeight: true
-    });
+      virtualLines: 20,
+     });
 
     watch(
       () => state.val,
