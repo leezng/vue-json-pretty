@@ -52,6 +52,12 @@ $ npm install vue-json-pretty --save
 $ yarn add vue-json-pretty
 ```
 
+## Use Vue3
+
+```bash
+$ npm install vue-json-pretty@next --save
+```
+
 ## Usage
 
 The CSS file is included separately and needs to be imported manually. You can either import CSS globally in your app (if supported by your framework) or directly from the component.
