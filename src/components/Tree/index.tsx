@@ -207,7 +207,6 @@ export default defineComponent({
     const {
       virtual,
       itemHeight,
-      virtualLines,
       customValueFormatter,
       showDoubleQuotes,
       showLength,
