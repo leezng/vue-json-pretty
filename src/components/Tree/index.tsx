@@ -252,7 +252,7 @@ export default defineComponent({
     return (
       <div
         ref="tree"
-          class={{
+        class={{
           'vjs-tree': true,
           'is-virtual': virtual,
         }}

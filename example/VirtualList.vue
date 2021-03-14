@@ -6,11 +6,11 @@
 
       <h3>Options:</h3>
       <div class="options">
-       <div>
+        <div>
           <label>virtualLines</label>
           <input v-model="state.virtualLines" type="number" />
         </div>
-          <div>
+        <div>
           <label>showLine</label>
           <input v-model="state.showLine" type="checkbox" />
         </div>
@@ -33,7 +33,7 @@
       <vue-json-pretty
         style="height:400px"
         :virtual="true"
-        :virtualLines="state.virtualLines"
+        :virtualLines="+state.virtualLines"
         :data="state.data"
         :deep="state.deep"
         :show-line="state.showLine"
@@ -70,7 +70,7 @@ export default defineComponent({
       collapsedOnClickBrackets: true,
       deep: 3,
       virtualLines: 20,
-     });
+    });
 
     watch(
       () => state.val,
