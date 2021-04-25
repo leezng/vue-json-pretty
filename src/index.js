@@ -1,7 +1,6 @@
 import pkg from '../package.json';
-import App from './components/app.vue'
-import './assets/less/index.less'
+import Tree from './components/Tree';
 
-export default Object.assign({}, App, {
-  version: pkg.version
-})
+export default Object.assign({}, Tree, {
+  version: pkg.version,
+});
