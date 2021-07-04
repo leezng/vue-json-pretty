@@ -1,9 +1,5 @@
-// 获取数据类型
 export function getDataType(value) {
-  return Object.prototype.toString
-    .call(value)
-    .slice(8, -1)
-    .toLowerCase();
+  return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
 // type enum: content | objectStart | objectEnd | objectCollapsed | arrayStart | arrayEnd | arrayCollapsed
@@ -24,7 +20,8 @@ export function jsonFlatten(
           type,
         }),
       )
-      .flat();
+      // No flat, for compatibility.
+      .reduce((acc, val) => acc.concat(val), []);
     return [
       jsonFlatten('[', path, level, { key, length: data.length, type: 'arrayStart' })[0],
     ].concat(
@@ -47,7 +44,8 @@ export function jsonFlatten(
           },
         ),
       )
-      .flat();
+      // No flat, for compatibility.
+      .reduce((acc, val) => acc.concat(val), []);
     return [
       jsonFlatten('{', path, level, { key, index, length: keys.length, type: 'objectStart' })[0],
     ].concat(
