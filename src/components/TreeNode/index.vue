@@ -25,7 +25,7 @@
     />
     <span v-if="node.key" class="vjs-key">{{ prettyKey }}:</span>
 
-    <span class="vjs-value__container">
+    <span>
       <brackets
         v-if="node.type !== 'content'"
         :data="node.content"
@@ -33,16 +33,7 @@
         @click="onBracketsClick"
       />
 
-      <template v-else>
-        <span
-          v-if="customValueFormatter"
-          :class="valueClass"
-          v-html="customFormatter(node.content)"
-        />
-        <span v-else :class="valueClass">{{ defaultFormatter(node.content) }}</span>
-      </template>
-
-      <span v-if="node.showComma">,</span>
+      <span v-else :class="valueClass" v-html="valueFormatter(node.content)" />
 
       <span v-if="showLength && collapsed" class="vjs-comment"> // {{ node.length }} items </span>
     </span>
@@ -143,8 +134,8 @@ export default {
       return text;
     },
 
-    customFormatter(data) {
-      return this.customValueFormatter
+    valueFormatter(data) {
+      const basic = this.customValueFormatter
         ? this.customValueFormatter(
             data,
             this.node.key,
@@ -152,6 +143,8 @@ export default {
             this.defaultFormatter(data),
           )
         : this.defaultFormatter(data);
+
+      return this.node.showComma ? `${basic},` : basic;
     },
 
     onBracketsClick() {
