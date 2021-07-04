@@ -23,9 +23,9 @@
         'has-line': showLine,
       }"
     />
-    <span v-if="node.key" class="vjs-key"> {{ prettyKey }}:&nbsp; </span>
+    <span v-if="node.key" class="vjs-key">{{ prettyKey }}:</span>
 
-    <span>
+    <span class="vjs-value__container">
       <brackets
         v-if="node.type !== 'content'"
         :data="node.content"

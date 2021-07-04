@@ -30,6 +30,18 @@
   color: @comment-color;
 }
 
+.@{css-prefix}-value__container {
+  white-space: nowrap;
+  &:after {
+    content: '';
+    clear: both;
+  }
+}
+
+.@{css-prefix}-value {
+  float: left;
+}
+
 .@{css-prefix}-value__null {
   .gen-value-style(@color-null);
 }
