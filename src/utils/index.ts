@@ -35,8 +35,13 @@ export function jsonFlatten(
   level = 0,
   options?: JSONFlattenOptions,
 ): JSONFlattenReturnType[] {
-  const { key, index, type = 'content', showComma = false, length = 1 } =
-    options || ({} as JSONFlattenOptions);
+  const {
+    key,
+    index,
+    type = 'content',
+    showComma = false,
+    length = 1,
+  } = options || ({} as JSONFlattenOptions);
   const dataType = getDataType(data);
 
   if (dataType === 'array') {
@@ -49,7 +54,8 @@ export function jsonFlatten(
           type,
         }),
       )
-      .flat();
+      // No flat, for compatibility.
+      .reduce((acc, val) => acc.concat(val), []);
     return [
       jsonFlatten('[', path, level, {
         showComma: false,
@@ -81,7 +87,8 @@ export function jsonFlatten(
           },
         ),
       )
-      .flat();
+      // No flat, for compatibility.
+      .reduce((acc, val) => acc.concat(val), []);
     return [
       jsonFlatten('{', path, level, {
         showComma: false,
