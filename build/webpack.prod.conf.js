@@ -43,7 +43,7 @@ if (!isExampleEnv) {
     libraryTarget: 'umd',
   };
   webpackConfig.externals = {
-    vue: 'vue',
+    vue: 'Vue',
   };
   webpackConfig.plugins.push(
     // extract css into its own file
