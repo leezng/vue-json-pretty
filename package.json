@@ -92,5 +92,8 @@
     "lib",
     "types"
   ],
+  "peerDependencies": {
+    "vue": ">=3.0.0"
+  },
   "dependencies": {}
 }
