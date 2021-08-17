@@ -55,6 +55,10 @@ export default {
       type: Number,
       default: Infinity,
     },
+    deepCollapseChildren: {
+      type: Boolean,
+      default: false,
+    },
     // 数据层级顶级路径
     path: {
       type: String,
@@ -129,9 +133,12 @@ export default {
       translateY: 0,
       visibleData: null,
       hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
+        const depthComparison = this.deepCollapseChildren
+          ? item.level >= this.deep
+          : item.level === this.deep;
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
-          item.level === this.deep
+          depthComparison
         ) {
           return {
             ...acc,
