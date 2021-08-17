@@ -112,6 +112,7 @@ plugins: [
 | ------------------------ | ------ | --------------------------------------------------------------------------------------- | ---------------------------------------------- | -------- |
 | data                     | normal | JSON data                                                                               | JSON object                                    | -        |
 | deep                     | normal | Data depth, data larger than this depth will not be expanded                            | number                                         | Infinity |
+| deepCollapseChildren     | normal | Whether children collapsed by `deep` prop should also be collapsed                      | boolean                                         | false |
 | showLength               | normal | Whether to show the length when closed                                                  | boolean                                        | false    |
 | showLine                 | normal | Whether to show the line                                                                | boolean                                        | true     |
 | showDoubleQuotes         | normal | Whether to show doublequotes on key                                                     | boolean                                        | true     |
