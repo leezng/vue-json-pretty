@@ -43,7 +43,11 @@ if (!isExampleEnv) {
     libraryTarget: 'umd',
   };
   webpackConfig.externals = {
-    vue: 'Vue',
+    vue: {
+      root: 'Vue',
+      commonjs: 'vue',
+      commonjs2: 'vue',
+    },
   };
   webpackConfig.plugins.push(
     // extract css into its own file
