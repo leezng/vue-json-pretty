@@ -44,6 +44,10 @@
             </option>
           </select>
         </div>
+        <div>
+          <label>deepCollapseChildren</label>
+          <input v-model="deepCollapseChildren" type="checkbox" />
+        </div>
       </div>
     </div>
     <div class="block">
@@ -51,6 +55,7 @@
       <vue-json-pretty
         :data="data"
         :deep="deep"
+        :deepCollapseChildren="deepCollapseChildren"
         :show-double-quotes="showDoubleQuotes"
         :show-length="showLength"
         :show-line="showLine"
@@ -107,6 +112,7 @@ export default {
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
       deep: 3,
+      deepCollapseChildren: false,
     };
   },
   watch: {
