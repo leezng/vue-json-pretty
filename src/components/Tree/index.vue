@@ -127,6 +127,11 @@ export default {
       type: Function,
       default: null,
     },
+    // Number of lines to show when virtual is true
+    virtualLines: {
+      type: Number,
+      default: 10
+    }
   },
   data() {
     return {
@@ -217,7 +222,7 @@ export default {
   methods: {
     onTreeScroll() {
       if (this.virtual) {
-        const visibleCount = 10;
+        const visibleCount = this.virtualLines;
         const scrollTop = (this.$refs.tree && this.$refs.tree.scrollTop) || 0;
         const scrollCount = Math.floor(scrollTop / this.itemHeight);
         let start =

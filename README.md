@@ -112,6 +112,7 @@ plugins: [
 | showDoubleQuotes         | normal | Whether to show doublequotes on key                                                     | boolean                                        | true     |
 | virtual                  | normal | Whether to use virtual scrolling, usually used for big data                             | boolean                                        | false    |
 | itemHeight               | normal | The height of each item when using virtual scrolling                                    | number                                         | auto     |
+| virtualLines             | normal | The number of lines to render when virtual scrolling is enabled                         | number                                         | 10       |
 | v-model                  | higher | Defines value when the tree can be selected                                             | string, array                                  | -        |
 | path                     | higher | Root data path                                                                          | string                                         | root     |
 | pathSelectable           | higher | Defines whether a data path supports selection                                          | function(path, content)                        | -        |
