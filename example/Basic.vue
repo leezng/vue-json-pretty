@@ -36,7 +36,7 @@
         </div>
         <div>
           <label>deepCollapseChildren</label>
-          <input v-model="deepCollapseChildren" type="checkbox" />
+          <input v-model="state.deepCollapseChildren" type="checkbox" />
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <vue-json-pretty
         :data="state.data"
         :deep="state.deep"
-        :deepCollapseChildren="deepCollapseChildren"
+        :deepCollapseChildren="state.deepCollapseChildren"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
