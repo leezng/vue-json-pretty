@@ -61,13 +61,10 @@ export default defineComponent({
       translateY: 0,
       visibleData: null as FlatDataType | null,
       hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
-        const depthComparison = this.deepCollapseChildren
-          ? item.level >= this.deep
-          : item.level === this.deep;
-        if (
-          (item.type === 'objectStart' || item.type === 'arrayStart') &&
-          depthComparison
-        ) {
+        const depthComparison = props.deepCollapseChildren
+          ? item.level >= props.deep
+          : item.level === props.deep;
+        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
           return {
             ...acc,
             [item.path]: 1,
