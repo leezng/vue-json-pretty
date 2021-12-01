@@ -10,7 +10,8 @@
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "build:dts": "tsc --p tsconfig.dts.json",
     "test": "cypress open",
-    "lint": "eslint --ext .ts,.tsx,.vue src example"
+    "lint": "eslint --ext .ts,.tsx,.vue src example",
+    "prepare": "ts-patch install -s"
   },
   "typings": "types/index.d.ts",
   "repository": {
@@ -68,7 +69,9 @@
     "selenium-server": "^3.0.1",
     "semver": "^7.3.5",
     "shelljs": "^0.8.4",
+    "ts-patch": "^2.0.1",
     "typescript": "^4.3.4",
+    "typescript-transform-paths": "^3.3.1",
     "url-loader": "^4.1.0",
     "vue": "^3.1.2",
     "vue-loader": "^16.2.0",

@@ -6,7 +6,14 @@
     "outDir": "lib",
     "declaration": true,
     "sourceMap": false,
-    "declarationDir": "types"
+    "declarationDir": "types",
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true,
+        "useRootDirs": false
+      }
+    ]
   },
   "include": [
     "src/**/*.ts",
