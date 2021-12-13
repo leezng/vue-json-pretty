@@ -38,6 +38,10 @@
           <label>deepCollapseChildren</label>
           <input v-model="state.deepCollapseChildren" type="checkbox" />
         </div>
+        <div>
+          <label>defaultCollapsePath</label>
+          <input v-model="state.collapsePathPattern" type="input" />
+        </div>
       </div>
     </div>
     <div class="block">
@@ -46,6 +50,7 @@
         :data="state.data"
         :deep="state.deep"
         :deepCollapseChildren="state.deepCollapseChildren"
+        :collapsePath="state.collapsePath"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
@@ -75,6 +80,9 @@ const defaultData = {
         'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
       source: 'Netease smart',
       link: 'http://netease.smart/traffic-paradise/1235',
+      author: {
+        names: ['Daniel', 'Mike', 'John'],
+      },
     },
     {
       news_id: 51182,
@@ -100,8 +108,10 @@ export default defineComponent({
       showDoubleQuotes: true,
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
-      deep: 3,
+      deep: 4,
       deepCollapseChildren: false,
+      collapsePath: /members/,
+      collapsePathPattern: 'members',
     });
 
     const customLinkFormatter = (data, key, path, defaultFormatted) => {
@@ -119,6 +129,17 @@ export default defineComponent({
           state.data = JSON.parse(newVal);
         } catch (err) {
           // console.log('JSON ERROR');
+        }
+      },
+    );
+
+    watch(
+      () => state.collapsePath,
+      newVal => {
+        try {
+          state.collapsePath = new RegExp(newVal);
+        } catch (err) {
+          // console.log('Regexp ERROR');
         }
       },
     );
