@@ -132,7 +132,7 @@ export default {
     defaultFormatter(data) {
       let text = data + '';
       if (this.dataType === 'string') text = `"${text}"`;
-      return text;
+      return this.node.showComma ? `${text},` : text;
     },
 
     customFormatter(data) {
