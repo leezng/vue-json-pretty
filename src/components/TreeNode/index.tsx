@@ -109,11 +109,9 @@ export default defineComponent({
       return text;
     };
 
-    const customFormatter = (data: string) => {
-      return props.customValueFormatter
-        ? props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
-        : defaultFormatter(data);
-    };
+    const customFormatter = props.customValueFormatter
+      ? (data: string) => props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
+      : null;
 
     const onBracketsClickHandler = () => {
       if (props.collapsedOnClickBrackets) {
