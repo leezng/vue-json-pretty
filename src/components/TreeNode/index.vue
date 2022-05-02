@@ -33,7 +33,7 @@
         @click="onBracketsClick"
       />
 
-      <span v-else-if="customValueFormatter" v-html="customFormatter(node.content)"></span>
+      <span v-else-if="customValueFormatter" :class="valueClass" v-html="customFormatter(node.content)"></span>
       <span v-else :class="valueClass" v-text="defaultFormatter(node.content)" />
 
       <span v-if="showLength && collapsed" class="vjs-comment"> // {{ node.length }} items </span>
