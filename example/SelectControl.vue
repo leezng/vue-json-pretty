@@ -192,6 +192,15 @@ export default defineComponent({
       },
     );
 
+    watch(
+      () => state.useCustomLinkFormatter,
+      async () => {
+        state.renderOK = false;
+        await nextTick();
+        state.renderOK = true;
+      },
+    );
+
     return {
       state,
       customLinkFormatter,

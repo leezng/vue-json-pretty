@@ -110,7 +110,13 @@ export default defineComponent({
     };
 
     const customFormatter = props.customValueFormatter
-      ? (data: string) => props.customValueFormatter(data, props.node.key, props.node.path, defaultFormatter(data))
+      ? (data: string) =>
+          props.customValueFormatter?.(
+            data,
+            props.node.key,
+            props.node.path,
+            defaultFormatter(data),
+          )
       : null;
 
     const onBracketsClickHandler = () => {
@@ -160,7 +166,6 @@ export default defineComponent({
     } = this;
 
     const {
-      customValueFormatter,
       defaultFormatter,
       customFormatter,
       onNodeClick,
@@ -203,7 +208,7 @@ export default defineComponent({
         <span>
           {node.type !== 'content' ? (
             <Brackets data={node.content} onClick={onBracketsClickHandler} />
-          ) : customValueFormatter ? (
+          ) : customFormatter ? (
             <span class={state.valueClass} v-html={customFormatter(node.content)} />
           ) : (
             <span class={state.valueClass}>{defaultFormatter(node.content)}</span>
