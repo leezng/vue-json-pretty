@@ -50,6 +50,11 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
+        options: {
+          compilerOptions: {
+            preserveWhitespace: false,
+          },
+        },
       },
       {
         test: /\.js[x]$/,

@@ -33,8 +33,14 @@
         @click="onBracketsClick"
       />
 
-      <span v-else-if="customValueFormatter" :class="valueClass" v-html="valueFormatter(node.content)"></span>
+      <span
+        v-else-if="customValueFormatter"
+        :class="valueClass"
+        v-html="valueFormatter(node.content)"
+      ></span>
       <span v-else :class="valueClass" v-text="valueFormatter(node.content)" />
+
+      <span v-if="node.showComma">,</span>
 
       <span v-if="showLength && collapsed" class="vjs-comment"> // {{ node.length }} items </span>
     </span>
@@ -141,11 +147,11 @@ export default {
             data,
             this.node.key,
             this.node.path,
-            this.defaultFormatter(data),
+            this.defaultFormatter(data)
           )
         : this.defaultFormatter(data);
 
-      return this.node.showComma ? `${basic},` : basic;
+      return basic;
     },
 
     onBracketsClick() {

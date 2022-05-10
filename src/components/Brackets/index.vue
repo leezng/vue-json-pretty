@@ -1,7 +1,5 @@
 <template>
-  <span class="vjs-tree__brackets" @click.stop="toggleBrackets">
-    {{ data }}
-  </span>
+  <span class="vjs-tree__brackets" @click.stop="toggleBrackets">{{ data }}</span>
 </template>
 
 <script>
