@@ -24,6 +24,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    collapsePath: {
+      type: RegExp,
+      default: null,
+    },
     // Data root path.
     path: {
       type: String,
@@ -64,7 +68,13 @@ export default defineComponent({
         const depthComparison = props.deepCollapseChildren
           ? item.level >= props.deep
           : item.level === props.deep;
-        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+        const pathComparison =
+          depthComparison ||
+          (props.collapsePath && props.collapsePath.test(item.path));
+        if (
+          (item.type === 'objectStart' || item.type === 'arrayStart') &&
+          (depthComparison || pathComparison)
+        ) {
           return {
             ...acc,
             [item.path]: 1,
