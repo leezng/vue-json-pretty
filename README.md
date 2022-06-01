@@ -116,6 +116,7 @@ plugins: [
 | showLength               | normal | Whether to show the length when closed                                                  | boolean                                        | false    |
 | showLine                 | normal | Whether to show the line                                                                | boolean                                        | true     |
 | showDoubleQuotes         | normal | Whether to show doublequotes on key                                                     | boolean                                        | true     |
+| escapeStrings            | normal | Whether to escape special characters in strings                                         | boolean                                        | true     |
 | virtual                  | normal | Whether to use virtual scrolling, usually used for big data                             | boolean                                        | false    |
 | itemHeight               | normal | The height of each item when using virtual scrolling                                    | number                                         | auto     |
 | v-model                  | higher | Defines value when the tree can be selected                                             | string, array                                  | -        |
