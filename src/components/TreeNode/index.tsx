@@ -20,6 +20,11 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: true,
   },
+  // Whether the string values are escaped
+  escapeStrings: {
+    type: Boolean,
+    default: true,
+  },
   // Custom formatter for values.
   customValueFormatter: Function as PropType<
     (data: string, key: NodeDataType['key'], path: string, defaultFormatResult: string) => unknown
@@ -105,7 +110,7 @@ export default defineComponent({
 
     const defaultFormatter = (data: string) => {
       let text = data + '';
-      if (dataType.value === 'string') text = `"${text}"`;
+      if (dataType.value === 'string') text = props.escapeStrings ? JSON.stringify(text) : `"${text}"`;
       return text;
     };
 
