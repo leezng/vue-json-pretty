@@ -8,7 +8,7 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
-    "build:dts": "tsc --p tsconfig.dts.json",
+    "build:dts": "tsc --p tsconfig.dts.json && tsc-alias -p ./tsconfig.dts.json",
     "test": "cypress open",
     "lint": "eslint --ext .ts,.tsx,.vue src example"
   },
@@ -68,6 +68,7 @@
     "selenium-server": "^3.0.1",
     "semver": "^7.3.5",
     "shelljs": "^0.8.4",
+    "tsc-alias": "^1.6.9",
     "typescript": "^4.3.4",
     "url-loader": "^4.1.0",
     "vue": "^3.1.2",
