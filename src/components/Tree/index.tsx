@@ -1,6 +1,6 @@
 import { defineComponent, reactive, computed, watchEffect, ref, PropType } from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, JSONDataType } from 'src/utils';
+import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
 import './styles.less';
 
 type FlatDataType = NodeDataType[];
@@ -50,12 +50,13 @@ export default defineComponent({
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
-    modelValue: {
+    selectedValue: {
       type: [String, Array] as PropType<string | string[]>,
       default: () => '',
     },
   },
 
+  emits: ['nodeClick', 'selectedChange', 'update:selectedValue', 'update:data'],
   emits: ['click', 'change', 'update:modelValue'],
 
   setup(props, { emit }) {
@@ -69,8 +70,7 @@ export default defineComponent({
           ? item.level >= props.deep
           : item.level === props.deep;
         const pathComparison =
-          depthComparison ||
-          (props.collapsePath && props.collapsePath.test(item.path));
+          depthComparison || (props.collapsePath && props.collapsePath.test(item.path));
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
           (depthComparison || pathComparison)
@@ -113,7 +113,7 @@ export default defineComponent({
     });
 
     const selectedPaths = computed(() => {
-      const value = props.modelValue;
+      const value = props.selectedValue;
       if (value && props.selectableType === 'multiple' && Array.isArray(value)) {
         return value;
       }
@@ -164,20 +164,20 @@ export default defineComponent({
         } else {
           newVal.push(path);
         }
-        emit('update:modelValue', newVal);
-        emit('change', newVal, [...selectedPaths.value]);
+        emit('update:selectedValue', newVal);
+        emit('selectedChange', newVal, [...selectedPaths.value]);
       } else if (type === 'single') {
         if (selectedPaths.value[0] !== path) {
           const [oldVal] = selectedPaths.value;
           const newVal = path;
-          emit('update:modelValue', newVal);
-          emit('change', newVal, oldVal);
+          emit('update:selectedValue', newVal);
+          emit('selectedChange', newVal, oldVal);
         }
       }
     };
 
     const onTreeNodeClick = ({ content, path }: NodeDataType) => {
-      emit('click', path, content);
+      emit('nodeClick', path, content);
     };
 
     const onBracketsClick = (collapsed: boolean, path: string) => {
@@ -191,6 +191,14 @@ export default defineComponent({
         delete newPaths[path];
         state.hiddenPaths = newPaths;
       }
+    };
+
+    const onValueChange = (value: unknown, path: string) => {
+      const newData = cloneDeep(props.data);
+      const rootPath = props.path;
+      new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
+      emit('update:data', newData);
+      console.log(newData);
     };
 
     watchEffect(() => {
@@ -214,6 +222,7 @@ export default defineComponent({
       onSelectedChange,
       onTreeNodeClick,
       onBracketsClick,
+      onValueChange,
     };
   },
 
@@ -234,9 +243,13 @@ export default defineComponent({
       flatData,
       selectedPaths,
       selectableType,
+      editable,
+      editableTrigger,
+      showIcon,
     } = this;
 
-    const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll } = this;
+    const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll, onValueChange } =
+      this;
 
     const nodeContent =
       state.visibleData &&
@@ -256,9 +269,13 @@ export default defineComponent({
           select-on-click-node={selectOnClickNode}
           path-selectable={pathSelectable}
           highlight-selected-node={highlightSelectedNode}
+          editable={editable}
+          editableTrigger={editableTrigger}
+          showIcon={showIcon}
           onTreeNodeClick={onTreeNodeClick}
           onBracketsClick={onBracketsClick}
           onSelectedChange={onSelectedChange}
+          onValueChange={onValueChange}
         />
       ));
 
