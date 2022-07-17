@@ -2,6 +2,7 @@ import { defineComponent, reactive, computed, PropType } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
+import { getDataType, JSONFlattenReturnType, stringToAutoType } from 'src/utils';
 import './styles.less';
 
 export interface NodeDataType extends JSONFlattenReturnType {
@@ -22,7 +23,12 @@ export const treeNodePropsPass = {
   },
   // Custom formatter for values.
   customValueFormatter: Function as PropType<
-    (data: string, key: NodeDataType['key'], path: string, defaultFormatResult: string) => unknown
+    (
+      data: string,
+      key: NodeDataType['key'],
+      path: string,
+      defaultFormatResult: string | JSX.Element,
+    ) => unknown
   >,
   // Define the selection method supported by the data level, which is not available by default.
   selectableType: String as PropType<'multiple' | 'single' | ''>,
@@ -60,6 +66,14 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: false,
   },
+  editable: {
+    type: Boolean,
+    default: false,
+  },
+  editableTrigger: {
+    type: String as PropType<'click' | 'dblclick'>,
+    default: 'click',
+  },
 };
 
 export default defineComponent({
@@ -85,6 +99,9 @@ export default defineComponent({
     onSelectedChange: {
       type: Function as PropType<(node: NodeDataType) => void>,
     },
+    onValueChange: {
+      type: Function as PropType<(value: boolean, path: string) => void>,
+    },
   },
 
   setup(props, { emit }) {
@@ -107,9 +124,39 @@ export default defineComponent({
         (isMultiple.value || isSingle.value),
     );
 
+    const state = reactive({
+      editing: false,
+      valueClass,
+      prettyKey,
+      isMultiple,
+      selectable,
+    });
+
+    const onInputChange = (e: Event) => {
+      const source = (e.target as HTMLInputElement)?.value;
+      const value = stringToAutoType(source);
+      emit('value-change', value, props.node.path);
+    };
+
     const defaultFormatter = (data: string) => {
-      let text = data + '';
-      if (dataType.value === 'string') text = `"${text}"`;
+      const str = data + '';
+      const text = dataType.value === 'string' ? `"${str}"` : str;
+      if (props.editable && state.editing) {
+        return (
+          <input
+            value={text}
+            onChange={onInputChange}
+            style={{
+              padding: '3px 8px',
+              border: '1px solid #eee',
+              boxShadow: 'none',
+              boxSizing: 'border-box',
+              borderRadius: 5,
+              fontFamily: 'inherit',
+            }}
+          />
+        );
+      }
       return text;
     };
 
@@ -140,12 +187,23 @@ export default defineComponent({
       }
     };
 
-    const state = reactive({
-      valueClass,
-      prettyKey,
-      isMultiple,
-      selectable,
-    });
+    const onValueEdit = (e: MouseEvent) => {
+      if (!props.editable) return;
+      if (!state.editing) {
+        state.editing = true;
+        const handle = (innerE: MouseEvent) => {
+          if (
+            innerE.target !== e.target &&
+            (innerE.target as Element)?.parentElement !== e.target
+          ) {
+            state.editing = false;
+            document.removeEventListener('click', handle);
+          }
+        };
+        document.removeEventListener('click', handle);
+        document.addEventListener('click', handle);
+      }
+    };
 
     return {
       state,
@@ -154,6 +212,7 @@ export default defineComponent({
       onBracketsClickHandler,
       onCheckedChange,
       onNodeClick,
+      onValueEdit,
     };
   },
 
@@ -167,6 +226,8 @@ export default defineComponent({
       showLength,
       collapsed,
       showLine,
+      editable,
+      editableTrigger,
       showIcon,
     } = this;
 
@@ -176,6 +237,7 @@ export default defineComponent({
       onNodeClick,
       onCheckedChange,
       onBracketsClickHandler,
+      onValueEdit,
     } = this;
 
     return (
@@ -219,7 +281,17 @@ export default defineComponent({
           ) : customFormatter ? (
             <span class={state.valueClass} v-html={customFormatter(node.content)} />
           ) : (
-            <span class={state.valueClass}>{defaultFormatter(node.content)}</span>
+            <span
+              class={state.valueClass}
+              onClick={
+                editable && (!editableTrigger || editableTrigger === 'click')
+                  ? onValueEdit
+                  : undefined
+              }
+              onDblclick={editable && editableTrigger === 'dblclick' ? onValueEdit : undefined}
+            >
+              {defaultFormatter(node.content)}
+            </span>
           )}
 
           {node.showComma && <span>{','}</span>}

@@ -124,3 +124,43 @@ export function jsonFlatten(
 
   return [output];
 }
+
+export function cloneDeep<T extends unknown>(source: T, hash = new WeakMap()): T {
+  if (source === null) return source;
+  if (source instanceof Date) return new Date(source) as T;
+  if (source instanceof RegExp) return new RegExp(source) as T;
+  if (typeof source !== 'object') return source;
+  if (hash.get(source as Record<string, unknown>))
+    return hash.get(source as Record<string, unknown>);
+
+  if (Array.isArray(source)) {
+    const output = source.map(item => cloneDeep(item, hash));
+    hash.set(source, output);
+    return output as T;
+  }
+  const output = {} as T;
+  for (const key in source) {
+    output[key] = cloneDeep(source[key], hash);
+  }
+  hash.set(source as Record<string, unknown>, output);
+  return output as T;
+}
+
+export function stringToAutoType(source: string): unknown {
+  let value;
+  if (source === 'null') value = null;
+  else if (source === 'undefined') value = undefined;
+  else if (source === 'true') value = true;
+  else if (source === 'false') value = false;
+  else if (
+    source[0] + source[source.length - 1] === '""' ||
+    source[0] + source[source.length - 1] === "''"
+  ) {
+    value = source.slice(1, -1);
+  } else if ((typeof Number(source) === 'number' && !isNaN(Number(source))) || source === 'NaN') {
+    value = Number(source);
+  } else {
+    value = source;
+  }
+  return value;
+}
