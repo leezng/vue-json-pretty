@@ -17,8 +17,13 @@
     background-color: @highlight-bg-color;
   }
 
-  .@{css-prefix}-tree__indent {
-    flex: 0 0 1em;
+  .@{css-prefix}-indent {
+    display: flex;
+    position: relative;
+  }
+
+  .@{css-prefix}-indent__unit {
+    width: 1em;
 
     &.has-line {
       border-left: 1px dashed @border-color;
