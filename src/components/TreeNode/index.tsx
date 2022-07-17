@@ -1,7 +1,7 @@
 import { defineComponent, reactive, computed, PropType } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
-import { getDataType, JSONFlattenReturnType } from 'src/utils';
+import Carets from 'src/components/Carets';
 import './styles.less';
 
 export interface NodeDataType extends JSONFlattenReturnType {
@@ -55,6 +55,10 @@ export const treeNodePropsPass = {
   highlightSelectedNode: {
     type: Boolean,
     default: true,
+  },
+  showIcon: {
+    type: Boolean,
+    default: false,
   },
 };
 
@@ -163,6 +167,7 @@ export default defineComponent({
       showLength,
       collapsed,
       showLine,
+      showIcon,
     } = this;
 
     const {
@@ -193,15 +198,18 @@ export default defineComponent({
             />
           )}
 
-        {Array.from(Array(node.level)).map((item, index) => (
-          <div
-            key={index}
-            class={{
-              'vjs-tree__indent': true,
-              'has-line': showLine,
-            }}
-          />
-        ))}
+        <div class="vjs-indent">
+          {Array.from(Array(node.level)).map((item, index) => (
+            <div
+              key={index}
+              class={{
+                'vjs-indent__unit': true,
+                'has-line': showLine,
+              }}
+            />
+          ))}
+          {showIcon && <Carets nodeType={node.type} onClick={onBracketsClickHandler} />}
+        </div>
 
         {node.key && <span class="vjs-key">{`${state.prettyKey}: `}</span>}
 
