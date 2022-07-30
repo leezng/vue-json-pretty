@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
       <textarea v-model="state.val" />
@@ -58,8 +58,8 @@
           <input v-model="state.useCustomLinkFormatter" type="checkbox" />
         </div>
       </div>
-      <h3>v-model:</h3>
-      <div>{{ state.value }}</div>
+      <h3>v-model:selectedValue:</h3>
+      <div>{{ state.selectedValue }}</div>
       <h3>Current Click:</h3>
       <div>path: {{ state.itemPath }}</div>
       <div>
@@ -71,7 +71,7 @@
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         v-if="state.renderOK"
-        v-model="state.value"
+        v-model:selectedValue="state.selectedValue"
         :data="state.data"
         :path="state.path"
         :deep="state.deep"
@@ -85,8 +85,8 @@
         :selectable-type="state.selectableType"
         :show-select-controller="state.showSelectController"
         :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
-        @click="handleClick"
-        @change="handleChange"
+        @nodeClick="handleClick"
+        @selectedChange="handleChange"
       />
     </div>
   </div>
@@ -132,7 +132,7 @@ export default defineComponent({
       renderOK: true,
       val: JSON.stringify(defaultData),
       data: defaultData,
-      value: 'res.error',
+      selectedValue: 'res.error',
       selectableType: 'single',
       showSelectController: true,
       showLength: false,
@@ -151,7 +151,7 @@ export default defineComponent({
     const handleClick = (path, data) => {
       // console.log('click: ', path, data);
       state.itemPath = path;
-      state.itemData = !data ? data + '' : data; // 处理 data = null 的情况
+      state.itemData = !data ? data + '' : data; // if data = null
     };
 
     const handleChange = () => {
@@ -182,11 +182,11 @@ export default defineComponent({
       async newVal => {
         state.renderOK = false;
         if (newVal === 'single') {
-          state.value = 'res.error';
+          state.selectedValue = 'res.error';
         } else if (newVal === 'multiple') {
-          state.value = ['res.error', 'res.data[0].title'];
+          state.selectedValue = ['res.error', 'res.data[0].title'];
         }
-        // 重新渲染, 因为2中情况的v-model格式不同
+        // Re-render because v-model:selectedValue format is different in case 2
         await nextTick();
         state.renderOK = true;
       },

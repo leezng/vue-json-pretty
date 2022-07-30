@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
       <textarea v-model="state.val" />
@@ -31,7 +31,7 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        style="height:400px"
+        style="height: 400px"
         :virtual="true"
         :virtualLines="+state.virtualLines"
         :data="state.data"
@@ -50,12 +50,16 @@ import VueJsonPretty from 'src';
 const defaultData = {
   status: 200,
   error: '',
-  data: Array.from(Array(1000)).map((item, index) => ({
-    news_id: index,
+  data: [],
+};
+
+for (let i = 0; i < 100000; i++) {
+  defaultData.data.push({
+    news_id: i,
     title: 'iPhone X Review: Innovative future with real black technology',
     source: 'Netease phone',
-  })),
-};
+  });
+}
 
 export default defineComponent({
   name: 'VirtualList',

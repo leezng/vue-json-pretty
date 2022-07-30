@@ -1,37 +1,82 @@
-import { defineComponent } from 'vue';
+import { defineComponent, reactive } from 'vue';
 import Basic from './Basic.vue';
 import VirtualList from './VirtualList.vue';
 import SelectControl from './SelectControl.vue';
+import Editable from './Editable.vue';
 import './styles.less';
 
+const list = [
+  {
+    title: 'Basic Use',
+    key: 'basic',
+    component: Basic,
+  },
+  {
+    title: 'Virtual List',
+    key: 'virtual-list',
+    component: VirtualList,
+  },
+  {
+    title: 'Selector',
+    key: 'select-control',
+    component: SelectControl,
+  },
+  {
+    title: 'Editable',
+    key: 'editable',
+    component: Editable,
+  },
+];
+
 export default defineComponent({
+  setup() {
+    const state = reactive({
+      activeKey: list[0].key,
+      opened: [list[0].key],
+    });
+
+    const onActiveChange = (key: string) => {
+      state.activeKey = key;
+    };
+
+    return {
+      state,
+      onActiveChange,
+    };
+  },
+
   render() {
-    const list = [
-      {
-        title: 'Basic Use',
-        key: 'basic',
-        component: <Basic />,
-      },
-      {
-        title: 'Virtual List',
-        key: 'virtual-list',
-        component: <VirtualList />,
-      },
-      {
-        title: 'Selector',
-        key: 'select-control',
-        component: <SelectControl />,
-      },
-    ];
+    const { state, onActiveChange } = this;
 
     return (
       <div class="example">
-        {list.map(item => (
-          <div class="example-box" id={item.key}>
-            <h2 class="title">{item.title}</h2>
-            {item.component}
+        <h1>Vue Json Pretty</h1>
+        <p>
+          Welcome to the demo space of Vue Json Pretty, here we provide the following different
+          usage scenarios, try to click on different tab panel to browse.
+        </p>
+
+        <div class="tabs">
+          <div class="tabs-header">
+            {list.map(({ title, key }) => (
+              <div
+                key={key}
+                class={`tabs-header-item ${key === state.activeKey ? 'is-active' : ''}`}
+                onClick={() => onActiveChange(key)}
+              >
+                {title}
+              </div>
+            ))}
           </div>
-        ))}
+
+          <div class="tabs-content">
+            {list.map(({ component: Component, key }) => (
+              <div key={key} style={{ display: `${key === state.activeKey ? 'block' : 'none'}` }}>
+                {key === state.activeKey || state.opened.includes(key) ? <Component /> : null}
+              </div>
+            ))}
+          </div>
+        </div>
 
         <a
           style="position: fixed; right: 0; top: 0;"

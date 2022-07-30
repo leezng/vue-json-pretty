@@ -7,10 +7,6 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>showIcon</label>
-          <input v-model="state.showIcon" type="checkbox" />
-        </div>
-        <div>
           <label>showLength</label>
           <input v-model="state.showLength" type="checkbox" />
         </div>
@@ -23,12 +19,15 @@
           <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
         <div>
-          <label>collapsedOnClickBrackets</label>
-          <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
+          <label>editable</label>
+          <input v-model="state.editable" type="checkbox" />
         </div>
         <div>
-          <label>use custom formatter</label>
-          <input v-model="state.useCustomLinkFormatter" type="checkbox" />
+          <label>editableTrigger</label>
+          <select v-model="state.editableTrigger">
+            <option value="click">click</option>
+            <option value="dblclick">dblclick</option>
+          </select>
         </div>
         <div>
           <label>deep</label>
@@ -38,29 +37,18 @@
             <option :value="4">4</option>
           </select>
         </div>
-        <div>
-          <label>deepCollapseChildren</label>
-          <input v-model="state.deepCollapseChildren" type="checkbox" />
-        </div>
-        <div>
-          <label>defaultCollapsePath</label>
-          <input v-model="state.collapsePathPattern" type="input" />
-        </div>
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        :data="state.data"
+        v-model:data="state.data"
         :deep="state.deep"
-        :deep-collapse-children="state.deepCollapseChildren"
-        :collapse-path="state.collapsePath"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
-        :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
-        :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
-        :show-icon="state.showIcon"
+        :editable="state.editable"
+        :editable-trigger="state.editableTrigger"
       />
     </div>
   </div>
@@ -85,9 +73,6 @@ const defaultData = {
         'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
       source: 'Netease smart',
       link: 'http://netease.smart/traffic-paradise/1235',
-      author: {
-        names: ['Daniel', 'Mike', 'John'],
-      },
     },
     {
       news_id: 51182,
@@ -100,7 +85,7 @@ const defaultData = {
 };
 
 export default defineComponent({
-  name: 'Basic',
+  name: 'SelectControl',
   components: {
     VueJsonPretty,
   },
@@ -111,22 +96,10 @@ export default defineComponent({
       showLength: false,
       showLine: true,
       showDoubleQuotes: true,
-      collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
-      deep: 4,
-      deepCollapseChildren: false,
-      collapsePath: /members/,
-      collapsePathPattern: 'members',
-      showIcon: false,
+      editable: true,
+      editableTrigger: 'click',
+      deep: 3,
     });
-
-    const customLinkFormatter = (data, key, path, defaultFormatted) => {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
-    };
 
     watch(
       () => state.val,
@@ -140,19 +113,18 @@ export default defineComponent({
     );
 
     watch(
-      () => state.collapsePath,
+      () => state.data,
       newVal => {
         try {
-          state.collapsePath = new RegExp(newVal);
+          state.val = JSON.stringify(newVal);
         } catch (err) {
-          // console.log('Regexp ERROR');
+          // console.log('JSON ERROR');
         }
       },
     );
 
     return {
       state,
-      customLinkFormatter,
     };
   },
 });

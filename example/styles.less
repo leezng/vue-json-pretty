@@ -1,55 +1,98 @@
+@primary-color: #1890ff;
+
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
+}
+
+body {
+  font-size: 14px;
   background-color: #f9f9f9;
 }
-.example {
-  position: relative;
-  padding: 0 15px;
-  margin: 0 auto;
-  width: 1200px;
+
+.tabs-header {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
 }
-.example-box {
-  margin: 0 -15px;
-  overflow: hidden;
-  h3 {
-    display: inline-block;
+
+.tabs-header-item {
+  position: relative;
+  margin-right: 20px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover,
+  &.is-active {
+    color: @primary-color;
+
+    &:after {
+      border-bottom: 2px solid @primary-color;
+      content: '';
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+    }
   }
+}
+
+.example {
+  padding: 0 20px;
+
+  > h1 {
+    text-align: center;
+  }
+
+  > p {
+    margin: 20px 20px 20px 0;
+    color: #8c8c8c;
+  }
+}
+
+.example-box {
+  display: flex;
+
   .title {
     text-align: center;
   }
+
   .block {
-    float: left;
-    padding: 0 15px;
     width: 50%;
-    box-sizing: border-box;
+    &:first-child {
+      padding-right: 30px;
+    }
   }
+
   input,
   select,
   textarea {
     padding: 3px 8px;
-    box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #bbb;
     font-family: inherit;
     &:focus {
       outline: none;
-      border-color: #1d8ce0;
-      box-shadow: 0 0 3px #1d8ce0;
+      border-color: @primary-color;
+      box-shadow: 0 0 3px @primary-color;
     }
   }
+
   textarea {
     width: 100%;
     height: 150px;
     resize: vertical;
   }
+
   pre {
     margin: 0;
     font-family: Consolas;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  .options {
-    font-size: 14px;
   }
 }
