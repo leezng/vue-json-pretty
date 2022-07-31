@@ -62,10 +62,12 @@ export default defineComponent({
   setup(props, { emit }) {
     const tree = ref<HTMLElement>();
 
+    const originFlatData = computed(() => jsonFlatten(props.data, props.path));
+
     const state = reactive({
       translateY: 0,
       visibleData: null as FlatDataType | null,
-      hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
+      hiddenPaths: originFlatData.value.reduce((acc, item) => {
         const depthComparison = props.deepCollapseChildren
           ? item.level >= props.deep
           : item.level === props.deep;
@@ -86,10 +88,13 @@ export default defineComponent({
 
     const flatData = computed(() => {
       let startHiddenItem: null | NodeDataType = null;
-      const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
+      const data = [];
+      const length = originFlatData.value.length;
+      for (let i = 0; i < length; i++) {
+        const cur = originFlatData.value[i];
         const item = {
           ...cur,
-          id: index,
+          id: i,
         };
         const isHidden = state.hiddenPaths[item.path];
         if (startHiddenItem && startHiddenItem.path === item.path) {
@@ -101,14 +106,15 @@ export default defineComponent({
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
           } as NodeDataType;
           startHiddenItem = null;
-          return acc.concat(mergeItem);
+          data.push(mergeItem);
         } else if (isHidden && !startHiddenItem) {
           startHiddenItem = item;
-          return acc;
+          continue;
+        } else {
+          if (startHiddenItem) continue;
+          else data.push(item);
         }
-
-        return startHiddenItem ? acc : acc.concat(item);
-      }, [] as FlatDataType);
+      }
       return data;
     });
 
