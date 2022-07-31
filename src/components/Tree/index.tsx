@@ -56,9 +56,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['nodeClick', 'selectedChange', 'update:selectedValue', 'update:data'],
-  emits: ['click', 'change', 'update:modelValue'],
-
+  emits: ['nodeClick', 'bracketsClick', 'selectedChange', 'update:selectedValue', 'update:data'],
   setup(props, { emit }) {
     const tree = ref<HTMLElement>();
 
@@ -197,6 +195,7 @@ export default defineComponent({
         delete newPaths[path];
         state.hiddenPaths = newPaths;
       }
+      emit('bracketsClick', collapsed);
     };
 
     const onValueChange = (value: unknown, path: string) => {
