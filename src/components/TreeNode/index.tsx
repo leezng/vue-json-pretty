@@ -24,7 +24,7 @@ export const treeNodePropsPass = {
   // Custom formatter for values.
   customValueFormatter: Function as PropType<
     (
-      data: string,
+      data: unknown,
       key: NodeDataType['key'],
       path: string,
       defaultFormatResult: string | JSX.Element,
@@ -54,7 +54,7 @@ export const treeNodePropsPass = {
   },
   // When using the selectableType, define whether current path/content is enabled.
   pathSelectable: {
-    type: Function as PropType<(path: string, content: string) => boolean>,
+    type: Function as PropType<(path: string, content: unknown) => boolean>,
     default: (): boolean => true,
   },
   // Highlight current node when selected.
@@ -138,7 +138,7 @@ export default defineComponent({
       emit('value-change', value, props.node.path);
     };
 
-    const defaultFormatter = (data: string) => {
+    const defaultFormatter = (data: unknown) => {
       const str = data + '';
       const text = dataType.value === 'string' ? `"${str}"` : str;
       if (props.editable && state.editing) {
@@ -161,7 +161,7 @@ export default defineComponent({
     };
 
     const customFormatter = props.customValueFormatter
-      ? (data: string) =>
+      ? (data: unknown) =>
           props.customValueFormatter?.(
             data,
             props.node.key,
@@ -276,8 +276,8 @@ export default defineComponent({
         {node.key && <span class="vjs-key">{`${state.prettyKey}: `}</span>}
 
         <span>
-          {node.type !== 'content' ? (
-            <Brackets data={node.content} onClick={onBracketsClickHandler} />
+          {node.type !== 'content' && node.content ? (
+            <Brackets data={node.content.toString()} onClick={onBracketsClickHandler} />
           ) : customFormatter ? (
             <span class={state.valueClass} v-html={customFormatter(node.content)} />
           ) : (
