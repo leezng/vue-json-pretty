@@ -38,10 +38,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    //When using virtual scroll, set the number of items there can be
-    virtualLines: {
+    // When using virtual scroll, set the height of tree.
+    height: {
       type: Number,
-      default: 10,
+      default: 400,
     },
     // When using virtual scroll, define the height of each row.
     itemHeight: {
@@ -134,7 +134,7 @@ export default defineComponent({
     const updateVisibleData = (flatDataValue: FlatDataType) => {
       if (props.virtual) {
         const treeRefValue = tree.value;
-        const visibleCount = props.virtualLines;
+        const visibleCount = props.height / props.itemHeight;
         const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
         const scrollCount = Math.floor(scrollTop / props.itemHeight);
         let start =
@@ -234,6 +234,7 @@ export default defineComponent({
   render() {
     const {
       virtual,
+      height,
       itemHeight,
       customValueFormatter,
       showDoubleQuotes,
@@ -281,6 +282,7 @@ export default defineComponent({
           onBracketsClick={onBracketsClick}
           onSelectedChange={onSelectedChange}
           onValueChange={onValueChange}
+          style={itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}}
         />
       ));
 
@@ -294,8 +296,10 @@ export default defineComponent({
         onScroll={onTreeScroll}
       >
         {virtual ? (
-          <div style={{ height: `${flatData.length * itemHeight}px` }}>
-            <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+          <div style={{ height: `${height}px` }}>
+            <div style={{ height: `${flatData.length * itemHeight}px` }}>
+              <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+            </div>
           </div>
         ) : (
           nodeContent

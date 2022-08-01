@@ -7,8 +7,8 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>virtualLines</label>
-          <input v-model="state.virtualLines" type="number" />
+          <label>itemHeight</label>
+          <input v-model="state.itemHeight" type="number" />
         </div>
         <div>
           <label>showLine</label>
@@ -31,9 +31,8 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        style="height: 400px"
         :virtual="true"
-        :virtualLines="+state.virtualLines"
+        :item-height="+state.itemHeight"
         :data="state.data"
         :deep="state.deep"
         :show-line="state.showLine"
@@ -53,7 +52,7 @@ const defaultData = {
   data: [],
 };
 
-for (let i = 0; i < 100000; i++) {
+for (let i = 0; i < 1000; i++) {
   defaultData.data.push({
     news_id: i,
     title: 'iPhone X Review: Innovative future with real black technology',
@@ -73,7 +72,7 @@ export default defineComponent({
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
-      virtualLines: 20,
+      itemHeight: 20,
     });
 
     watch(

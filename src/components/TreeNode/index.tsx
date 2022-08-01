@@ -1,4 +1,4 @@
-import { defineComponent, reactive, computed, PropType } from 'vue';
+import { defineComponent, reactive, computed, PropType, CSSProperties } from 'vue';
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
@@ -90,6 +90,7 @@ export default defineComponent({
     collapsed: Boolean,
     // Whether the current node is checked(When using the selection function).
     checked: Boolean,
+    style: Object as PropType<CSSProperties>,
     onTreeNodeClick: {
       type: Function as PropType<(node: NodeDataType) => void>,
     },
