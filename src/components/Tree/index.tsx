@@ -293,7 +293,7 @@ export default defineComponent({
           'vjs-tree': true,
           'is-virtual': virtual,
         }}
-        onScroll={onTreeScroll}
+        onScroll={virtual ? onTreeScroll: undefined}
       >
         {virtual ? (
           <div style={{ height: `${height}px` }}>
