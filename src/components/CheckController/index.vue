@@ -3,12 +3,10 @@
   <label :class="[`vjs-check-controller`, checked ? 'is-checked' : '']" @click.stop>
     <span :class="`vjs-check-controller__inner is-${uiType}`" />
     <input
-      v-model="model"
+      :checked="model"
       :class="`vjs-check-controller__original is-${uiType}`"
       :type="uiType"
       @change="$emit('change', model)"
-      @focus="focus = true"
-      @blur="focus = false"
     />
   </label>
 </template>
@@ -23,11 +21,6 @@ export default {
       default: false,
     },
     isMultiple: Boolean,
-  },
-  data() {
-    return {
-      focus: false,
-    };
   },
   computed: {
     uiType() {
