@@ -9,8 +9,13 @@
   position: relative;
   line-height: 20px;
 
-  &.has-selector {
-    padding-left: @selector-span;
+  &.has-carets {
+    padding-left: 15px;
+  }
+
+  &.has-selector,
+  &.has-carets.has-selector {
+    padding-left: 30px;
   }
 
   &.is-highlight,
@@ -30,6 +35,12 @@
       border-left: 1px dashed @border-color;
     }
   }
+}
+
+.@{css-prefix}-node__index {
+  position: absolute;
+  right: 100%;
+  margin-right: 4px;
 }
 
 .@{css-prefix}-comment {

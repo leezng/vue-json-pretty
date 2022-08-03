@@ -37,6 +37,9 @@ export default defineComponent({
 
     const onActiveChange = (key: string) => {
       state.activeKey = key;
+      if (!state.opened.includes(key)) {
+        state.opened.push(key);
+      }
     };
 
     return {

@@ -42,6 +42,10 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: true,
   },
+  showLineNumber: {
+    type: Boolean,
+    default: false,
+  },
   // Whether to trigger selection when clicking on the node.
   selectOnClickNode: {
     type: Boolean,
@@ -227,9 +231,11 @@ export default defineComponent({
       showLength,
       collapsed,
       showLine,
+      showLineNumber,
       editable,
       editableTrigger,
       showIcon,
+      style,
     } = this;
 
     const {
@@ -246,10 +252,14 @@ export default defineComponent({
         class={{
           'vjs-tree__node': true,
           'has-selector': showSelectController,
+          'has-carets': showIcon,
           'is-highlight': highlightSelectedNode && checked,
         }}
         onClick={onNodeClick}
+        style={style}
       >
+        {showLineNumber && <span class="vjs-node__index">{node.id + 1}</span>}
+
         {showSelectController &&
           state.selectable &&
           node.type !== 'objectEnd' &&

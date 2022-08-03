@@ -7,6 +7,10 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
+          <label>showIcon</label>
+          <input v-model="state.showIcon" type="checkbox" />
+        </div>
+        <div>
           <label>selectableType</label>
           <select v-model="state.selectableType">
             <option>single</option>
@@ -34,8 +38,8 @@
           <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
-          <label>showDoubleQuotes</label>
-          <input v-model="state.showDoubleQuotes" type="checkbox" />
+          <label>showLineNumber</label>
+          <input v-model="state.showLineNumber" type="checkbox" />
         </div>
         <div>
           <label>highlightSelectedNode</label>
@@ -52,10 +56,6 @@
             <option :value="3">3</option>
             <option :value="4">4</option>
           </select>
-        </div>
-        <div>
-          <label>use custom formatter</label>
-          <input v-model="state.useCustomLinkFormatter" type="checkbox" />
         </div>
       </div>
       <h3>v-model:selectedValue:</h3>
@@ -75,16 +75,17 @@
         :data="state.data"
         :path="state.path"
         :deep="state.deep"
-        :show-double-quotes="state.showDoubleQuotes"
+        :show-double-quotes="true"
         :highlight-selected-node="state.highlightSelectedNode"
         :show-length="state.showLength"
         :show-line="state.showLine"
+        :show-line-number="state.showLineNumber"
         :select-on-click-node="state.selectOnClickNode"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
         :path-selectable="(path, data) => typeof state.data !== 'number'"
         :selectable-type="state.selectableType"
         :show-select-controller="state.showSelectController"
-        :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
+        :show-icon="state.showIcon"
         @nodeClick="handleClick"
         @selectedChange="handleChange"
       />
@@ -137,15 +138,15 @@ export default defineComponent({
       showSelectController: true,
       showLength: false,
       showLine: true,
-      showDoubleQuotes: true,
+      showLineNumber: false,
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
       path: 'res',
       deep: 3,
       itemData: {},
       itemPath: '',
+      showIcon: false,
     });
 
     const handleClick = (path, data) => {
@@ -156,14 +157,6 @@ export default defineComponent({
 
     const handleChange = () => {
       // console.log('newVal: ', newVal, ' oldVal: ', oldVal);
-    };
-
-    const customLinkFormatter = (data, key, path, defaultFormatted) => {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
     };
 
     watch(
@@ -192,18 +185,8 @@ export default defineComponent({
       },
     );
 
-    watch(
-      () => state.useCustomLinkFormatter,
-      async () => {
-        state.renderOK = false;
-        await nextTick();
-        state.renderOK = true;
-      },
-    );
-
     return {
       state,
-      customLinkFormatter,
       handleClick,
       handleChange,
     };

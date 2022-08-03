@@ -15,8 +15,8 @@
           <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
-          <label>showDoubleQuotes</label>
-          <input v-model="state.showDoubleQuotes" type="checkbox" />
+          <label>showLineNumber</label>
+          <input v-model="state.showLineNumber" type="checkbox" />
         </div>
         <div>
           <label>editable</label>
@@ -44,9 +44,10 @@
       <vue-json-pretty
         v-model:data="state.data"
         :deep="state.deep"
-        :show-double-quotes="state.showDoubleQuotes"
+        :show-double-quotes="true"
         :show-length="state.showLength"
         :show-line="state.showLine"
+        :show-line-number="state.showLineNumber"
         :editable="state.editable"
         :editable-trigger="state.editableTrigger"
       />
@@ -85,7 +86,7 @@ const defaultData = {
 };
 
 export default defineComponent({
-  name: 'SelectControl',
+  name: 'Editable',
   components: {
     VueJsonPretty,
   },
@@ -95,7 +96,7 @@ export default defineComponent({
       data: defaultData,
       showLength: false,
       showLine: true,
-      showDoubleQuotes: true,
+      showLineNumber: false,
       editable: true,
       editableTrigger: 'click',
       deep: 3,

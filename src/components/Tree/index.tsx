@@ -1,4 +1,12 @@
-import { defineComponent, reactive, computed, watchEffect, ref, PropType } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  computed,
+  watchEffect,
+  ref,
+  PropType,
+  CSSProperties,
+} from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
 import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
 import './styles.less';
@@ -54,6 +62,7 @@ export default defineComponent({
       type: [String, Array] as PropType<string | string[]>,
       default: () => '',
     },
+    style: Object as PropType<CSSProperties>,
   },
 
   emits: ['nodeClick', 'bracketsClick', 'selectedChange', 'update:selectedValue', 'update:data'],
@@ -98,8 +107,9 @@ export default defineComponent({
         if (startHiddenItem && startHiddenItem.path === item.path) {
           const isObject = startHiddenItem.type === 'objectStart';
           const mergeItem = {
-            ...startHiddenItem,
             ...item,
+            ...startHiddenItem,
+            showComma: item.showComma,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
           } as NodeDataType;
@@ -203,7 +213,6 @@ export default defineComponent({
       const rootPath = props.path;
       new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
       emit('update:data', newData);
-      console.log(newData);
     };
 
     watchEffect(() => {
@@ -240,6 +249,7 @@ export default defineComponent({
       showDoubleQuotes,
       showLength,
       showLine,
+      showLineNumber,
       showSelectController,
       selectOnClickNode,
       pathSelectable,
@@ -252,6 +262,7 @@ export default defineComponent({
       editable,
       editableTrigger,
       showIcon,
+      style,
     } = this;
 
     const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll, onValueChange } =
@@ -271,6 +282,7 @@ export default defineComponent({
           checked={selectedPaths.includes(item.path)}
           selectable-type={selectableType}
           show-line={showLine}
+          show-line-number={showLineNumber}
           show-select-controller={showSelectController}
           select-on-click-node={selectOnClickNode}
           path-selectable={pathSelectable}
@@ -293,7 +305,12 @@ export default defineComponent({
           'vjs-tree': true,
           'is-virtual': virtual,
         }}
-        onScroll={virtual ? onTreeScroll: undefined}
+        onScroll={virtual ? onTreeScroll : undefined}
+        style={
+          showLineNumber
+            ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px`, ...style }
+            : style
+        }
       >
         {virtual ? (
           <div style={{ height: `${height}px` }}>

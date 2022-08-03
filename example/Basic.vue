@@ -19,6 +19,10 @@
           <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
+          <label>showLineNumber</label>
+          <input v-model="state.showLineNumber" type="checkbox" />
+        </div>
+        <div>
           <label>showDoubleQuotes</label>
           <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
@@ -58,9 +62,11 @@
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
+        :show-line-number="state.showLineNumber"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
         :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
         :show-icon="state.showIcon"
+        style="position: relative"
       />
     </div>
   </div>
@@ -85,9 +91,6 @@ const defaultData = {
         'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
       source: 'Netease smart',
       link: 'http://netease.smart/traffic-paradise/1235',
-      author: {
-        names: ['Daniel', 'Mike', 'John'],
-      },
     },
     {
       news_id: 51182,
@@ -110,6 +113,7 @@ export default defineComponent({
       data: defaultData,
       showLength: false,
       showLine: true,
+      showLineNumber: false,
       showDoubleQuotes: true,
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
