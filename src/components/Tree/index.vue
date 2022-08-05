@@ -5,30 +5,39 @@
       'vjs-tree': true,
       'is-virtual': virtual,
     }"
-    @scroll="onTreeScroll"
+    @scroll="virtual ? onTreeScroll() : undefined"
   >
-    <div :style="virtual && { height: `${flatData.length * itemHeight}px` }">
-      <div :style="virtual && { transform: `translateY(${translateY}px)` }">
-        <tree-node
-          v-for="item in visibleData"
-          :key="item.id"
-          :node="item"
-          :collapsed="!!hiddenPaths[item.path]"
-          :custom-value-formatter="customValueFormatter"
-          :show-double-quotes="showDoubleQuotes"
-          :show-length="showLength"
-          :collapsed-on-click-brackets="collapsedOnClickBrackets"
-          :checked="selectedPaths.includes(item.path)"
-          :selectable-type="selectableType"
-          :show-line="showLine"
-          :show-select-controller="showSelectController"
-          :select-on-click-node="selectOnClickNode"
-          :path-selectable="pathSelectable"
-          :highlight-selected-node="highlightSelectedNode"
-          @tree-node-click="onTreeNodeClick"
-          @brackets-click="onBracketsClick"
-          @selected-change="onSelectedChange"
-        />
+    <div class="vjs-tree-list" :style="virtual && { height: `${height}px` }">
+      <div
+        class="vjs-tree-list__holder"
+        :style="virtual && { height: `${flatData.length * itemHeight}px` }"
+      >
+        <div
+          class="vjs-tree-list__holder-inner"
+          :style="virtual && { transform: `translateY(${translateY}px)` }"
+        >
+          <tree-node
+            v-for="item in visibleData"
+            :key="item.id"
+            :node="item"
+            :collapsed="!!hiddenPaths[item.path]"
+            :custom-value-formatter="customValueFormatter"
+            :show-double-quotes="showDoubleQuotes"
+            :show-length="showLength"
+            :collapsed-on-click-brackets="collapsedOnClickBrackets"
+            :checked="selectedPaths.includes(item.path)"
+            :selectable-type="selectableType"
+            :show-line="showLine"
+            :show-select-controller="showSelectController"
+            :select-on-click-node="selectOnClickNode"
+            :path-selectable="pathSelectable"
+            :highlight-selected-node="highlightSelectedNode"
+            @tree-node-click="onTreeNodeClick"
+            @brackets-click="onBracketsClick"
+            @selected-change="onSelectedChange"
+            :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -36,7 +45,7 @@
 
 <script>
 import TreeNode from 'src/components/TreeNode';
-import { getDataType, jsonFlatten } from 'src/utils';
+import { jsonFlatten } from 'src/utils';
 import './styles.less';
 
 export default {
@@ -45,12 +54,11 @@ export default {
     TreeNode,
   },
   props: {
-    // 当前树的数据
+    // JSON
     data: {
       type: [String, Number, Boolean, Array, Object],
       default: null,
     },
-    // 定义树的深度, 大于该深度的子树将不被展开
     deep: {
       type: Number,
       default: Infinity,
@@ -59,7 +67,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    // 数据层级顶级路径
+    // define root path
     path: {
       type: String,
       default: 'root',
@@ -68,26 +76,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    // When using virtual scroll, set the height of tree.
+    height: {
+      type: Number,
+      default: 400,
+    },
+    // When using virtual scroll, define the height of each row.
     itemHeight: {
       type: Number,
       default: 20,
     },
-    // 是否显示数组|对象的长度
     showLength: {
       type: Boolean,
       default: false,
     },
-    // key名是否显示双引号
+    // showDoubleQuotes on key
     showDoubleQuotes: {
       type: Boolean,
       default: true,
     },
-    // 定义数据层级支持的选中方式, 默认无该功能
+    // Define the selection method supported by the data level, which is not available by default.
     selectableType: {
       type: String,
       default: '', // ''|multiple|single
     },
-    // 是否展示左侧选择控件
+    // Whether to display the selection control.
     showSelectController: {
       type: Boolean,
       default: false,
@@ -96,18 +109,18 @@ export default {
       type: Boolean,
       default: true,
     },
-    // 是否在点击树的时候选中节点
+    // Whether to trigger selection when clicking on the node.
     selectOnClickNode: {
       type: Boolean,
       default: true,
     },
-    // 存在选择功能时, 定义已选中的数据层级
-    //    多选时为数组['root.a', 'root.b'], 单选时为字符串'root.a'
+    // When there is a selection function, define the selected path.
+    // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
     value: {
       type: [Array, String],
       default: () => '',
     },
-    // 定义某个数据层级是否支持选中操作
+    // When using the selectableType, define whether current path/content is enabled.
     pathSelectable: {
       type: Function,
       default: () => true,
@@ -127,11 +140,6 @@ export default {
       type: Function,
       default: null,
     },
-    // Number of lines to show when virtual is true
-    virtualLines: {
-      type: Number,
-      default: 10
-    }
   },
   data() {
     return {
@@ -141,10 +149,7 @@ export default {
         const depthComparison = this.deepCollapseChildren
           ? item.level >= this.deep
           : item.level === this.deep;
-        if (
-          (item.type === 'objectStart' || item.type === 'arrayStart') &&
-          depthComparison
-        ) {
+        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
           return {
             ...acc,
             [item.path]: 1,
@@ -155,31 +160,41 @@ export default {
     };
   },
   computed: {
-    flatData() {
+    originFlatData() {
+      return jsonFlatten(this.data, this.path);
+    },
+
+    flatData({ originFlatData, hiddenPaths }) {
+      // Avoid accessing `this` in a loop to improve performance
       let startHiddenItem = null;
-      const data = jsonFlatten(this.data, this.path).reduce((acc, cur, index) => {
+      const data = [];
+      const length = originFlatData.length;
+      for (let i = 0; i < length; i++) {
+        const cur = originFlatData[i];
         const item = {
           ...cur,
-          id: index,
+          id: i,
         };
-        const isHidden = this.hiddenPaths[item.path];
+        const isHidden = hiddenPaths[item.path];
         if (startHiddenItem && startHiddenItem.path === item.path) {
           const isObject = startHiddenItem.type === 'objectStart';
           const mergeItem = {
-            ...startHiddenItem,
             ...item,
+            ...startHiddenItem,
+            showComma: item.showComma,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
           };
           startHiddenItem = null;
-          return acc.concat(mergeItem);
+          data.push(mergeItem);
         } else if (isHidden && !startHiddenItem) {
           startHiddenItem = item;
-          return acc;
+          continue;
+        } else {
+          if (startHiddenItem) continue;
+          else data.push(item);
         }
-
-        return startHiddenItem ? acc : acc.concat(item);
-      }, []);
+      }
       return data;
     },
 
@@ -213,39 +228,43 @@ export default {
     },
 
     flatData: {
-      handler() {
-        this.onTreeScroll();
+      handler(val) {
+        this.updateVisibleData(val);
       },
       immediate: true,
     },
   },
   methods: {
-    onTreeScroll() {
+    updateVisibleData(flatDataValue) {
       if (this.virtual) {
-        const visibleCount = this.virtualLines;
+        const visibleCount = this.height / this.itemHeight;
         const scrollTop = (this.$refs.tree && this.$refs.tree.scrollTop) || 0;
         const scrollCount = Math.floor(scrollTop / this.itemHeight);
         let start =
           scrollCount < 0
             ? 0
-            : scrollCount + visibleCount > this.flatData.length
-            ? this.flatData.length - visibleCount
+            : scrollCount + visibleCount > flatDataValue.length
+            ? flatDataValue.length - visibleCount
             : scrollCount;
         if (start < 0) {
           start = 0;
         }
         const end = start + visibleCount;
         this.translateY = start * this.itemHeight;
-        this.visibleData = this.flatData.filter((item, index) => index >= start && index < end);
+        this.visibleData = flatDataValue.filter((item, index) => index >= start && index < end);
       } else {
-        this.visibleData = this.flatData;
+        this.visibleData = flatDataValue;
       }
+    },
+
+    onTreeScroll() {
+      this.updateVisibleData(this.flatData);
     },
 
     onSelectedChange({ path }) {
       const type = this.selectableType;
       if (type === 'multiple') {
-        const index = this.selectedPaths.findIndex(item => item === path);
+        const index = this.selectedPaths.findIndex((item) => item === path);
         const oldVal = [...this.selectedPaths];
         if (index !== -1) {
           this.selectedPaths.splice(index, 1);

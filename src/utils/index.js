@@ -11,17 +11,16 @@ export function jsonFlatten(
 ) {
   const dataType = getDataType(data);
   if (dataType === 'array') {
-    const inner = data
-      .map((item, idx, arr) =>
+    const inner = arrFlat(
+      data.map((item, idx, arr) =>
         jsonFlatten(item, `${path}[${idx}]`, level + 1, {
           index: idx,
           showComma: idx !== arr.length - 1,
           length,
           type,
         }),
-      )
-      // No flat, for compatibility.
-      .reduce((acc, val) => acc.concat(val), []);
+      ),
+    );
     return [
       jsonFlatten('[', path, level, { key, length: data.length, type: 'arrayStart' })[0],
     ].concat(
@@ -30,8 +29,8 @@ export function jsonFlatten(
     );
   } else if (dataType === 'object') {
     const keys = Object.keys(data);
-    const inner = keys
-      .map((objKey, idx, arr) =>
+    const inner = arrFlat(
+      keys.map((objKey, idx, arr) =>
         jsonFlatten(
           data[objKey],
           objKey.includes('.') ? `${path}["${objKey}"]` : `${path}.${objKey}`,
@@ -43,9 +42,8 @@ export function jsonFlatten(
             type,
           },
         ),
-      )
-      // No flat, for compatibility.
-      .reduce((acc, val) => acc.concat(val), []);
+      ),
+    );
     return [
       jsonFlatten('{', path, level, { key, index, length: keys.length, type: 'objectStart' })[0],
     ].concat(
@@ -54,24 +52,33 @@ export function jsonFlatten(
     );
   }
 
-  const output = Object.entries({
-    content: data,
-    level,
-    key,
-    index,
-    path,
-    showComma,
-    length,
-    type,
-  }).reduce((acc, [key, value]) => {
-    if (value !== undefined) {
-      return {
-        ...acc,
-        [key]: value,
-      };
-    }
-    return acc;
-  }, {});
+  return [
+    {
+      content: data,
+      level,
+      key,
+      index,
+      path,
+      showComma,
+      length,
+      type,
+    },
+  ];
+}
 
-  return getDataType(output) === 'object' ? [output] : output;
+export function arrFlat(arr) {
+  if (typeof Array.prototype.flat === 'function') {
+    return arr.flat();
+  }
+  const stack = [...arr];
+  const result = [];
+  while (stack.length) {
+    const first = stack.shift();
+    if (Array.isArray(first)) {
+      stack.unshift(...first);
+    } else {
+      result.push(first);
+    }
+  }
+  return result;
 }
