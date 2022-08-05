@@ -9,7 +9,12 @@
   position: relative;
   line-height: 20px;
 
-  &.has-selector {
+  &.has-carets {
+    padding-left: 15px;
+  }
+
+  &.has-selector,
+  &.has-carets.has-selector {
     padding-left: 30px;
   }
 
@@ -18,13 +23,24 @@
     background-color: @highlight-bg-color;
   }
 
-  .@{css-prefix}-tree__indent {
-    flex: 0 0 1em;
+  .@{css-prefix}-indent {
+    display: flex;
+    position: relative;
+  }
+
+  .@{css-prefix}-indent__unit {
+    width: 1em;
 
     &.has-line {
       border-left: 1px dashed @border-color;
     }
   }
+}
+
+.@{css-prefix}-node__index {
+  position: absolute;
+  right: 100%;
+  margin-right: 4px;
 }
 
 .@{css-prefix}-comment {

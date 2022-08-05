@@ -7,6 +7,10 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
+          <label>itemHeight</label>
+          <input v-model="itemHeight" type="number" />
+        </div>
+        <div>
           <label>showLine</label>
           <input v-model="showLine" type="checkbox" />
         </div>
@@ -17,15 +21,9 @@
         <div>
           <label>deep</label>
           <select v-model="deep">
-            <option :value="2">
-              2
-            </option>
-            <option :value="3">
-              3
-            </option>
-            <option :value="4">
-              4
-            </option>
+            <option :value="2">2</option>
+            <option :value="3">3</option>
+            <option :value="4">4</option>
           </select>
         </div>
       </div>
@@ -33,8 +31,8 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        style="height: 200px"
         :virtual="true"
+        :item-height="+itemHeight"
         :data="data"
         :deep="deep"
         :show-line="showLine"
@@ -58,7 +56,7 @@ const defaultData = {
 };
 
 export default {
-  name: 'App',
+  name: 'VirtualList',
   components: {
     VueJsonPretty,
   },
@@ -69,12 +67,13 @@ export default {
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
+      itemHeight: 20,
     };
   },
   watch: {
     val(newVal) {
       try {
-        this.data = JSON.parse(this.val);
+        this.data = JSON.parse(newVal);
       } catch (err) {
         console.log('JSON ERROR');
       }

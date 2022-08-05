@@ -6,6 +6,9 @@
       'is-virtual': virtual,
     }"
     @scroll="virtual ? onTreeScroll() : undefined"
+    :style="
+      showLineNumber ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px` } : {}
+    "
   >
     <div class="vjs-tree-list" :style="virtual && { height: `${height}px` }">
       <div
@@ -28,10 +31,12 @@
             :checked="selectedPaths.includes(item.path)"
             :selectable-type="selectableType"
             :show-line="showLine"
+            :show-line-number="showLineNumber"
             :show-select-controller="showSelectController"
             :select-on-click-node="selectOnClickNode"
             :path-selectable="pathSelectable"
             :highlight-selected-node="highlightSelectedNode"
+            :show-icon="showIcon"
             @tree-node-click="onTreeNodeClick"
             @brackets-click="onBracketsClick"
             @selected-change="onSelectedChange"
@@ -109,6 +114,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    showLineNumber: {
+      type: Boolean,
+      default: false,
+    },
     // Whether to trigger selection when clicking on the node.
     selectOnClickNode: {
       type: Boolean,
@@ -139,6 +148,10 @@ export default {
     customValueFormatter: {
       type: Function,
       default: null,
+    },
+    showIcon: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -272,19 +285,19 @@ export default {
           this.selectedPaths.push(path);
         }
 
-        this.$emit('change', this.selectedPaths, oldVal);
+        this.$emit('selected-change', this.selectedPaths, oldVal);
       } else if (type === 'single') {
         if (this.selectedPaths !== path) {
           const oldVal = this.selectedPaths;
           const newVal = path;
           this.selectedPaths = newVal;
-          this.$emit('change', newVal, oldVal);
+          this.$emit('selected-change', newVal, oldVal);
         }
       }
     },
 
     onTreeNodeClick({ content, path }) {
-      this.$emit('click', path, content);
+      this.$emit('node-click', path, content);
     },
 
     onBracketsClick(collapsed, path) {

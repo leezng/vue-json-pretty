@@ -7,6 +7,10 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
+          <label>showIcon</label>
+          <input v-model="showIcon" type="checkbox" />
+        </div>
+        <div>
           <label>selectableType</label>
           <select v-model="selectableType">
             <option>single</option>
@@ -34,6 +38,10 @@
           <input v-model="showLine" type="checkbox" />
         </div>
         <div>
+          <label>showLineNumber</label>
+          <input v-model="showLineNumber" type="checkbox" />
+        </div>
+        <div>
           <label>showDoubleQuotes</label>
           <input v-model="showDoubleQuotes" type="checkbox" />
         </div>
@@ -56,10 +64,6 @@
             <option :value="3">3</option>
             <option :value="4">4</option>
           </select>
-        </div>
-        <div>
-          <label>use custom formatter</label>
-          <input v-model="useCustomLinkFormatter" type="checkbox" />
         </div>
       </div>
       <h3>v-model:</h3>
@@ -84,14 +88,15 @@
         :highlight-selected-node="highlightSelectedNode"
         :show-length="showLength"
         :show-line="showLine"
+        :show-line-number="showLineNumber"
         :select-on-click-node="selectOnClickNode"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :path-selectable="(path, data) => typeof data !== 'number'"
         :selectable-type="selectableType"
         :show-select-controller="showSelectController"
-        :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
-        @click="handleClick(...arguments, 'complexTree')"
-        @change="handleChange"
+        :show-icon="showIcon"
+        @node-click="handleClick(...arguments, 'complexTree')"
+        @selected-change="handleChange"
       />
     </div>
   </div>
@@ -127,7 +132,7 @@ const defaultData = {
 };
 
 export default {
-  name: 'App',
+  name: 'SelectControl',
   components: {
     VueJsonPretty,
   },
@@ -141,16 +146,17 @@ export default {
       showSelectController: true,
       showLength: false,
       showLine: true,
+      showLineNumber: false,
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
       path: 'res',
       deep: 3,
       itemData: {},
       itemPath: '',
+      showIcon: false,
     };
   },
   watch: {
@@ -168,7 +174,7 @@ export default {
       } else if (newVal === 'multiple') {
         this.value = ['res.error', 'res.data[0].title'];
       }
-      // 重新渲染, 因为2中情况的v-model格式不同
+      // Re-render because v-model:selectedValue format is different in case 2
       this.$nextTick(() => {
         this.renderOK = true;
       });
@@ -176,19 +182,12 @@ export default {
   },
   methods: {
     handleClick(path, data, treeName = '') {
-      console.log('click: ', path, data, treeName);
+      // console.log('click: ', path, data, treeName);
       this.itemPath = path;
       this.itemData = !data ? data + '' : data; // 处理 data = null 的情况
     },
     handleChange(newVal, oldVal) {
       console.log('newVal: ', newVal, ' oldVal: ', oldVal);
-    },
-    customLinkFormatter(data, key, path, defaultFormatted) {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
     },
   },
 };

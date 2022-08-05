@@ -7,12 +7,20 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
+          <label>showIcon</label>
+          <input v-model="showIcon" type="checkbox" />
+        </div>
+        <div>
           <label>showLength</label>
           <input v-model="showLength" type="checkbox" />
         </div>
         <div>
           <label>showLine</label>
           <input v-model="showLine" type="checkbox" />
+        </div>
+        <div>
+          <label>showLineNumber</label>
+          <input v-model="showLineNumber" type="checkbox" />
         </div>
         <div>
           <label>showDoubleQuotes</label>
@@ -33,15 +41,9 @@
         <div>
           <label>deep</label>
           <select v-model="deep">
-            <option :value="2">
-              2
-            </option>
-            <option :value="3">
-              3
-            </option>
-            <option :value="4">
-              4
-            </option>
+            <option :value="2">2</option>
+            <option :value="3">3</option>
+            <option :value="4">4</option>
           </select>
         </div>
         <div>
@@ -59,9 +61,12 @@
         :show-double-quotes="showDoubleQuotes"
         :show-length="showLength"
         :show-line="showLine"
+        :show-line-number="showLineNumber"
         :highlight-mouseover-node="highlightMouseoverNode"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
+        :show-icon="showIcon"
+        style="position: relative"
       />
     </div>
   </div>
@@ -97,7 +102,7 @@ const defaultData = {
 };
 
 export default {
-  name: 'App',
+  name: 'Basic',
   components: {
     VueJsonPretty,
   },
@@ -107,18 +112,20 @@ export default {
       data: defaultData,
       showLength: false,
       showLine: true,
+      showLineNumber: false,
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       collapsedOnClickBrackets: true,
       useCustomLinkFormatter: false,
       deep: 3,
       deepCollapseChildren: false,
+      showIcon: false,
     };
   },
   watch: {
     val(newVal) {
       try {
-        this.data = JSON.parse(this.val);
+        this.data = JSON.parse(newVal);
       } catch (err) {
         console.log('JSON ERROR');
       }

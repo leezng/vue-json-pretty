@@ -3,26 +3,36 @@
     :class="{
       'vjs-tree__node': true,
       'has-selector': showSelectController,
+      'has-carets': showIcon,
       'is-highlight': highlightSelectedNode && checked,
     }"
     @click="onTreeNodeClick"
   >
-    <template
+    <span v-if="showLineNumber" class="vjs-node__index">
+      {{ node.id + 1 }}
+    </span>
+
+    <check-controller
       v-if="
         showSelectController && selectable && node.type !== 'objectEnd' && node.type !== 'arrayEnd'
       "
-    >
-      <check-controller :is-multiple="isMultiple" :checked="checked" @change="onCheckedChange" />
-    </template>
-
-    <div
-      v-for="(item, index) in node.level"
-      :key="index"
-      :class="{
-        'vjs-tree__indent': true,
-        'has-line': showLine,
-      }"
+      :is-multiple="isMultiple"
+      :checked="checked"
+      @change="onCheckedChange"
     />
+
+    <div class="vjs-indent">
+      <div
+        v-for="(item, index) in node.level"
+        :key="index"
+        :class="{
+          'vjs-indent__unit': true,
+          'has-line': showLine,
+        }"
+      />
+      <carets v-if="showIcon" :node-type="node.type" @click="onBracketsClick" />
+    </div>
+
     <span v-if="node.key" class="vjs-key">{{ prettyKey }}:</span>
 
     <span>
@@ -50,6 +60,7 @@
 <script>
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
+import Carets from 'src/components/Carets';
 import { getDataType } from 'src/utils';
 import './styles.less';
 
@@ -57,6 +68,7 @@ export default {
   components: {
     Brackets,
     CheckController,
+    Carets,
   },
   props: {
     node: {
@@ -68,12 +80,12 @@ export default {
     showDoubleQuotes: Boolean,
     showLength: Boolean,
     checked: Boolean,
-    // 定义数据层级支持的选中方式, 默认无该功能
+    // Define the selection method supported by the data level, which is not available by default.
     selectableType: {
       type: String,
       default: '', // ''|multiple|single
     },
-    // 是否展示左侧选择控件
+    // Whether to display the selection control.
     showSelectController: {
       type: Boolean,
       default: false,
@@ -82,12 +94,16 @@ export default {
       type: Boolean,
       default: true,
     },
-    // 是否在点击树的时候选中节点
+    showLineNumber: {
+      type: Boolean,
+      default: false,
+    },
+    // Whether to trigger selection when clicking on the node.
     selectOnClickNode: {
       type: Boolean,
       default: true,
     },
-    // 定义某个数据层级是否支持选中操作
+    // When using the selectableType, define whether current path/content is enabled.
     pathSelectable: {
       type: Function,
       default: () => true,
@@ -101,6 +117,10 @@ export default {
     customValueFormatter: {
       type: Function,
       default: null,
+    },
+    showIcon: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -147,7 +167,7 @@ export default {
             data,
             this.node.key,
             this.node.path,
-            this.defaultFormatter(data)
+            this.defaultFormatter(data),
           )
         : this.defaultFormatter(data);
 
@@ -155,7 +175,9 @@ export default {
     },
 
     onBracketsClick() {
-      this.$emit('brackets-click', !this.collapsed, this.node.path);
+      if (this.collapsedOnClickBrackets) {
+        this.$emit('brackets-click', !this.collapsed, this.node.path);
+      }
     },
 
     onCheckedChange() {
