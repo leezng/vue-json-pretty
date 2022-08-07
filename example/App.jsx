@@ -1,6 +1,7 @@
 import Basic from './Basic';
 import VirtualList from './VirtualList';
 import SelectControl from './SelectControl';
+import Editable from './Editable';
 import './styles.less';
 
 export default {
@@ -21,11 +22,16 @@ export default {
         key: 'select-control',
         component: <SelectControl />,
       },
+      {
+        title: 'Editable',
+        key: 'editable',
+        component: <Editable />,
+      },
     ];
 
     return (
       <div class="example">
-        {list.map(item => (
+        {list.map((item) => (
           <div class="example-box" id={item.key}>
             <h2 class="title">{item.title}</h2>
             {item.component}

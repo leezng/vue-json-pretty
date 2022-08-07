@@ -66,8 +66,8 @@
           </select>
         </div>
       </div>
-      <h3>v-model:</h3>
-      <div>{{ value }}</div>
+      <h3>selectedValue.sync:</h3>
+      <div>{{ selectedValue }}</div>
       <h3>Current Click:</h3>
       <div>path: {{ itemPath }}</div>
       <div>
@@ -79,7 +79,7 @@
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         v-if="renderOK"
-        v-model="value"
+        :selected-value.sync="selectedValue"
         :data="data"
         :path="path"
         :deep="deep"
@@ -141,7 +141,7 @@ export default {
       renderOK: true,
       val: JSON.stringify(defaultData),
       data: defaultData,
-      value: 'res.error',
+      selectedValue: 'res.error',
       selectableType: 'single',
       showSelectController: true,
       showLength: false,
@@ -170,9 +170,9 @@ export default {
     selectableType(newVal) {
       this.renderOK = false;
       if (newVal === 'single') {
-        this.value = 'res.error';
+        this.selectedValue = 'res.error';
       } else if (newVal === 'multiple') {
-        this.value = ['res.error', 'res.data[0].title'];
+        this.selectedValue = ['res.error', 'res.data[0].title'];
       }
       // Re-render because v-model:selectedValue format is different in case 2
       this.$nextTick(() => {

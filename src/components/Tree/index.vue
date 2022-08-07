@@ -37,9 +37,12 @@
             :path-selectable="pathSelectable"
             :highlight-selected-node="highlightSelectedNode"
             :show-icon="showIcon"
+            :editable="editable"
+            :editable-trigger="editableTrigger"
             @tree-node-click="onTreeNodeClick"
             @brackets-click="onBracketsClick"
             @selected-change="onSelectedChange"
+            @value-change="onValueChange"
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
           />
         </div>
@@ -50,13 +53,16 @@
 
 <script>
 import TreeNode from 'src/components/TreeNode';
-import { jsonFlatten } from 'src/utils';
+import { jsonFlatten, cloneDeep } from 'src/utils';
 import './styles.less';
 
 export default {
   name: 'VueJsonPretty',
   components: {
     TreeNode,
+  },
+  model: {
+    prop: 'data',
   },
   props: {
     // JSON
@@ -125,7 +131,7 @@ export default {
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
-    value: {
+    selectedValue: {
       type: [Array, String],
       default: () => '',
     },
@@ -152,6 +158,14 @@ export default {
     showIcon: {
       type: Boolean,
       default: false,
+    },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
+    editableTrigger: {
+      type: String,
+      default: 'click',
     },
   },
   data() {
@@ -213,13 +227,14 @@ export default {
 
     selectedPaths: {
       get() {
-        if (this.value && this.selectableType === 'single') {
-          return [this.value];
+        const value = this.selectedValue;
+        if (value && this.selectableType === 'multiple' && Array.isArray(value)) {
+          return value;
         }
-        return this.value || [];
+        return [value];
       },
       set(val) {
-        this.$emit('input', val);
+        this.$emit('update:selectedValue', val);
       },
     },
 
@@ -311,6 +326,13 @@ export default {
         delete newPaths[path];
         this.hiddenPaths = newPaths;
       }
+    },
+
+    onValueChange(value, path) {
+      const newData = cloneDeep(this.data);
+      const rootPath = this.path;
+      new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
+      this.$emit('input', newData);
     },
   },
 };

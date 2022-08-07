@@ -44,11 +44,37 @@
       />
 
       <span
-        v-else-if="customValueFormatter"
+        v-else-if="customFormatter"
         :class="valueClass"
-        v-html="valueFormatter(node.content)"
-      ></span>
-      <span v-else :class="valueClass" v-text="valueFormatter(node.content)" />
+        v-html="customFormatter(node.content)"
+      />
+      <span
+        v-else
+        :class="valueClass"
+        @click="
+          editable && (!editableTrigger || editableTrigger === 'click')
+            ? onValueEdit($event)
+            : undefined
+        "
+        @dblclick="editable && editableTrigger === 'dblclick' ? onValueEdit($event) : undefined"
+      >
+        <input
+          v-if="editable && editing"
+          :value="defaultFormatter(node.content)"
+          @change="onInputChange"
+          :style="{
+            padding: '3px 8px',
+            border: '1px solid #eee',
+            boxShadow: 'none',
+            boxSizing: 'border-box',
+            borderRadius: 5,
+            fontFamily: 'inherit',
+          }"
+        />
+        <template v-else>{{
+          editable && editing ? undefined : defaultFormatter(node.content)
+        }}</template>
+      </span>
 
       <span v-if="node.showComma">,</span>
 
@@ -61,7 +87,7 @@
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
-import { getDataType } from 'src/utils';
+import { getDataType, stringToAutoType } from 'src/utils';
 import './styles.less';
 
 export default {
@@ -122,6 +148,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
+    editableTrigger: {
+      type: String,
+      default: 'click',
+    },
+  },
+  data() {
+    return {
+      editing: false,
+    };
   },
   computed: {
     valueClass() {
@@ -153,25 +192,46 @@ export default {
     isSingle() {
       return this.selectableType === 'single';
     },
+
+    customFormatter() {
+      return this.customValueFormatter
+        ? (data) =>
+            this.customValueFormatter?.(
+              data,
+              this.node.key,
+              this.node.path,
+              this.defaultFormatter(data),
+            )
+        : null;
+    },
   },
   methods: {
-    defaultFormatter(data) {
-      let text = data + '';
-      if (this.dataType === 'string') text = `"${text}"`;
-      return text;
+    onInputChange(e) {
+      const source = e.target?.value;
+      const value = stringToAutoType(source);
+      this.$emit('value-change', value, this.node.path);
     },
 
-    valueFormatter(data) {
-      const basic = this.customValueFormatter
-        ? this.customValueFormatter(
-            data,
-            this.node.key,
-            this.node.path,
-            this.defaultFormatter(data),
-          )
-        : this.defaultFormatter(data);
-
-      return basic;
+    defaultFormatter(data) {
+      const str = data + '';
+      const text = this.dataType === 'string' ? `"${str}"` : str;
+      // if (this.editable && this.editing) {
+      //   return (
+      //     <input
+      //       value={text}
+      //       onChange={onInputChange}
+      //       style={{
+      //         padding: '3px 8px',
+      //         border: '1px solid #eee',
+      //         boxShadow: 'none',
+      //         boxSizing: 'border-box',
+      //         borderRadius: 5,
+      //         fontFamily: 'inherit',
+      //       }}
+      //     />
+      //   );
+      // }
+      return text;
     },
 
     onBracketsClick() {
@@ -188,6 +248,21 @@ export default {
       this.$emit('tree-node-click', this.node);
       if (this.selectable && this.selectOnClickNode) {
         this.$emit('selected-change', this.node);
+      }
+    },
+
+    onValueEdit(e) {
+      if (!this.editable) return;
+      if (!this.editing) {
+        this.editing = true;
+        const handle = (innerE) => {
+          if (innerE.target !== e.target && innerE.target?.parentElement !== e.target) {
+            this.editing = false;
+            document.removeEventListener('click', handle);
+          }
+        };
+        document.removeEventListener('click', handle);
+        document.addEventListener('click', handle);
       }
     },
   },

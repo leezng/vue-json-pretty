@@ -2,36 +2,36 @@
   <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
-      <textarea v-model="state.val" />
+      <textarea v-model="val" />
 
       <h3>Options:</h3>
       <div class="options">
         <div>
           <label>showLength</label>
-          <input v-model="state.showLength" type="checkbox" />
+          <input v-model="showLength" type="checkbox" />
         </div>
         <div>
           <label>showLine</label>
-          <input v-model="state.showLine" type="checkbox" />
+          <input v-model="showLine" type="checkbox" />
         </div>
         <div>
           <label>showLineNumber</label>
-          <input v-model="state.showLineNumber" type="checkbox" />
+          <input v-model="showLineNumber" type="checkbox" />
         </div>
         <div>
           <label>editable</label>
-          <input v-model="state.editable" type="checkbox" />
+          <input v-model="editable" type="checkbox" />
         </div>
         <div>
           <label>editableTrigger</label>
-          <select v-model="state.editableTrigger">
+          <select v-model="editableTrigger">
             <option value="click">click</option>
             <option value="dblclick">dblclick</option>
           </select>
         </div>
         <div>
           <label>deep</label>
-          <select v-model="state.deep">
+          <select v-model="deep">
             <option :value="2">2</option>
             <option :value="3">3</option>
             <option :value="4">4</option>
@@ -42,21 +42,20 @@
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        v-model:data="state.data"
-        :deep="state.deep"
+        v-model="data"
+        :deep="deep"
         :show-double-quotes="true"
-        :show-length="state.showLength"
-        :show-line="state.showLine"
-        :show-line-number="state.showLineNumber"
-        :editable="state.editable"
-        :editable-trigger="state.editableTrigger"
+        :show-length="showLength"
+        :show-line="showLine"
+        :show-line-number="showLineNumber"
+        :editable="editable"
+        :editable-trigger="editableTrigger"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -85,13 +84,13 @@ const defaultData = {
   ],
 };
 
-export default defineComponent({
+export default {
   name: 'Editable',
   components: {
     VueJsonPretty,
   },
-  setup() {
-    const state = reactive({
+  data() {
+    return {
       val: JSON.stringify(defaultData),
       data: defaultData,
       showLength: false,
@@ -100,33 +99,23 @@ export default defineComponent({
       editable: true,
       editableTrigger: 'click',
       deep: 3,
-    });
-
-    watch(
-      () => state.val,
-      newVal => {
-        try {
-          state.data = JSON.parse(newVal);
-        } catch (err) {
-          // console.log('JSON ERROR');
-        }
-      },
-    );
-
-    watch(
-      () => state.data,
-      newVal => {
-        try {
-          state.val = JSON.stringify(newVal);
-        } catch (err) {
-          // console.log('JSON ERROR');
-        }
-      },
-    );
-
-    return {
-      state,
     };
   },
-});
+  watch: {
+    val(newVal) {
+      try {
+        this.data = JSON.parse(newVal);
+      } catch (err) {
+        console.log('JSON ERROR');
+      }
+    },
+    data(newVal) {
+      try {
+        this.val = JSON.stringify(newVal);
+      } catch (err) {
+        console.log('JSON ERROR');
+      }
+    },
+  },
+};
 </script>

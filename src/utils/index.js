@@ -82,3 +82,42 @@ export function arrFlat(arr) {
   }
   return result;
 }
+
+export function cloneDeep(source, hash = new WeakMap()) {
+  if (source === null) return source;
+  if (source instanceof Date) return new Date(source);
+  if (source instanceof RegExp) return new RegExp(source);
+  if (typeof source !== 'object') return source;
+  if (hash.get(source)) return hash.get(source);
+
+  if (Array.isArray(source)) {
+    const output = source.map((item) => cloneDeep(item, hash));
+    hash.set(source, output);
+    return output;
+  }
+  const output = {};
+  for (const key in source) {
+    output[key] = cloneDeep(source[key], hash);
+  }
+  hash.set(source, output);
+  return output;
+}
+
+export function stringToAutoType(source) {
+  let value;
+  if (source === 'null') value = null;
+  else if (source === 'undefined') value = undefined;
+  else if (source === 'true') value = true;
+  else if (source === 'false') value = false;
+  else if (
+    source[0] + source[source.length - 1] === '""' ||
+    source[0] + source[source.length - 1] === "''"
+  ) {
+    value = source.slice(1, -1);
+  } else if ((typeof Number(source) === 'number' && !isNaN(Number(source))) || source === 'NaN') {
+    value = Number(source);
+  } else {
+    value = source;
+  }
+  return value;
+}
