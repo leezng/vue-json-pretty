@@ -5,7 +5,7 @@
       'vjs-tree': true,
       'is-virtual': virtual,
     }"
-    @scroll="virtual ? onTreeScroll() : undefined"
+    @scroll="virtual ? handleTreeScroll() : undefined"
     :style="
       showLineNumber ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px` } : {}
     "
@@ -39,10 +39,11 @@
             :show-icon="showIcon"
             :editable="editable"
             :editable-trigger="editableTrigger"
-            @tree-node-click="onTreeNodeClick"
-            @brackets-click="onBracketsClick"
-            @selected-change="onSelectedChange"
-            @value-change="onValueChange"
+            @node-click="handleNodeClick"
+            @brackets-click="handleBracketsClick"
+            @icon-click="handleIconClick"
+            @selected-change="handleSelectedChange"
+            @value-change="handleValueChange"
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
           />
         </div>
@@ -73,10 +74,6 @@ export default {
     deep: {
       type: Number,
       default: Infinity,
-    },
-    deepCollapseChildren: {
-      type: Boolean,
-      default: false,
     },
     // define root path
     path: {
@@ -173,9 +170,7 @@ export default {
       translateY: 0,
       visibleData: null,
       hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
-        const depthComparison = this.deepCollapseChildren
-          ? item.level >= this.deep
-          : item.level === this.deep;
+        const depthComparison = item.level >= this.deep;
         if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
           return {
             ...acc,
@@ -285,11 +280,11 @@ export default {
       }
     },
 
-    onTreeScroll() {
+    handleTreeScroll() {
       this.updateVisibleData(this.flatData);
     },
 
-    onSelectedChange({ path }) {
+    handleSelectedChange({ path }) {
       const type = this.selectableType;
       if (type === 'multiple') {
         const index = this.selectedPaths.findIndex((item) => item === path);
@@ -299,11 +294,10 @@ export default {
         } else {
           this.selectedPaths.push(path);
         }
-
         this.$emit('selected-change', this.selectedPaths, oldVal);
       } else if (type === 'single') {
-        if (this.selectedPaths !== path) {
-          const oldVal = this.selectedPaths;
+        if (this.selectedPaths[0] !== path) {
+          const [oldVal] = this.selectedPaths;
           const newVal = path;
           this.selectedPaths = newVal;
           this.$emit('selected-change', newVal, oldVal);
@@ -311,11 +305,11 @@ export default {
       }
     },
 
-    onTreeNodeClick({ content, path }) {
-      this.$emit('node-click', path, content);
+    handleNodeClick(node) {
+      this.$emit('node-click', node);
     },
 
-    onBracketsClick(collapsed, path) {
+    updateCollapsedPaths(collapsed, path) {
       if (collapsed) {
         this.hiddenPaths = {
           ...this.hiddenPaths,
@@ -328,7 +322,19 @@ export default {
       }
     },
 
-    onValueChange(value, path) {
+    handleBracketsClick(collapsed, path) {
+      if (this.collapsedOnClickBrackets) {
+        this.updateCollapsedPaths(collapsed, path);
+      }
+      this.$emit('brackets-click', collapsed);
+    },
+
+    handleIconClick(collapsed, path) {
+      this.updateCollapsedPaths(collapsed, path);
+      this.$emit('icon-click', collapsed);
+    },
+
+    handleValueChange(value, path) {
       const newData = cloneDeep(this.data);
       const rootPath = this.path;
       new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);

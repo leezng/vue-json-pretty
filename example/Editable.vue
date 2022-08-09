@@ -7,10 +7,6 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>showLength</label>
-          <input v-model="showLength" type="checkbox" />
-        </div>
-        <div>
           <label>showLine</label>
           <input v-model="showLine" type="checkbox" />
         </div>
@@ -45,7 +41,6 @@
         v-model="data"
         :deep="deep"
         :show-double-quotes="true"
-        :show-length="showLength"
         :show-line="showLine"
         :show-line-number="showLineNumber"
         :editable="editable"
@@ -93,7 +88,6 @@ export default {
     return {
       val: JSON.stringify(defaultData),
       data: defaultData,
-      showLength: false,
       showLine: true,
       showLineNumber: false,
       editable: true,

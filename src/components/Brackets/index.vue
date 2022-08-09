@@ -11,14 +11,10 @@ export default {
       required: true,
       type: String,
     },
-    collapsedOnClickBrackets: Boolean,
   },
   methods: {
-    // 切换括号展开|关闭
     toggleBrackets(e) {
-      if (this.collapsedOnClickBrackets) {
-        this.$emit('click', e);
-      }
+      this.$emit('click', e);
     },
   },
 };

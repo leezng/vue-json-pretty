@@ -6,7 +6,7 @@
       'has-carets': showIcon,
       'is-highlight': highlightSelectedNode && checked,
     }"
-    @click="onTreeNodeClick"
+    @click="handleNodeClick"
   >
     <span v-if="showLineNumber" class="vjs-node__index">
       {{ node.id + 1 }}
@@ -18,7 +18,7 @@
       "
       :is-multiple="isMultiple"
       :checked="checked"
-      @change="onCheckedChange"
+      @change="handleSelectedChange"
     />
 
     <div class="vjs-indent">
@@ -30,18 +30,13 @@
           'has-line': showLine,
         }"
       />
-      <carets v-if="showIcon" :node-type="node.type" @click="onBracketsClick" />
+      <carets v-if="showIcon" :node-type="node.type" @click="handleIconClick" />
     </div>
 
     <span v-if="node.key" class="vjs-key">{{ prettyKey }}:</span>
 
     <span>
-      <brackets
-        v-if="node.type !== 'content'"
-        :data="node.content"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        @click="onBracketsClick"
-      />
+      <brackets v-if="node.type !== 'content'" :data="node.content" @click="handleBracketsClick" />
 
       <span
         v-else-if="customFormatter"
@@ -53,15 +48,15 @@
         :class="valueClass"
         @click="
           editable && (!editableTrigger || editableTrigger === 'click')
-            ? onValueEdit($event)
+            ? handleValueEdit($event)
             : undefined
         "
-        @dblclick="editable && editableTrigger === 'dblclick' ? onValueEdit($event) : undefined"
+        @dblclick="editable && editableTrigger === 'dblclick' ? handleValueEdit($event) : undefined"
       >
         <input
           v-if="editable && editing"
           :value="defaultFormatter(node.content)"
-          @change="onInputChange"
+          @change="handleInputChange"
           :style="{
             padding: '3px 8px',
             border: '1px solid #eee',
@@ -102,7 +97,6 @@ export default {
       type: Object,
     },
     collapsed: Boolean,
-    collapsedOnClickBrackets: Boolean,
     showDoubleQuotes: Boolean,
     showLength: Boolean,
     checked: Boolean,
@@ -206,7 +200,7 @@ export default {
     },
   },
   methods: {
-    onInputChange(e) {
+    handleInputChange(e) {
       const source = e.target?.value;
       const value = stringToAutoType(source);
       this.$emit('value-change', value, this.node.path);
@@ -219,7 +213,7 @@ export default {
       //   return (
       //     <input
       //       value={text}
-      //       onChange={onInputChange}
+      //       onChange={handleInputChange}
       //       style={{
       //         padding: '3px 8px',
       //         border: '1px solid #eee',
@@ -234,24 +228,26 @@ export default {
       return text;
     },
 
-    onBracketsClick() {
-      if (this.collapsedOnClickBrackets) {
-        this.$emit('brackets-click', !this.collapsed, this.node.path);
-      }
+    handleIconClick() {
+      this.$emit('icon-click', !this.collapsed, this.node.path);
     },
 
-    onCheckedChange() {
+    handleBracketsClick() {
+      this.$emit('brackets-click', !this.collapsed, this.node.path);
+    },
+
+    handleSelectedChange() {
       this.$emit('selected-change', this.node);
     },
 
-    onTreeNodeClick() {
-      this.$emit('tree-node-click', this.node);
+    handleNodeClick() {
+      this.$emit('node-click', this.node);
       if (this.selectable && this.selectOnClickNode) {
         this.$emit('selected-change', this.node);
       }
     },
 
-    onValueEdit(e) {
+    handleValueEdit(e) {
       if (!this.editable) return;
       if (!this.editing) {
         this.editing = true;

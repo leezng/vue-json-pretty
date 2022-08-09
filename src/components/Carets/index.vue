@@ -2,7 +2,7 @@
   <span
     v-if="isOpen || isClose"
     :class="`vjs-carets vjs-carets__${isOpen ? 'open' : 'close'}`"
-    @click="onClick"
+    @click="handleClick"
   >
     <svg
       viewBox="0 0 1024 1024"
@@ -39,8 +39,8 @@ export default {
       return this.nodeType === 'objectCollapsed' || this.nodeType === 'arrayCollapsed';
     },
   },
-  method: {
-    onClick() {
+  methods: {
+    handleClick() {
       this.$emit('click');
     },
   },

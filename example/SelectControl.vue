@@ -68,12 +68,8 @@
       </div>
       <h3>selectedValue.sync:</h3>
       <div>{{ selectedValue }}</div>
-      <h3>Current Click:</h3>
-      <div>path: {{ itemPath }}</div>
-      <div>
-        data:
-        <pre>{{ itemData }}</pre>
-      </div>
+      <h3>Current Node Click:</h3>
+      <div>{{ node }}</div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
@@ -95,8 +91,10 @@
         :selectable-type="selectableType"
         :show-select-controller="showSelectController"
         :show-icon="showIcon"
-        @node-click="handleClick(...arguments, 'complexTree')"
-        @selected-change="handleChange"
+        @node-click="handleNodeClick(...arguments, 'SelectControl')"
+        @brackets-click="handleAll"
+        @icon-click="handleAll"
+        @selected-change="handleAll"
       />
     </div>
   </div>
@@ -154,15 +152,14 @@ export default {
       collapsedOnClickBrackets: true,
       path: 'res',
       deep: 3,
-      itemData: {},
-      itemPath: '',
+      node: null,
       showIcon: false,
     };
   },
   watch: {
     val(newVal) {
       try {
-        this.data = JSON.parse(this.val);
+        this.data = JSON.parse(newVal);
       } catch (err) {
         console.log('JSON ERROR');
       }
@@ -181,13 +178,12 @@ export default {
     },
   },
   methods: {
-    handleClick(path, data, treeName = '') {
-      // console.log('click: ', path, data, treeName);
-      this.itemPath = path;
-      this.itemData = !data ? data + '' : data; // 处理 data = null 的情况
+    handleNodeClick(node, myParam) {
+      // console.log('click: ', node, myParam);
+      this.node = node;
     },
-    handleChange(newVal, oldVal) {
-      console.log('newVal: ', newVal, ' oldVal: ', oldVal);
+    handleAll(...rest) {
+      console.log('handleAll: ', rest);
     },
   },
 };
