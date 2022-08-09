@@ -106,7 +106,7 @@ plugins: [
 
 ## Props
 
-| Property                 | Description ｜ Type                             | Default                                  |
+| Property                 | Description                                     | Type                                     | Default |
 | ------------------------ | ----------------------------------------------- | ---------------------------------------- | ------- |
 | data(v-model)            | JSON data, support v-model when use editable    | JSON object                              | -       |
 | deep                     | Paths greater than this depth will be collapsed | number                                   | -       |
