@@ -106,29 +106,29 @@ plugins: [
 
 ## Props
 
-| Property                 | Description ｜ Type                             | Default                                  |
-| ------------------------ | ----------------------------------------------- | ---------------------------------------- |
-| data(v-model)            | JSON data, support v-model when use editable    | JSON object                              | - |
-| deep                     | Paths greater than this depth will be collapsed | number                                   | - |
-| showLength               | Show the length when collapsed                  | boolean                                  | false |
-| showLine                 | Show the line                                   | boolean                                  | true |
-| showLineNumber           | Show the line number                            | boolean                                  | false |
-| showIcon                 | Show the icon                                   | boolean                                  | false |
-| showDoubleQuotes         | Show doublequotes on key                        | boolean                                  | true |
-| virtual                  | Use virtual scroll                              | boolean                                  | false |
-| height                   | The height of list when using virtual           | number                                   | 400 |
-| itemHeight               | The height of node when using virtual           | number                                   | 20 |
-| selectedValue.sync       | Selected data path                              | string, array                            | - |
-| path                     | Root data path                                  | string                                   | 'root' |
-| pathSelectable           | Defines whether a data path supports selection  | function(path, content)                  | - |
-| selectableType           | Support path select, default none               | `multiple`\|`single`                     | - |
-| showSelectController     | Show the select controller                      | boolean                                  | false |
-| selectOnClickNode        | Trigger select when click node                  | boolean                                  | true |
-| highlightSelectedNode    | Support highlighting selected nodes             | boolean                                  | true |
-| collapsedOnClickBrackets | Support click brackets to collapse              | boolean                                  | true |
-| customValueFormatter     | Custom value rendering function                 | function(data, key, path, defaultResult) | - |
-| editable                 | Support editable                                | boolean                                  | false |
-| editableTrigger          | Trigger                                         | `click` \| `dblclick`                    | 'click' |
+| Property                 | Description                                     | Type                                     | Default |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------- | ------- |
+| data(v-model)            | JSON data, support v-model when use editable    | JSON object                              | -       |
+| deep                     | Paths greater than this depth will be collapsed | number                                   | -       |
+| showLength               | Show the length when collapsed                  | boolean                                  | false   |
+| showLine                 | Show the line                                   | boolean                                  | true    |
+| showLineNumber           | Show the line number                            | boolean                                  | false   |
+| showIcon                 | Show the icon                                   | boolean                                  | false   |
+| showDoubleQuotes         | Show doublequotes on key                        | boolean                                  | true    |
+| virtual                  | Use virtual scroll                              | boolean                                  | false   |
+| height                   | The height of list when using virtual           | number                                   | 400     |
+| itemHeight               | The height of node when using virtual           | number                                   | 20      |
+| selectedValue.sync       | Selected data path                              | string, array                            | -       |
+| path                     | Root data path                                  | string                                   | 'root'  |
+| pathSelectable           | Defines whether a data path supports selection  | function(path, content)                  | -       |
+| selectableType           | Support path select, default none               | `multiple`, `single`                     | -       |
+| showSelectController     | Show the select controller                      | boolean                                  | false   |
+| selectOnClickNode        | Trigger select when click node                  | boolean                                  | true    |
+| highlightSelectedNode    | Support highlighting selected nodes             | boolean                                  | true    |
+| collapsedOnClickBrackets | Support click brackets to collapse              | boolean                                  | true    |
+| customValueFormatter     | Custom value rendering function                 | function(data, key, path, defaultResult) | -       |
+| editable                 | Support editable                                | boolean                                  | false   |
+| editableTrigger          | Trigger                                         | `click`, `dblclick`                      | 'click' |
 
 ## Events
 
