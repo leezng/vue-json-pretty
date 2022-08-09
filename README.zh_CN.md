@@ -25,14 +25,14 @@
 | selectedValue(v-model)   | 双向绑定选中的数据路径         | string, array                            | string, array |
 | path                     | 定义最顶层数据路径             | string                                   | root          |
 | pathSelectable           | 定义哪些数据路径可以被选择     | function(path, content)                  | -             |
-| selectableType           | 定义选择功能，默认无           | multiple, single                         | -             |
+| selectableType           | 定义选择功能，默认无           | `multiple`, `single`                     | -             |
 | showSelectController     | 展示选择器                     | boolean                                  | false         |
 | selectOnClickNode        | 支持点击节点的时候触发选择     | boolean                                  | true          |
 | highlightSelectedNode    | 支持高亮已选择节点             | boolean                                  | true          |
 | collapsedOnClickBrackets | 支持点击括号折叠               | boolean                                  | true          |
 | customValueFormatter     | 自定义值渲染                   | function(data, key, path, defaultResult) | -             |
 | editable                 | 支持可编辑                     | boolean                                  | false         |
-| editableTrigger          | 触发编辑的时机                 | `click` \| `dblclick`                    | 'click'       |
+| editableTrigger          | 触发编辑的时机                 | `click`, `dblclick`                      | 'click'       |
 
 ## Events
 

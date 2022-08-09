@@ -121,14 +121,14 @@ plugins: [
 | selectedValue(v-model)   | Selected data path                              | string, array                            | -       |
 | path                     | Root data path                                  | string                                   | 'root'  |
 | pathSelectable           | Defines whether a data path supports selection  | function(path, content)                  | -       |
-| selectableType           | Support path select, default none               | `multiple`\|`single`                     | -       |
+| selectableType           | Support path select, default none               | `multiple`, `single`                     | -       |
 | showSelectController     | Show the select controller                      | boolean                                  | false   |
 | selectOnClickNode        | Trigger select when click node                  | boolean                                  | true    |
 | highlightSelectedNode    | Support highlighting selected nodes             | boolean                                  | true    |
 | collapsedOnClickBrackets | Support click brackets to collapse              | boolean                                  | true    |
 | customValueFormatter     | Custom value rendering function                 | function(data, key, path, defaultResult) | -       |
 | editable                 | Support editable                                | boolean                                  | false   |
-| editableTrigger          | Trigger                                         | `click` \| `dblclick`                    | 'click' |
+| editableTrigger          | Trigger                                         | `click`, `dblclick`                      | 'click' |
 
 ## Events
 
