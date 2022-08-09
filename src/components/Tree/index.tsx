@@ -28,10 +28,6 @@ export default defineComponent({
       type: Number,
       default: Infinity,
     },
-    deepCollapseChildren: {
-      type: Boolean,
-      default: false,
-    },
     collapsePath: {
       type: RegExp,
       default: null,
@@ -62,10 +58,25 @@ export default defineComponent({
       type: [String, Array] as PropType<string | string[]>,
       default: () => '',
     },
+    // Collapsed control.
+    collapsedOnClickBrackets: {
+      type: Boolean,
+      default: true,
+    },
     style: Object as PropType<CSSProperties>,
+    onSelectedChange: {
+      type: Function as PropType<(newVal: string | string[], oldVal: string | string[]) => void>,
+    },
   },
 
-  emits: ['nodeClick', 'bracketsClick', 'selectedChange', 'update:selectedValue', 'update:data'],
+  emits: [
+    'nodeClick',
+    'bracketsClick',
+    'iconClick',
+    'selectedChange',
+    'update:selectedValue',
+    'update:data',
+  ],
   setup(props, { emit }) {
     const tree = ref<HTMLElement>();
 
@@ -75,11 +86,8 @@ export default defineComponent({
       translateY: 0,
       visibleData: null as FlatDataType | null,
       hiddenPaths: originFlatData.value.reduce((acc, item) => {
-        const depthComparison = props.deepCollapseChildren
-          ? item.level >= props.deep
-          : item.level === props.deep;
-        const pathComparison =
-          depthComparison || (props.collapsePath && props.collapsePath.test(item.path));
+        const depthComparison = item.level >= props.deep;
+        const pathComparison = props.collapsePath && props.collapsePath.test(item.path);
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
           (depthComparison || pathComparison)
@@ -164,11 +172,11 @@ export default defineComponent({
       }
     };
 
-    const onTreeScroll = () => {
+    const handleTreeScroll = () => {
       updateVisibleData(flatData.value);
     };
 
-    const onSelectedChange = ({ path }: NodeDataType) => {
+    const handleSelectedChange = ({ path }: NodeDataType) => {
       const type = props.selectableType;
       if (type === 'multiple') {
         const index = selectedPaths.value.findIndex(item => item === path);
@@ -190,11 +198,11 @@ export default defineComponent({
       }
     };
 
-    const onTreeNodeClick = ({ content, path }: NodeDataType) => {
-      emit('nodeClick', path, content);
+    const handleNodeClick = (node: NodeDataType) => {
+      emit('nodeClick', node);
     };
 
-    const onBracketsClick = (collapsed: boolean, path: string) => {
+    const updateCollapsedPaths = (collapsed: boolean, path: string) => {
       if (collapsed) {
         state.hiddenPaths = {
           ...state.hiddenPaths,
@@ -205,10 +213,21 @@ export default defineComponent({
         delete newPaths[path];
         state.hiddenPaths = newPaths;
       }
+    };
+
+    const handleBracketsClick = (collapsed: boolean, path: string) => {
+      if (props.collapsedOnClickBrackets) {
+        updateCollapsedPaths(collapsed, path);
+      }
       emit('bracketsClick', collapsed);
     };
 
-    const onValueChange = (value: unknown, path: string) => {
+    const handleIconClick = (collapsed: boolean, path: string) => {
+      updateCollapsedPaths(collapsed, path);
+      emit('iconClick', collapsed);
+    };
+
+    const handleValueChange = (value: unknown, path: string) => {
       const newData = cloneDeep(props.data);
       const rootPath = props.path;
       new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
@@ -232,11 +251,12 @@ export default defineComponent({
       state,
       flatData,
       selectedPaths,
-      onTreeScroll,
-      onSelectedChange,
-      onTreeNodeClick,
-      onBracketsClick,
-      onValueChange,
+      handleTreeScroll,
+      handleSelectedChange,
+      handleNodeClick,
+      handleBracketsClick,
+      handleIconClick,
+      handleValueChange,
     };
   },
 
@@ -254,7 +274,6 @@ export default defineComponent({
       selectOnClickNode,
       pathSelectable,
       highlightSelectedNode,
-      collapsedOnClickBrackets,
       state,
       flatData,
       selectedPaths,
@@ -265,8 +284,14 @@ export default defineComponent({
       style,
     } = this;
 
-    const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll, onValueChange } =
-      this;
+    const {
+      handleNodeClick,
+      handleBracketsClick,
+      handleIconClick,
+      handleSelectedChange,
+      handleTreeScroll,
+      handleValueChange,
+    } = this;
 
     const nodeContent =
       state.visibleData &&
@@ -275,25 +300,25 @@ export default defineComponent({
           key={item.id}
           node={item}
           collapsed={!!state.hiddenPaths[item.path]}
-          custom-value-formatter={customValueFormatter}
-          show-double-quotes={showDoubleQuotes}
-          show-length={showLength}
-          collapsed-on-click-brackets={collapsedOnClickBrackets}
+          customValueFormatter={customValueFormatter}
+          showDoubleQuotes={showDoubleQuotes}
+          showLength={showLength}
           checked={selectedPaths.includes(item.path)}
-          selectable-type={selectableType}
-          show-line={showLine}
-          show-line-number={showLineNumber}
-          show-select-controller={showSelectController}
-          select-on-click-node={selectOnClickNode}
-          path-selectable={pathSelectable}
-          highlight-selected-node={highlightSelectedNode}
+          selectableType={selectableType}
+          showLine={showLine}
+          showLineNumber={showLineNumber}
+          showSelectController={showSelectController}
+          selectOnClickNode={selectOnClickNode}
+          pathSelectable={pathSelectable}
+          highlightSelectedNode={highlightSelectedNode}
           editable={editable}
           editableTrigger={editableTrigger}
           showIcon={showIcon}
-          onTreeNodeClick={onTreeNodeClick}
-          onBracketsClick={onBracketsClick}
-          onSelectedChange={onSelectedChange}
-          onValueChange={onValueChange}
+          onNodeClick={handleNodeClick}
+          onBracketsClick={handleBracketsClick}
+          onIconClick={handleIconClick}
+          onSelectedChange={handleSelectedChange}
+          onValueChange={handleValueChange}
           style={itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}}
         />
       ));
@@ -305,7 +330,7 @@ export default defineComponent({
           'vjs-tree': true,
           'is-virtual': virtual,
         }}
-        onScroll={virtual ? onTreeScroll : undefined}
+        onScroll={virtual ? handleTreeScroll : undefined}
         style={
           showLineNumber
             ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px`, ...style }

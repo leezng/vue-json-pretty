@@ -7,10 +7,6 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>showLength</label>
-          <input v-model="state.showLength" type="checkbox" />
-        </div>
-        <div>
           <label>showLine</label>
           <input v-model="state.showLine" type="checkbox" />
         </div>
@@ -45,7 +41,6 @@
         v-model:data="state.data"
         :deep="state.deep"
         :show-double-quotes="true"
-        :show-length="state.showLength"
         :show-line="state.showLine"
         :show-line-number="state.showLineNumber"
         :editable="state.editable"
@@ -94,7 +89,6 @@ export default defineComponent({
     const state = reactive({
       val: JSON.stringify(defaultData),
       data: defaultData,
-      showLength: false,
       showLine: true,
       showLineNumber: false,
       editable: true,

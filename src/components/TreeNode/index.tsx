@@ -51,11 +51,6 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: true,
   },
-  // Collapsed control.
-  collapsedOnClickBrackets: {
-    type: Boolean,
-    default: true,
-  },
   // When using the selectableType, define whether current path/content is enabled.
   pathSelectable: {
     type: Function as PropType<(path: string, content: unknown) => boolean>,
@@ -78,6 +73,18 @@ export const treeNodePropsPass = {
     type: String as PropType<'click' | 'dblclick'>,
     default: 'click',
   },
+  onNodeClick: {
+    type: Function as PropType<(node: NodeDataType) => void>,
+  },
+  onBracketsClick: {
+    type: Function as PropType<(collapsed: boolean, path: string) => void>,
+  },
+  onIconClick: {
+    type: Function as PropType<(collapsed: boolean, path: string) => void>,
+  },
+  onValueChange: {
+    type: Function as PropType<(value: boolean, path: string) => void>,
+  },
 };
 
 export default defineComponent({
@@ -95,19 +102,12 @@ export default defineComponent({
     // Whether the current node is checked(When using the selection function).
     checked: Boolean,
     style: Object as PropType<CSSProperties>,
-    onTreeNodeClick: {
-      type: Function as PropType<(node: NodeDataType) => void>,
-    },
-    onBracketsClick: {
-      type: Function as PropType<(collapsed: boolean, path: string) => void>,
-    },
     onSelectedChange: {
       type: Function as PropType<(node: NodeDataType) => void>,
     },
-    onValueChange: {
-      type: Function as PropType<(value: boolean, path: string) => void>,
-    },
   },
+
+  emits: ['nodeClick', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
 
   setup(props, { emit }) {
     const dataType = computed(() => getDataType(props.node.content));
@@ -137,10 +137,10 @@ export default defineComponent({
       selectable,
     });
 
-    const onInputChange = (e: Event) => {
+    const handleInputChange = (e: Event) => {
       const source = (e.target as HTMLInputElement)?.value;
       const value = stringToAutoType(source);
-      emit('value-change', value, props.node.path);
+      emit('valueChange', value, props.node.path);
     };
 
     const defaultFormatter = (data: unknown) => {
@@ -150,7 +150,7 @@ export default defineComponent({
         return (
           <input
             value={text}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             style={{
               padding: '3px 8px',
               border: '1px solid #eee',
@@ -175,24 +175,26 @@ export default defineComponent({
           )
       : null;
 
-    const onBracketsClickHandler = () => {
-      if (props.collapsedOnClickBrackets) {
-        emit('brackets-click', !props.collapsed, props.node.path);
-      }
+    const handleBracketsClick = () => {
+      emit('bracketsClick', !props.collapsed, props.node.path);
     };
 
-    const onCheckedChange = () => {
-      emit('selected-change', props.node);
+    const handleIconClick = () => {
+      emit('iconClick', !props.collapsed, props.node.path);
     };
 
-    const onNodeClick = () => {
-      emit('tree-node-click', props.node);
+    const handleSelectedChange = () => {
+      emit('selectedChange', props.node);
+    };
+
+    const handleNodeClick = () => {
+      emit('nodeClick', props.node);
       if (selectable.value && props.selectOnClickNode) {
-        emit('selected-change', props.node);
+        emit('selectedChange', props.node);
       }
     };
 
-    const onValueEdit = (e: MouseEvent) => {
+    const handleValueEdit = (e: MouseEvent) => {
       if (!props.editable) return;
       if (!state.editing) {
         state.editing = true;
@@ -214,10 +216,11 @@ export default defineComponent({
       state,
       defaultFormatter,
       customFormatter,
-      onBracketsClickHandler,
-      onCheckedChange,
-      onNodeClick,
-      onValueEdit,
+      handleBracketsClick,
+      handleIconClick,
+      handleSelectedChange,
+      handleNodeClick,
+      handleValueEdit,
     };
   },
 
@@ -241,10 +244,11 @@ export default defineComponent({
     const {
       defaultFormatter,
       customFormatter,
-      onNodeClick,
-      onCheckedChange,
-      onBracketsClickHandler,
-      onValueEdit,
+      handleNodeClick,
+      handleSelectedChange,
+      handleBracketsClick,
+      handleIconClick,
+      handleValueEdit,
     } = this;
 
     return (
@@ -255,7 +259,7 @@ export default defineComponent({
           'has-carets': showIcon,
           'is-highlight': highlightSelectedNode && checked,
         }}
-        onClick={onNodeClick}
+        onClick={handleNodeClick}
         style={style}
       >
         {showLineNumber && <span class="vjs-node__index">{node.id + 1}</span>}
@@ -267,7 +271,7 @@ export default defineComponent({
             <CheckController
               isMultiple={state.isMultiple}
               checked={checked}
-              onChange={onCheckedChange}
+              onChange={handleSelectedChange}
             />
           )}
 
@@ -281,14 +285,14 @@ export default defineComponent({
               }}
             />
           ))}
-          {showIcon && <Carets nodeType={node.type} onClick={onBracketsClickHandler} />}
+          {showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
         </div>
 
         {node.key && <span class="vjs-key">{`${state.prettyKey}: `}</span>}
 
         <span>
           {node.type !== 'content' && node.content ? (
-            <Brackets data={node.content.toString()} onClick={onBracketsClickHandler} />
+            <Brackets data={node.content.toString()} onClick={handleBracketsClick} />
           ) : customFormatter ? (
             <span class={state.valueClass} v-html={customFormatter(node.content)} />
           ) : (
@@ -296,10 +300,10 @@ export default defineComponent({
               class={state.valueClass}
               onClick={
                 editable && (!editableTrigger || editableTrigger === 'click')
-                  ? onValueEdit
+                  ? handleValueEdit
                   : undefined
               }
-              onDblclick={editable && editableTrigger === 'dblclick' ? onValueEdit : undefined}
+              onDblclick={editable && editableTrigger === 'dblclick' ? handleValueEdit : undefined}
             >
               {defaultFormatter(node.content)}
             </span>

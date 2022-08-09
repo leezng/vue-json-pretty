@@ -60,12 +60,8 @@
       </div>
       <h3>v-model:selectedValue:</h3>
       <div>{{ state.selectedValue }}</div>
-      <h3>Current Click:</h3>
-      <div>path: {{ state.itemPath }}</div>
-      <div>
-        data:
-        <pre>{{ state.itemData }}</pre>
-      </div>
+      <h3>Current Node Click:</h3>
+      <div>{{ state.node }}</div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
@@ -86,8 +82,10 @@
         :selectable-type="state.selectableType"
         :show-select-controller="state.showSelectController"
         :show-icon="state.showIcon"
-        @nodeClick="handleClick"
-        @selectedChange="handleChange"
+        @node-click="handleNodeClick"
+        @brackets-click="handleAll"
+        @icon-click="handleAll"
+        @selected-change="handleAll"
       />
     </div>
   </div>
@@ -144,19 +142,16 @@ export default defineComponent({
       collapsedOnClickBrackets: true,
       path: 'res',
       deep: 3,
-      itemData: {},
-      itemPath: '',
+      node: '',
       showIcon: false,
     });
 
-    const handleClick = (path, data) => {
-      // console.log('click: ', path, data);
-      state.itemPath = path;
-      state.itemData = !data ? data + '' : data; // if data = null
+    const handleNodeClick = node => {
+      state.node = node;
     };
 
-    const handleChange = () => {
-      // console.log('newVal: ', newVal, ' oldVal: ', oldVal);
+    const handleAll = (...rest) => {
+      console.log('handleAll: ', rest);
     };
 
     watch(
@@ -187,8 +182,8 @@ export default defineComponent({
 
     return {
       state,
-      handleClick,
-      handleChange,
+      handleNodeClick,
+      handleAll,
     };
   },
 });
