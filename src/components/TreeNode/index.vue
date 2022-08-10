@@ -39,11 +39,6 @@
       <brackets v-if="node.type !== 'content'" :data="node.content" @click="handleBracketsClick" />
 
       <span
-        v-else-if="customFormatter"
-        :class="valueClass"
-        v-html="customFormatter(node.content)"
-      />
-      <span
         v-else
         :class="valueClass"
         @click="
@@ -55,7 +50,7 @@
       >
         <input
           v-if="editable && editing"
-          :value="defaultFormatter(node.content)"
+          :value="defaultValue"
           @change="handleInputChange"
           :style="{
             padding: '3px 8px',
@@ -66,9 +61,9 @@
             fontFamily: 'inherit',
           }"
         />
-        <template v-else>{{
-          editable && editing ? undefined : defaultFormatter(node.content)
-        }}</template>
+        <slot v-else name="value" :node="node" :defaultValue="defaultValue">{{
+          defaultValue
+        }}</slot>
       </span>
 
       <span v-if="node.showComma">,</span>
@@ -133,11 +128,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    // custom formatter for values
-    customValueFormatter: {
-      type: Function,
-      default: null,
-    },
     showIcon: {
       type: Boolean,
       default: false,
@@ -161,7 +151,6 @@ export default {
       return `vjs-value vjs-value__${this.dataType}`;
     },
 
-    // 当前数据类型
     dataType() {
       return getDataType(this.node.content);
     },
@@ -170,33 +159,24 @@ export default {
       return this.showDoubleQuotes ? `"${this.node.key}"` : this.node.key;
     },
 
-    // 当前的树是否支持选中功能
     selectable() {
       return (
         this.pathSelectable(this.node.path, this.node.content) && (this.isMultiple || this.isSingle)
       );
     },
 
-    // 多选模式
     isMultiple() {
       return this.selectableType === 'multiple';
     },
 
-    // 单选模式
     isSingle() {
       return this.selectableType === 'single';
     },
 
-    customFormatter() {
-      return this.customValueFormatter
-        ? (data) =>
-            this.customValueFormatter?.(
-              data,
-              this.node.key,
-              this.node.path,
-              this.defaultFormatter(data),
-            )
-        : null;
+    defaultValue() {
+      const str = (this.node?.content ?? '') + '';
+      const text = this.dataType === 'string' ? `"${str}"` : str;
+      return text;
     },
   },
   methods: {
@@ -204,28 +184,6 @@ export default {
       const source = e.target?.value;
       const value = stringToAutoType(source);
       this.$emit('value-change', value, this.node.path);
-    },
-
-    defaultFormatter(data) {
-      const str = data + '';
-      const text = this.dataType === 'string' ? `"${str}"` : str;
-      // if (this.editable && this.editing) {
-      //   return (
-      //     <input
-      //       value={text}
-      //       onChange={handleInputChange}
-      //       style={{
-      //         padding: '3px 8px',
-      //         border: '1px solid #eee',
-      //         boxShadow: 'none',
-      //         boxSizing: 'border-box',
-      //         borderRadius: 5,
-      //         fontFamily: 'inherit',
-      //       }}
-      //     />
-      //   );
-      // }
-      return text;
     },
 
     handleIconClick() {

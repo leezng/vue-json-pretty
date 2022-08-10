@@ -24,7 +24,6 @@
             :key="item.id"
             :node="item"
             :collapsed="!!hiddenPaths[item.path]"
-            :custom-value-formatter="customValueFormatter"
             :show-double-quotes="showDoubleQuotes"
             :show-length="showLength"
             :collapsed-on-click-brackets="collapsedOnClickBrackets"
@@ -45,7 +44,11 @@
             @selected-change="handleSelectedChange"
             @value-change="handleValueChange"
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
-          />
+          >
+            <template #value="slotProps">
+              <slot name="nodeValue" :node="item" :defaultValue="slotProps.defaultValue" />
+            </template>
+          </tree-node>
         </div>
       </div>
     </div>
@@ -146,11 +149,6 @@ export default {
     collapsedOnClickBrackets: {
       type: Boolean,
       default: true,
-    },
-    // custom formatter for values
-    customValueFormatter: {
-      type: Function,
-      default: null,
     },
     showIcon: {
       type: Boolean,

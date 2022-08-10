@@ -35,8 +35,8 @@
           <input v-model="collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
-          <label>use custom formatter</label>
-          <input v-model="useCustomLinkFormatter" type="checkbox" />
+          <label>useNodeValueSlot</label>
+          <input v-model="useNodeValueSlot" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
@@ -64,10 +64,16 @@
         :show-line-number="showLineNumber"
         :highlight-mouseover-node="highlightMouseoverNode"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :custom-value-formatter="useCustomLinkFormatter ? customLinkFormatter : null"
         :show-icon="showIcon"
         style="position: relative"
-      />
+      >
+        <template v-if="useNodeValueSlot" #nodeValue="{ node, defaultValue }">
+          <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
+            <a href="node.content" target="_blank">{{ node.content }}</a>
+          </template>
+          <template v-else>{{ defaultValue }}</template>
+        </template>
+      </vue-json-pretty>
     </div>
   </div>
 </template>
@@ -116,7 +122,7 @@ export default {
       showDoubleQuotes: true,
       highlightMouseoverNode: true,
       collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
+      useNodeValueSlot: false,
       deep: 3,
       deepCollapseChildren: false,
       showIcon: false,
@@ -131,14 +137,11 @@ export default {
       }
     },
   },
-  methods: {
-    customLinkFormatter(data, key, path, defaultFormatted) {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
-    },
-  },
 };
 </script>
+
+<style scoped>
+a {
+  color: blue;
+}
+</style>
