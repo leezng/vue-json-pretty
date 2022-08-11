@@ -26,8 +26,8 @@
           <input v-model="selectOnClickNode" type="checkbox" />
         </div>
         <div>
-          <label>path</label>
-          <input v-model="path" type="text" />
+          <label>rootPath</label>
+          <input v-model="rootPath" type="text" />
         </div>
         <div>
           <label>showLength</label>
@@ -77,7 +77,7 @@
         v-if="renderOK"
         :selected-value.sync="selectedValue"
         :data="data"
-        :path="path"
+        :root-path="rootPath"
         :deep="deep"
         :show-double-quotes="showDoubleQuotes"
         :highlight-mouseover-node="highlightMouseoverNode"
@@ -150,7 +150,7 @@ export default {
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
-      path: 'res',
+      rootPath: 'res',
       deep: 3,
       node: null,
       showIcon: false,

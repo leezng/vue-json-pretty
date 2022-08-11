@@ -46,7 +46,11 @@
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
           >
             <template #value="slotProps">
-              <slot name="nodeValue" :node="item" :defaultValue="slotProps.defaultValue" />
+              <slot
+                name="nodeValue"
+                :node="slotProps.node"
+                :defaultValue="slotProps.defaultValue"
+              />
             </template>
           </tree-node>
         </div>
@@ -79,7 +83,7 @@ export default {
       default: Infinity,
     },
     // define root path
-    path: {
+    rootPath: {
       type: String,
       default: 'root',
     },
@@ -167,7 +171,7 @@ export default {
     return {
       translateY: 0,
       visibleData: null,
-      hiddenPaths: jsonFlatten(this.data, this.path).reduce((acc, item) => {
+      hiddenPaths: jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
         const depthComparison = item.level >= this.deep;
         if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
           return {
@@ -181,7 +185,7 @@ export default {
   },
   computed: {
     originFlatData() {
-      return jsonFlatten(this.data, this.path);
+      return jsonFlatten(this.data, this.rootPath);
     },
 
     flatData({ originFlatData, hiddenPaths }) {
@@ -334,7 +338,7 @@ export default {
 
     handleValueChange(value, path) {
       const newData = cloneDeep(this.data);
-      const rootPath = this.path;
+      const rootPath = this.rootPath;
       new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
       this.$emit('input', newData);
     },

@@ -66,7 +66,7 @@ The CSS file is included separately and needs to be imported manually. You can e
 ```vue
 <template>
   <div>
-    <vue-json-pretty :path="'res'" :data="{ key: 'value' }" @click="handleClick" />
+    <vue-json-pretty :data="{ key: 'value' }" />
   </div>
 </template>
 
@@ -106,29 +106,28 @@ plugins: [
 
 ## Props
 
-| Property                 | Description                                     | Type                                     | Default |
-| ------------------------ | ----------------------------------------------- | ---------------------------------------- | ------- |
-| data(v-model)            | JSON data, support v-model when use editable    | JSON object                              | -       |
-| deep                     | Paths greater than this depth will be collapsed | number                                   | -       |
-| showLength               | Show the length when collapsed                  | boolean                                  | false   |
-| showLine                 | Show the line                                   | boolean                                  | true    |
-| showLineNumber           | Show the line number                            | boolean                                  | false   |
-| showIcon                 | Show the icon                                   | boolean                                  | false   |
-| showDoubleQuotes         | Show doublequotes on key                        | boolean                                  | true    |
-| virtual                  | Use virtual scroll                              | boolean                                  | false   |
-| height                   | The height of list when using virtual           | number                                   | 400     |
-| itemHeight               | The height of node when using virtual           | number                                   | 20      |
-| selectedValue.sync       | Selected data path                              | string, array                            | -       |
-| path                     | Root data path                                  | string                                   | 'root'  |
-| pathSelectable           | Defines whether a data path supports selection  | function(path, content)                  | -       |
-| selectableType           | Support path select, default none               | `multiple`, `single`                     | -       |
-| showSelectController     | Show the select controller                      | boolean                                  | false   |
-| selectOnClickNode        | Trigger select when click node                  | boolean                                  | true    |
-| highlightSelectedNode    | Support highlighting selected nodes             | boolean                                  | true    |
-| collapsedOnClickBrackets | Support click brackets to collapse              | boolean                                  | true    |
-| customValueFormatter     | Custom value rendering function                 | function(data, key, path, defaultResult) | -       |
-| editable                 | Support editable                                | boolean                                  | false   |
-| editableTrigger          | Trigger                                         | `click`, `dblclick`                      | 'click' |
+| Property                 | Description                                     | Type                    | Default |
+| ------------------------ | ----------------------------------------------- | ----------------------- | ------- |
+| data(v-model)            | JSON data, support v-model when use editable    | JSON object             | -       |
+| deep                     | Paths greater than this depth will be collapsed | number                  | -       |
+| showLength               | Show the length when collapsed                  | boolean                 | false   |
+| showLine                 | Show the line                                   | boolean                 | true    |
+| showLineNumber           | Show the line number                            | boolean                 | false   |
+| showIcon                 | Show the icon                                   | boolean                 | false   |
+| showDoubleQuotes         | Show doublequotes on key                        | boolean                 | true    |
+| virtual                  | Use virtual scroll                              | boolean                 | false   |
+| height                   | The height of list when using virtual           | number                  | 400     |
+| itemHeight               | The height of node when using virtual           | number                  | 20      |
+| selectedValue.sync       | Selected data path                              | string, array           | -       |
+| rootPath                 | Root data path                                  | string                  | `root`  |
+| pathSelectable           | Defines whether a data path supports selection  | function(path, content) | -       |
+| selectableType           | Support path select, default none               | `multiple`, `single`    | -       |
+| showSelectController     | Show the select controller                      | boolean                 | false   |
+| selectOnClickNode        | Trigger select when click node                  | boolean                 | true    |
+| highlightSelectedNode    | Support highlighting selected nodes             | boolean                 | true    |
+| collapsedOnClickBrackets | Support click brackets to collapse              | boolean                 | true    |
+| editable                 | Support editable                                | boolean                 | false   |
+| editableTrigger          | Trigger                                         | `click`, `dblclick`     | `click` |
 
 ## Events
 
@@ -138,6 +137,12 @@ plugins: [
 | brackets-click  | triggers when click brackets             | (collapsed: boolean) |
 | icon-click      | triggers when click icon                 | (collapsed: boolean) |
 | selected-change | triggers when the selected value changed | (newVal, oldVal)     |
+
+## Scoped Slots
+
+| Slot Name | Description       | Parameters             |
+| --------- | ----------------- | ---------------------- |
+| nodeValue | render node value | { node, defaultValue } |
 
 ## Major Contributors
 
