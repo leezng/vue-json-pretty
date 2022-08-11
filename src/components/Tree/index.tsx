@@ -11,8 +11,6 @@ import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNo
 import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
 import './styles.less';
 
-type FlatDataType = NodeDataType[];
-
 export default defineComponent({
   name: 'Tree',
 
@@ -28,9 +26,9 @@ export default defineComponent({
       type: Number,
       default: Infinity,
     },
-    collapsePath: {
-      type: RegExp,
-      default: null,
+    pathCollapsible: {
+      type: Function as PropType<(node: NodeDataType) => boolean>,
+      default: (): boolean => false,
     },
     // Data root path.
     rootPath: {
@@ -69,6 +67,8 @@ export default defineComponent({
     },
   },
 
+  slots: ['renderNodeValue'],
+
   emits: [
     'nodeClick',
     'bracketsClick',
@@ -77,17 +77,17 @@ export default defineComponent({
     'update:selectedValue',
     'update:data',
   ],
-  setup(props, { emit }) {
-    const tree = ref<HTMLElement>();
+  setup(props, { emit, slots }) {
+    const treeRef = ref<HTMLElement>();
 
-    const originFlatData = computed(() => jsonFlatten(props.data, props.path));
+    const originFlatData = computed(() => jsonFlatten(props.data, props.rootPath));
 
     const state = reactive({
       translateY: 0,
-      visibleData: null as FlatDataType | null,
+      visibleData: null as NodeDataType[] | null,
       hiddenPaths: originFlatData.value.reduce((acc, item) => {
         const depthComparison = item.level >= props.deep;
-        const pathComparison = props.collapsePath && props.collapsePath.test(item.path);
+        const pathComparison = props.pathCollapsible?.(item as NodeDataType);
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
           (depthComparison || pathComparison)
@@ -149,11 +149,11 @@ export default defineComponent({
         : '';
     });
 
-    const updateVisibleData = (flatDataValue: FlatDataType) => {
+    const updateVisibleData = () => {
+      const flatDataValue = flatData.value;
       if (props.virtual) {
-        const treeRefValue = tree.value;
         const visibleCount = props.height / props.itemHeight;
-        const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
+        const scrollTop = treeRef.value?.scrollTop || 0;
         const scrollCount = Math.floor(scrollTop / props.itemHeight);
         let start =
           scrollCount < 0
@@ -173,7 +173,7 @@ export default defineComponent({
     };
 
     const handleTreeScroll = () => {
-      updateVisibleData(flatData.value);
+      updateVisibleData();
     };
 
     const handleSelectedChange = ({ path }: NodeDataType) => {
@@ -242,111 +242,75 @@ export default defineComponent({
 
     watchEffect(() => {
       if (flatData.value) {
-        updateVisibleData(flatData.value);
+        updateVisibleData();
       }
     });
 
-    return {
-      tree,
-      state,
-      flatData,
-      selectedPaths,
-      handleTreeScroll,
-      handleSelectedChange,
-      handleNodeClick,
-      handleBracketsClick,
-      handleIconClick,
-      handleValueChange,
-    };
-  },
+    return () => {
+      const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
 
-  render() {
-    const {
-      virtual,
-      height,
-      itemHeight,
-      customValueFormatter,
-      showDoubleQuotes,
-      showLength,
-      showLine,
-      showLineNumber,
-      showSelectController,
-      selectOnClickNode,
-      pathSelectable,
-      highlightSelectedNode,
-      state,
-      flatData,
-      selectedPaths,
-      selectableType,
-      editable,
-      editableTrigger,
-      showIcon,
-      style,
-    } = this;
+      const nodeContent =
+        state.visibleData &&
+        state.visibleData.map(item => (
+          <TreeNode
+            key={item.id}
+            node={item}
+            collapsed={!!state.hiddenPaths[item.path]}
+            showDoubleQuotes={props.showDoubleQuotes}
+            showLength={props.showLength}
+            checked={selectedPaths.value.includes(item.path)}
+            selectableType={props.selectableType}
+            showLine={props.showLine}
+            showLineNumber={props.showLineNumber}
+            showSelectController={props.showSelectController}
+            selectOnClickNode={props.selectOnClickNode}
+            pathSelectable={props.pathSelectable}
+            highlightSelectedNode={props.highlightSelectedNode}
+            editable={props.editable}
+            editableTrigger={props.editableTrigger}
+            showIcon={props.showIcon}
+            renderNodeValue={renderNodeValue}
+            onNodeClick={handleNodeClick}
+            onBracketsClick={handleBracketsClick}
+            onIconClick={handleIconClick}
+            onSelectedChange={handleSelectedChange}
+            onValueChange={handleValueChange}
+            style={
+              props.itemHeight && props.itemHeight !== 20
+                ? { lineHeight: `${props.itemHeight}px` }
+                : {}
+            }
+          />
+        ));
 
-    const {
-      handleNodeClick,
-      handleBracketsClick,
-      handleIconClick,
-      handleSelectedChange,
-      handleTreeScroll,
-      handleValueChange,
-    } = this;
-
-    const nodeContent =
-      state.visibleData &&
-      state.visibleData.map(item => (
-        <TreeNode
-          key={item.id}
-          node={item}
-          collapsed={!!state.hiddenPaths[item.path]}
-          customValueFormatter={customValueFormatter}
-          showDoubleQuotes={showDoubleQuotes}
-          showLength={showLength}
-          checked={selectedPaths.includes(item.path)}
-          selectableType={selectableType}
-          showLine={showLine}
-          showLineNumber={showLineNumber}
-          showSelectController={showSelectController}
-          selectOnClickNode={selectOnClickNode}
-          pathSelectable={pathSelectable}
-          highlightSelectedNode={highlightSelectedNode}
-          editable={editable}
-          editableTrigger={editableTrigger}
-          showIcon={showIcon}
-          onNodeClick={handleNodeClick}
-          onBracketsClick={handleBracketsClick}
-          onIconClick={handleIconClick}
-          onSelectedChange={handleSelectedChange}
-          onValueChange={handleValueChange}
-          style={itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}}
-        />
-      ));
-
-    return (
-      <div
-        ref="tree"
-        class={{
-          'vjs-tree': true,
-          'is-virtual': virtual,
-        }}
-        onScroll={virtual ? handleTreeScroll : undefined}
-        style={
-          showLineNumber
-            ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px`, ...style }
-            : style
-        }
-      >
-        {virtual ? (
-          <div style={{ height: `${height}px` }}>
-            <div style={{ height: `${flatData.length * itemHeight}px` }}>
-              <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+      return (
+        <div
+          ref={treeRef}
+          class={{
+            'vjs-tree': true,
+            'is-virtual': props.virtual,
+          }}
+          onScroll={props.virtual ? handleTreeScroll : undefined}
+          style={
+            props.showLineNumber
+              ? {
+                  paddingLeft: `${Number(flatData.value.length.toString().length) * 12}px`,
+                  ...props.style,
+                }
+              : props.style
+          }
+        >
+          {props.virtual ? (
+            <div style={{ height: `${props.height}px` }}>
+              <div style={{ height: `${flatData.value.length * props.itemHeight}px` }}>
+                <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+              </div>
             </div>
-          </div>
-        ) : (
-          nodeContent
-        )}
-      </div>
-    );
+          ) : (
+            nodeContent
+          )}
+        </div>
+      );
+    };
   },
 });

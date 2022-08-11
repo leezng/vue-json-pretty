@@ -21,14 +21,9 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: true,
   },
-  // Custom formatter for values.
-  customValueFormatter: Function as PropType<
-    (
-      data: unknown,
-      key: NodeDataType['key'],
-      path: string,
-      defaultFormatResult: string | JSX.Element,
-    ) => unknown
+  // Custom render for value.
+  renderNodeValue: Function as PropType<
+    (opt: { node: NodeDataType; defaultValue: string | JSX.Element }) => unknown
   >,
   // Define the selection method supported by the data level, which is not available by default.
   selectableType: String as PropType<'multiple' | 'single' | ''>,
@@ -110,7 +105,7 @@ export default defineComponent({
   emits: ['nodeClick', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
 
   setup(props, { emit }) {
-    const dataType = computed(() => getDataType(props.node.content));
+    const dataType = computed<string>(() => getDataType(props.node.content));
 
     const valueClass = computed(() => `vjs-value vjs-value__${dataType.value}`);
 
@@ -131,10 +126,6 @@ export default defineComponent({
 
     const state = reactive({
       editing: false,
-      valueClass,
-      prettyKey,
-      isMultiple,
-      selectable,
     });
 
     const handleInputChange = (e: Event) => {
@@ -143,37 +134,19 @@ export default defineComponent({
       emit('valueChange', value, props.node.path);
     };
 
-    const defaultFormatter = (data: unknown) => {
-      const str = data + '';
+    const defaultValue = computed(() => {
+      const str = (props.node?.content ?? '') + '';
       const text = dataType.value === 'string' ? `"${str}"` : str;
-      if (props.editable && state.editing) {
-        return (
-          <input
-            value={text}
-            onChange={handleInputChange}
-            style={{
-              padding: '3px 8px',
-              border: '1px solid #eee',
-              boxShadow: 'none',
-              boxSizing: 'border-box',
-              borderRadius: 5,
-              fontFamily: 'inherit',
-            }}
-          />
-        );
-      }
       return text;
-    };
+    });
 
-    const customFormatter = props.customValueFormatter
-      ? (data: unknown) =>
-          props.customValueFormatter?.(
-            data,
-            props.node.key,
-            props.node.path,
-            defaultFormatter(data),
-          )
-      : null;
+    const renderValue = () => {
+      const render = props.renderNodeValue;
+
+      return render
+        ? render({ node: props.node, defaultValue: defaultValue.value })
+        : defaultValue.value;
+    };
 
     const handleBracketsClick = () => {
       emit('bracketsClick', !props.collapsed, props.node.path);
@@ -212,108 +185,92 @@ export default defineComponent({
       }
     };
 
-    return {
-      state,
-      defaultFormatter,
-      customFormatter,
-      handleBracketsClick,
-      handleIconClick,
-      handleSelectedChange,
-      handleNodeClick,
-      handleValueEdit,
-    };
-  },
+    return () => {
+      const { node } = props;
 
-  render() {
-    const {
-      state,
-      node,
-      showSelectController,
-      highlightSelectedNode,
-      checked,
-      showLength,
-      collapsed,
-      showLine,
-      showLineNumber,
-      editable,
-      editableTrigger,
-      showIcon,
-      style,
-    } = this;
+      return (
+        <div
+          class={{
+            'vjs-tree__node': true,
+            'has-selector': props.showSelectController,
+            'has-carets': props.showIcon,
+            'is-highlight': props.highlightSelectedNode && props.checked,
+          }}
+          onClick={handleNodeClick}
+          style={props.style}
+        >
+          {props.showLineNumber && <span class="vjs-node__index">{node.id + 1}</span>}
 
-    const {
-      defaultFormatter,
-      customFormatter,
-      handleNodeClick,
-      handleSelectedChange,
-      handleBracketsClick,
-      handleIconClick,
-      handleValueEdit,
-    } = this;
+          {props.showSelectController &&
+            selectable.value &&
+            node.type !== 'objectEnd' &&
+            node.type !== 'arrayEnd' && (
+              <CheckController
+                isMultiple={isMultiple.value}
+                checked={props.checked}
+                onChange={handleSelectedChange}
+              />
+            )}
 
-    return (
-      <div
-        class={{
-          'vjs-tree__node': true,
-          'has-selector': showSelectController,
-          'has-carets': showIcon,
-          'is-highlight': highlightSelectedNode && checked,
-        }}
-        onClick={handleNodeClick}
-        style={style}
-      >
-        {showLineNumber && <span class="vjs-node__index">{node.id + 1}</span>}
+          <div class="vjs-indent">
+            {Array.from(Array(node.level)).map((item, index) => (
+              <div
+                key={index}
+                class={{
+                  'vjs-indent__unit': true,
+                  'has-line': props.showLine,
+                }}
+              />
+            ))}
+            {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
+          </div>
 
-        {showSelectController &&
-          state.selectable &&
-          node.type !== 'objectEnd' &&
-          node.type !== 'arrayEnd' && (
-            <CheckController
-              isMultiple={state.isMultiple}
-              checked={checked}
-              onChange={handleSelectedChange}
-            />
-          )}
+          {node.key && <span class="vjs-key">{`${prettyKey.value}: `}</span>}
 
-        <div class="vjs-indent">
-          {Array.from(Array(node.level)).map((item, index) => (
-            <div
-              key={index}
-              class={{
-                'vjs-indent__unit': true,
-                'has-line': showLine,
-              }}
-            />
-          ))}
-          {showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
+          <span>
+            {node.type !== 'content' && node.content ? (
+              <Brackets data={node.content.toString()} onClick={handleBracketsClick} />
+            ) : (
+              <span
+                class={valueClass.value}
+                onClick={
+                  props.editable && (!props.editableTrigger || props.editableTrigger === 'click')
+                    ? handleValueEdit
+                    : undefined
+                }
+                onDblclick={
+                  props.editable && props.editableTrigger === 'dblclick'
+                    ? handleValueEdit
+                    : undefined
+                }
+              >
+                {props.editable && state.editing ? (
+                  <input
+                    value={defaultValue.value}
+                    onChange={handleInputChange}
+                    style={{
+                      padding: '3px 8px',
+                      border: '1px solid #eee',
+                      boxShadow: 'none',
+                      boxSizing: 'border-box',
+                      borderRadius: 5,
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                ) : (
+                  renderValue()
+                )}
+              </span>
+            )}
+
+            {node.showComma && <span>{','}</span>}
+
+            {props.showLength && props.collapsed && (
+              <span class="vjs-comment"> // {node.length} items </span>
+            )}
+          </span>
         </div>
-
-        {node.key && <span class="vjs-key">{`${state.prettyKey}: `}</span>}
-
-        <span>
-          {node.type !== 'content' && node.content ? (
-            <Brackets data={node.content.toString()} onClick={handleBracketsClick} />
-          ) : customFormatter ? (
-            <span class={state.valueClass} v-html={customFormatter(node.content)} />
-          ) : (
-            <span
-              class={state.valueClass}
-              onClick={
-                editable && (!editableTrigger || editableTrigger === 'click')
-                  ? handleValueEdit
-                  : undefined
-              }
-              onDblclick={editable && editableTrigger === 'dblclick' ? handleValueEdit : undefined}
-            >
-              {defaultFormatter(node.content)}
-            </span>
-          )}
-
-          {node.showComma && <span>{','}</span>}
-
-          {showLength && collapsed && <span class="vjs-comment"> // {node.length} items </span>}
-        </span>
-      </div>
-    );
+      );
+    };
   },
 });

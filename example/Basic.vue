@@ -31,8 +31,8 @@
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
-          <label>use custom formatter</label>
-          <input v-model="state.useCustomLinkFormatter" type="checkbox" />
+          <label>useRenderNodeValue</label>
+          <input v-model="state.useRenderNodeValue" type="checkbox" />
         </div>
         <div>
           <label>deep</label>
@@ -43,12 +43,8 @@
           </select>
         </div>
         <div>
-          <label>deepCollapseChildren</label>
-          <input v-model="state.deepCollapseChildren" type="checkbox" />
-        </div>
-        <div>
-          <label>defaultCollapsePath</label>
-          <input v-model="state.collapsePathPattern" type="input" />
+          <label>setPathCollapsible</label>
+          <input v-model="state.setPathCollapsible" type="checkbox" />
         </div>
       </div>
     </div>
@@ -57,17 +53,22 @@
       <vue-json-pretty
         :data="state.data"
         :deep="state.deep"
-        :deep-collapse-children="state.deepCollapseChildren"
-        :collapse-path="state.collapsePath"
+        :path-collapsible="setPathCollapsible ? pathCollapsible : undefined"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
         :show-line-number="state.showLineNumber"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
-        :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
         :show-icon="state.showIcon"
         style="position: relative"
-      />
+      >
+        <template v-if="state.useRenderNodeValue" #renderNodeValue="{ node, defaultValue }">
+          <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
+            <a :href="node.content" target="_blank">{{ node.content }}</a>
+          </template>
+          <template v-else>{{ defaultValue }}</template>
+        </template>
+      </vue-json-pretty>
     </div>
   </div>
 </template>
@@ -116,20 +117,14 @@ export default defineComponent({
       showLineNumber: false,
       showDoubleQuotes: true,
       collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
+      useRenderNodeValue: false,
       deep: 4,
-      deepCollapseChildren: false,
-      collapsePath: /members/,
-      collapsePathPattern: 'members',
+      setPathCollapsible: false,
       showIcon: false,
     });
 
-    const customLinkFormatter = (data, key, path, defaultFormatted) => {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
+    const pathCollapsible = node => {
+      return node.key === 'members';
     };
 
     watch(
@@ -143,21 +138,16 @@ export default defineComponent({
       },
     );
 
-    watch(
-      () => state.collapsePath,
-      newVal => {
-        try {
-          state.collapsePath = new RegExp(newVal);
-        } catch (err) {
-          // console.log('Regexp ERROR');
-        }
-      },
-    );
-
     return {
       state,
-      customLinkFormatter,
+      pathCollapsible,
     };
   },
 });
 </script>
+
+<style scoped>
+a {
+  color: blue;
+}
+</style>
