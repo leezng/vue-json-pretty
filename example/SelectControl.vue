@@ -26,8 +26,8 @@
           <input v-model="state.selectOnClickNode" type="checkbox" />
         </div>
         <div>
-          <label>path</label>
-          <input v-model="state.path" type="text" />
+          <label>rootPath</label>
+          <input v-model="state.rootPath" type="text" />
         </div>
         <div>
           <label>showLength</label>
@@ -69,7 +69,7 @@
         v-if="state.renderOK"
         v-model:selectedValue="state.selectedValue"
         :data="state.data"
-        :path="state.path"
+        :root-path="state.rootPath"
         :deep="state.deep"
         :show-double-quotes="true"
         :highlight-selected-node="state.highlightSelectedNode"
@@ -140,7 +140,7 @@ export default defineComponent({
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
-      path: 'res',
+      rootPath: 'res',
       deep: 3,
       node: '',
       showIcon: false,

@@ -33,7 +33,7 @@ export default defineComponent({
       default: null,
     },
     // Data root path.
-    path: {
+    rootPath: {
       type: String,
       default: 'root',
     },
@@ -229,7 +229,7 @@ export default defineComponent({
 
     const handleValueChange = (value: unknown, path: string) => {
       const newData = cloneDeep(props.data);
-      const rootPath = props.path;
+      const rootPath = props.rootPath;
       new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
       emit('update:data', newData);
     };
