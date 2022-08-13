@@ -4,7 +4,7 @@
   color: @color;
 }
 
-.@{css-prefix}-tree__node {
+.@{css-prefix}-tree-node {
   display: flex;
   position: relative;
   line-height: 20px;
@@ -28,7 +28,7 @@
     position: relative;
   }
 
-  .@{css-prefix}-indent__unit {
+  .@{css-prefix}-indent-unit {
     width: 1em;
 
     &.has-line {
@@ -37,7 +37,7 @@
   }
 }
 
-.@{css-prefix}-node__index {
+.@{css-prefix}-node-index {
   position: absolute;
   right: 100%;
   margin-right: 4px;
@@ -47,18 +47,22 @@
   color: @comment-color;
 }
 
-.@{css-prefix}-value__null {
+.@{css-prefix}-value {
+  word-break: break-word;
+}
+
+.@{css-prefix}-value-null {
   .gen-value-style(@color-null);
 }
 
-.@{css-prefix}-value__number {
+.@{css-prefix}-value-number {
   .gen-value-style(@color-number);
 }
 
-.@{css-prefix}-value__boolean {
+.@{css-prefix}-value-boolean {
   .gen-value-style(@color-boolean);
 }
 
-.@{css-prefix}-value__string {
+.@{css-prefix}-value-string {
   .gen-value-style(@color-string);
 }

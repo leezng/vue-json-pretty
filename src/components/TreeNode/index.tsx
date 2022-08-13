@@ -107,7 +107,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const dataType = computed<string>(() => getDataType(props.node.content));
 
-    const valueClass = computed(() => `vjs-value vjs-value__${dataType.value}`);
+    const valueClass = computed(() => `vjs-value vjs-value-${dataType.value}`);
 
     const prettyKey = computed(() =>
       props.showDoubleQuotes ? `"${props.node.key}"` : props.node.key,
@@ -191,7 +191,7 @@ export default defineComponent({
       return (
         <div
           class={{
-            'vjs-tree__node': true,
+            'vjs-tree-node': true,
             'has-selector': props.showSelectController,
             'has-carets': props.showIcon,
             'is-highlight': props.highlightSelectedNode && props.checked,
@@ -199,7 +199,7 @@ export default defineComponent({
           onClick={handleNodeClick}
           style={props.style}
         >
-          {props.showLineNumber && <span class="vjs-node__index">{node.id + 1}</span>}
+          {props.showLineNumber && <span class="vjs-node-index">{node.id + 1}</span>}
 
           {props.showSelectController &&
             selectable.value &&
@@ -217,7 +217,7 @@ export default defineComponent({
               <div
                 key={index}
                 class={{
-                  'vjs-indent__unit': true,
+                  'vjs-indent-unit': true,
                   'has-line': props.showLine,
                 }}
               />

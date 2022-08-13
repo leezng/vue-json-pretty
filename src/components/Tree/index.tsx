@@ -301,9 +301,17 @@ export default defineComponent({
           }
         >
           {props.virtual ? (
-            <div style={{ height: `${props.height}px` }}>
-              <div style={{ height: `${flatData.value.length * props.itemHeight}px` }}>
-                <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
+            <div class="vjs-tree-list" style={{ height: `${props.height}px` }}>
+              <div
+                class="vjs-tree-list-holder"
+                style={{ height: `${flatData.value.length * props.itemHeight}px` }}
+              >
+                <div
+                  class="vjs-tree-list-holder-inner"
+                  style={{ transform: `translateY(${state.translateY}px)` }}
+                >
+                  {nodeContent}
+                </div>
               </div>
             </div>
           ) : (

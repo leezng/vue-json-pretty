@@ -22,7 +22,7 @@ export default defineComponent({
     if (!isOpen && !isClose) return null;
 
     return (
-      <span class={`vjs-carets vjs-carets__${isOpen ? 'open' : 'close'}`} onClick={onClick}>
+      <span class={`vjs-carets vjs-carets-${isOpen ? 'open' : 'close'}`} onClick={onClick}>
         <svg
           viewBox="0 0 1024 1024"
           focusable="false"

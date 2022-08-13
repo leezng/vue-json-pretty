@@ -31,10 +31,6 @@
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
-          <label>useRenderNodeValue</label>
-          <input v-model="state.useRenderNodeValue" type="checkbox" />
-        </div>
-        <div>
           <label>deep</label>
           <select v-model="state.deep">
             <option :value="2">2</option>
@@ -47,13 +43,21 @@
           <input v-model="state.setPathCollapsible" type="checkbox" />
         </div>
       </div>
+
+      <h3>Slots:</h3>
+      <div class="options">
+        <div>
+          <label>renderNodeValue</label>
+          <input v-model="state.useRenderNodeValueSlot" type="checkbox" />
+        </div>
+      </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         :data="state.data"
         :deep="state.deep"
-        :path-collapsible="setPathCollapsible ? pathCollapsible : undefined"
+        :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
         :show-line="state.showLine"
@@ -62,7 +66,7 @@
         :show-icon="state.showIcon"
         style="position: relative"
       >
-        <template v-if="state.useRenderNodeValue" #renderNodeValue="{ node, defaultValue }">
+        <template v-if="state.useRenderNodeValueSlot" #renderNodeValue="{ node, defaultValue }">
           <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
             <a :href="node.content" target="_blank">{{ node.content }}</a>
           </template>
@@ -117,7 +121,7 @@ export default defineComponent({
       showLineNumber: false,
       showDoubleQuotes: true,
       collapsedOnClickBrackets: true,
-      useRenderNodeValue: false,
+      useRenderNodeValueSlot: false,
       deep: 4,
       setPathCollapsible: false,
       showIcon: false,
