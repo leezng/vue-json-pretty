@@ -12,11 +12,11 @@
   >
     <div class="vjs-tree-list" :style="virtual && { height: `${height}px` }">
       <div
-        class="vjs-tree-list__holder"
+        class="vjs-tree-list-holder"
         :style="virtual && { height: `${flatData.length * itemHeight}px` }"
       >
         <div
-          class="vjs-tree-list__holder-inner"
+          class="vjs-tree-list-holder-inner"
           :style="virtual && { transform: `translateY(${translateY}px)` }"
         >
           <tree-node

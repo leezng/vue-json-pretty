@@ -1,14 +1,14 @@
 <template>
   <div
     :class="{
-      'vjs-tree__node': true,
+      'vjs-tree-node': true,
       'has-selector': showSelectController,
       'has-carets': showIcon,
       'is-highlight': highlightSelectedNode && checked,
     }"
     @click="handleNodeClick"
   >
-    <span v-if="showLineNumber" class="vjs-node__index">
+    <span v-if="showLineNumber" class="vjs-node-index">
       {{ node.id + 1 }}
     </span>
 
@@ -26,7 +26,7 @@
         v-for="(item, index) in node.level"
         :key="index"
         :class="{
-          'vjs-indent__unit': true,
+          'vjs-indent-unit': true,
           'has-line': showLine,
         }"
       />
@@ -148,7 +148,7 @@ export default {
   },
   computed: {
     valueClass() {
-      return `vjs-value vjs-value__${this.dataType}`;
+      return `vjs-value vjs-value-${this.dataType}`;
     },
 
     dataType() {

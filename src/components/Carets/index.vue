@@ -1,7 +1,7 @@
 <template>
   <span
     v-if="isOpen || isClose"
-    :class="`vjs-carets vjs-carets__${isOpen ? 'open' : 'close'}`"
+    :class="`vjs-carets vjs-carets-${isOpen ? 'open' : 'close'}`"
     @click="handleClick"
   >
     <svg

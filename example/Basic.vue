@@ -35,10 +35,6 @@
           <input v-model="collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
-          <label>useNodeValueSlot</label>
-          <input v-model="useNodeValueSlot" type="checkbox" />
-        </div>
-        <div>
           <label>deep</label>
           <select v-model="deep">
             <option :value="2">2</option>
@@ -46,9 +42,13 @@
             <option :value="4">4</option>
           </select>
         </div>
+      </div>
+
+      <h3>Slots:</h3>
+      <div class="options">
         <div>
-          <label>deepCollapseChildren</label>
-          <input v-model="deepCollapseChildren" type="checkbox" />
+          <label>nodeValue</label>
+          <input v-model="useNodeValueSlot" type="checkbox" />
         </div>
       </div>
     </div>
@@ -57,7 +57,6 @@
       <vue-json-pretty
         :data="data"
         :deep="deep"
-        :deepCollapseChildren="deepCollapseChildren"
         :show-double-quotes="showDoubleQuotes"
         :show-length="showLength"
         :show-line="showLine"
@@ -124,7 +123,6 @@ export default {
       collapsedOnClickBrackets: true,
       useNodeValueSlot: false,
       deep: 3,
-      deepCollapseChildren: false,
       showIcon: false,
     };
   },

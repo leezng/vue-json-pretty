@@ -1,10 +1,10 @@
 <template>
   <!-- click.stop 避免向上冒泡触发 tree.vue 的 click 事件-->
   <label :class="[`vjs-check-controller`, checked ? 'is-checked' : '']" @click.stop>
-    <span :class="`vjs-check-controller__inner is-${uiType}`" />
+    <span :class="`vjs-check-controller-inner is-${uiType}`" />
     <input
       :checked="model"
-      :class="`vjs-check-controller__original is-${uiType}`"
+      :class="`vjs-check-controller-original is-${uiType}`"
       :type="uiType"
       @change="$emit('change', model)"
     />
