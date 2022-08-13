@@ -138,13 +138,14 @@ plugins: [
 | icon-click      | triggers when click icon                 | (collapsed: boolean) |
 | selected-change | triggers when the selected value changed | (newVal, oldVal)     |
 
-## Scoped Slots
+## Slots
 
 | Slot Name | Description       | Parameters             |
 | --------- | ----------------- | ---------------------- |
 | nodeValue | render node value | { node, defaultValue } |
 
-## Major Contributors
+## Contributors
 
-[![](https://avatars3.githubusercontent.com/u/153197?v=3&s=50)](https://github.com/rchl)
-[![](https://avatars1.githubusercontent.com/u/445616?v=3&s=50)](https://github.com/blackmad)
+<a href="https://github.com/leezng/vue-json-pretty/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=leezng/vue-json-pretty" />
+</a>

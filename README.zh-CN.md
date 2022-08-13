@@ -41,7 +41,7 @@
 | icon-click      | 点击图标时触发       | (collapsed: boolean) |
 | selected-change | 选中值发生变化时触发 | (newVal, oldVal)     |
 
-## Scoped Slots
+## Slots
 
 | 插槽名    | 描述       | 参数                   |
 | --------- | ---------- | ---------------------- |
