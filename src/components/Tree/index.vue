@@ -33,7 +33,7 @@
             :show-line-number="showLineNumber"
             :show-select-controller="showSelectController"
             :select-on-click-node="selectOnClickNode"
-            :path-selectable="pathSelectable"
+            :node-selectable="nodeSelectable"
             :highlight-selected-node="highlightSelectedNode"
             :show-icon="showIcon"
             :editable="editable"
@@ -140,7 +140,7 @@ export default {
       default: () => '',
     },
     // When using the selectableType, define whether current path/content is enabled.
-    pathSelectable: {
+    nodeSelectable: {
       type: Function,
       default: () => true,
     },

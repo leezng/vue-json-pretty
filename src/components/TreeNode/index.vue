@@ -119,7 +119,7 @@ export default {
       default: true,
     },
     // When using the selectableType, define whether current path/content is enabled.
-    pathSelectable: {
+    nodeSelectable: {
       type: Function,
       default: () => true,
     },
@@ -160,9 +160,7 @@ export default {
     },
 
     selectable() {
-      return (
-        this.pathSelectable(this.node.path, this.node.content) && (this.isMultiple || this.isSingle)
-      );
+      return this.nodeSelectable(this.node) && (this.isMultiple || this.isSingle);
     },
 
     isMultiple() {

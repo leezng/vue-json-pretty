@@ -87,7 +87,7 @@
         :show-line-number="showLineNumber"
         :select-on-click-node="selectOnClickNode"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :path-selectable="(path, data) => typeof data !== 'number'"
+        :node-selectable="(node) => typeof node.content !== 'number'"
         :selectable-type="selectableType"
         :show-select-controller="showSelectController"
         :show-icon="showIcon"
