@@ -7,14 +7,6 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>showIcon</label>
-          <input v-model="state.showIcon" type="checkbox" />
-        </div>
-        <div>
-          <label>showLength</label>
-          <input v-model="state.showLength" type="checkbox" />
-        </div>
-        <div>
           <label>showLine</label>
           <input v-model="state.showLine" type="checkbox" />
         </div>
@@ -23,12 +15,15 @@
           <input v-model="state.showLineNumber" type="checkbox" />
         </div>
         <div>
-          <label>showDoubleQuotes</label>
-          <input v-model="state.showDoubleQuotes" type="checkbox" />
+          <label>editable</label>
+          <input v-model="state.editable" type="checkbox" />
         </div>
         <div>
-          <label>collapsedOnClickBrackets</label>
-          <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
+          <label>editableTrigger</label>
+          <select v-model="state.editableTrigger">
+            <option value="click">click</option>
+            <option value="dblclick">dblclick</option>
+          </select>
         </div>
         <div>
           <label>deep</label>
@@ -38,41 +33,19 @@
             <option :value="4">4</option>
           </select>
         </div>
-        <div>
-          <label>setPathCollapsible</label>
-          <input v-model="state.setPathCollapsible" type="checkbox" />
-        </div>
-      </div>
-
-      <h3>Slots:</h3>
-      <div class="options">
-        <div>
-          <label>renderNodeValue</label>
-          <input v-model="state.useRenderNodeValueSlot" type="checkbox" />
-        </div>
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        :data="state.data"
+        v-model:data="state.data"
         :deep="state.deep"
-        :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"
-        :show-double-quotes="state.showDoubleQuotes"
-        :show-length="state.showLength"
+        :show-double-quotes="true"
         :show-line="state.showLine"
         :show-line-number="state.showLineNumber"
-        :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
-        :show-icon="state.showIcon"
-        style="position: relative"
-      >
-        <template v-if="state.useRenderNodeValueSlot" #renderNodeValue="{ node, defaultValue }">
-          <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
-            <a :href="node.content" target="_blank">{{ node.content }}</a>
-          </template>
-          <template v-else>{{ defaultValue }}</template>
-        </template>
-      </vue-json-pretty>
+        :editable="state.editable"
+        :editable-trigger="state.editableTrigger"
+      />
     </div>
   </div>
 </template>
@@ -108,7 +81,7 @@ const defaultData = {
 };
 
 export default defineComponent({
-  name: 'Basic',
+  name: 'Editable',
   components: {
     VueJsonPretty,
   },
@@ -116,20 +89,12 @@ export default defineComponent({
     const state = reactive({
       val: JSON.stringify(defaultData),
       data: defaultData,
-      showLength: false,
       showLine: true,
       showLineNumber: false,
-      showDoubleQuotes: true,
-      collapsedOnClickBrackets: true,
-      useRenderNodeValueSlot: false,
-      deep: 4,
-      setPathCollapsible: false,
-      showIcon: false,
+      editable: true,
+      editableTrigger: 'click',
+      deep: 3,
     });
-
-    const pathCollapsible = node => {
-      return node.key === 'members';
-    };
 
     watch(
       () => state.val,
@@ -142,16 +107,20 @@ export default defineComponent({
       },
     );
 
+    watch(
+      () => state.data,
+      newVal => {
+        try {
+          state.val = JSON.stringify(newVal);
+        } catch (err) {
+          // console.log('JSON ERROR');
+        }
+      },
+    );
+
     return {
       state,
-      pathCollapsible,
     };
   },
 });
 </script>
-
-<style scoped>
-a {
-  color: blue;
-}
-</style>

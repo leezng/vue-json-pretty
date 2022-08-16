@@ -1,0 +1,19 @@
+@import '~src/themes.less';
+
+.@{css-prefix}-carets {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+
+  svg {
+    transition: transform 0.3s;
+  }
+
+  &:hover {
+    color: @color-primary;
+  }
+}
+
+.@{css-prefix}-carets-close {
+  transform: rotate(-90deg);
+}

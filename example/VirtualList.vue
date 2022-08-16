@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
       <textarea v-model="state.val" />
@@ -7,8 +7,8 @@
       <h3>Options:</h3>
       <div class="options">
         <div>
-          <label>virtualLines</label>
-          <input v-model="state.virtualLines" type="number" />
+          <label>itemHeight</label>
+          <input v-model="state.itemHeight" type="number" />
         </div>
         <div>
           <label>showLine</label>
@@ -29,11 +29,10 @@
       </div>
     </div>
     <div class="block">
-      <h3>vue-json-pretty(1000+ items):</h3>
+      <h3>vue-json-pretty(10000+ items):</h3>
       <vue-json-pretty
-        style="height:400px"
         :virtual="true"
-        :virtualLines="+state.virtualLines"
+        :item-height="+state.itemHeight"
         :data="state.data"
         :deep="state.deep"
         :show-line="state.showLine"
@@ -50,12 +49,16 @@ import VueJsonPretty from 'src';
 const defaultData = {
   status: 200,
   error: '',
-  data: Array.from(Array(1000)).map((item, index) => ({
-    news_id: index,
+  data: [],
+};
+
+for (let i = 0; i < 10000; i++) {
+  defaultData.data.push({
+    news_id: i,
     title: 'iPhone X Review: Innovative future with real black technology',
     source: 'Netease phone',
-  })),
-};
+  });
+}
 
 export default defineComponent({
   name: 'VirtualList',
@@ -69,7 +72,7 @@ export default defineComponent({
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
-      virtualLines: 20,
+      itemHeight: 20,
     });
 
     watch(

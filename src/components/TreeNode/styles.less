@@ -4,12 +4,18 @@
   color: @color;
 }
 
-.@{css-prefix}-tree__node {
+.@{css-prefix}-tree-node {
   display: flex;
   position: relative;
+  line-height: 20px;
 
-  &.has-selector {
-    padding-left: @selector-span;
+  &.has-carets {
+    padding-left: 15px;
+  }
+
+  &.has-selector,
+  &.has-carets.has-selector {
+    padding-left: 30px;
   }
 
   &.is-highlight,
@@ -17,8 +23,13 @@
     background-color: @highlight-bg-color;
   }
 
-  .@{css-prefix}-tree__indent {
-    flex: 0 0 1em;
+  .@{css-prefix}-indent {
+    display: flex;
+    position: relative;
+  }
+
+  .@{css-prefix}-indent-unit {
+    width: 1em;
 
     &.has-line {
       border-left: 1px dashed @border-color;
@@ -26,22 +37,32 @@
   }
 }
 
+.@{css-prefix}-node-index {
+  position: absolute;
+  right: 100%;
+  margin-right: 4px;
+}
+
 .@{css-prefix}-comment {
   color: @comment-color;
 }
 
-.@{css-prefix}-value__null {
+.@{css-prefix}-value {
+  word-break: break-word;
+}
+
+.@{css-prefix}-value-null {
   .gen-value-style(@color-null);
 }
 
-.@{css-prefix}-value__number {
+.@{css-prefix}-value-number {
   .gen-value-style(@color-number);
 }
 
-.@{css-prefix}-value__boolean {
+.@{css-prefix}-value-boolean {
   .gen-value-style(@color-boolean);
 }
 
-.@{css-prefix}-value__string {
+.@{css-prefix}-value-string {
   .gen-value-style(@color-string);
 }

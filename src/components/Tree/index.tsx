@@ -1,9 +1,15 @@
-import { defineComponent, reactive, computed, watchEffect, ref, PropType } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  computed,
+  watchEffect,
+  ref,
+  PropType,
+  CSSProperties,
+} from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, JSONDataType } from 'src/utils';
+import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
 import './styles.less';
-
-type FlatDataType = NodeDataType[];
 
 export default defineComponent({
   name: 'Tree',
@@ -20,16 +26,12 @@ export default defineComponent({
       type: Number,
       default: Infinity,
     },
-    deepCollapseChildren: {
-      type: Boolean,
-      default: false,
-    },
-    collapsePath: {
-      type: RegExp,
-      default: null,
+    pathCollapsible: {
+      type: Function as PropType<(node: NodeDataType) => boolean>,
+      default: (): boolean => false,
     },
     // Data root path.
-    path: {
+    rootPath: {
       type: String,
       default: 'root',
     },
@@ -38,10 +40,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    //When using virtual scroll, set the number of items there can be
-    virtualLines: {
+    // When using virtual scroll, set the height of tree.
+    height: {
       type: Number,
-      default: 10,
+      default: 400,
     },
     // When using virtual scroll, define the height of each row.
     itemHeight: {
@@ -50,27 +52,43 @@ export default defineComponent({
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
-    modelValue: {
+    selectedValue: {
       type: [String, Array] as PropType<string | string[]>,
       default: () => '',
     },
+    // Collapsed control.
+    collapsedOnClickBrackets: {
+      type: Boolean,
+      default: true,
+    },
+    style: Object as PropType<CSSProperties>,
+    onSelectedChange: {
+      type: Function as PropType<(newVal: string | string[], oldVal: string | string[]) => void>,
+    },
   },
 
-  emits: ['click', 'change', 'update:modelValue'],
+  slots: ['renderNodeValue'],
 
-  setup(props, { emit }) {
-    const tree = ref<HTMLElement>();
+  emits: [
+    'nodeClick',
+    'bracketsClick',
+    'iconClick',
+    'selectedChange',
+    'update:selectedValue',
+    'update:data',
+  ],
+
+  setup(props, { emit, slots }) {
+    const treeRef = ref<HTMLElement>();
+
+    const originFlatData = computed(() => jsonFlatten(props.data, props.rootPath));
 
     const state = reactive({
       translateY: 0,
-      visibleData: null as FlatDataType | null,
-      hiddenPaths: jsonFlatten(props.data, props.path).reduce((acc, item) => {
-        const depthComparison = props.deepCollapseChildren
-          ? item.level >= props.deep
-          : item.level === props.deep;
-        const pathComparison =
-          depthComparison ||
-          (props.collapsePath && props.collapsePath.test(item.path));
+      visibleData: null as NodeDataType[] | null,
+      hiddenPaths: originFlatData.value.reduce((acc, item) => {
+        const depthComparison = item.level >= props.deep;
+        const pathComparison = props.pathCollapsible?.(item as NodeDataType);
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
           (depthComparison || pathComparison)
@@ -86,34 +104,39 @@ export default defineComponent({
 
     const flatData = computed(() => {
       let startHiddenItem: null | NodeDataType = null;
-      const data = jsonFlatten(props.data, props.path).reduce((acc, cur, index) => {
+      const data = [];
+      const length = originFlatData.value.length;
+      for (let i = 0; i < length; i++) {
+        const cur = originFlatData.value[i];
         const item = {
           ...cur,
-          id: index,
+          id: i,
         };
         const isHidden = state.hiddenPaths[item.path];
         if (startHiddenItem && startHiddenItem.path === item.path) {
           const isObject = startHiddenItem.type === 'objectStart';
           const mergeItem = {
-            ...startHiddenItem,
             ...item,
+            ...startHiddenItem,
+            showComma: item.showComma,
             content: isObject ? '{...}' : '[...]',
             type: isObject ? 'objectCollapsed' : 'arrayCollapsed',
           } as NodeDataType;
           startHiddenItem = null;
-          return acc.concat(mergeItem);
+          data.push(mergeItem);
         } else if (isHidden && !startHiddenItem) {
           startHiddenItem = item;
-          return acc;
+          continue;
+        } else {
+          if (startHiddenItem) continue;
+          else data.push(item);
         }
-
-        return startHiddenItem ? acc : acc.concat(item);
-      }, [] as FlatDataType);
+      }
       return data;
     });
 
     const selectedPaths = computed(() => {
-      const value = props.modelValue;
+      const value = props.selectedValue;
       if (value && props.selectableType === 'multiple' && Array.isArray(value)) {
         return value;
       }
@@ -127,11 +150,11 @@ export default defineComponent({
         : '';
     });
 
-    const updateVisibleData = (flatDataValue: FlatDataType) => {
+    const updateVisibleData = () => {
+      const flatDataValue = flatData.value;
       if (props.virtual) {
-        const treeRefValue = tree.value;
-        const visibleCount = props.virtualLines;
-        const scrollTop = (treeRefValue && treeRefValue.scrollTop) || 0;
+        const visibleCount = props.height / props.itemHeight;
+        const scrollTop = treeRef.value?.scrollTop || 0;
         const scrollCount = Math.floor(scrollTop / props.itemHeight);
         let start =
           scrollCount < 0
@@ -150,11 +173,11 @@ export default defineComponent({
       }
     };
 
-    const onTreeScroll = () => {
-      updateVisibleData(flatData.value);
+    const handleTreeScroll = () => {
+      updateVisibleData();
     };
 
-    const onSelectedChange = ({ path }: NodeDataType) => {
+    const handleSelectedChange = ({ path }: NodeDataType) => {
       const type = props.selectableType;
       if (type === 'multiple') {
         const index = selectedPaths.value.findIndex(item => item === path);
@@ -164,23 +187,23 @@ export default defineComponent({
         } else {
           newVal.push(path);
         }
-        emit('update:modelValue', newVal);
-        emit('change', newVal, [...selectedPaths.value]);
+        emit('update:selectedValue', newVal);
+        emit('selectedChange', newVal, [...selectedPaths.value]);
       } else if (type === 'single') {
         if (selectedPaths.value[0] !== path) {
           const [oldVal] = selectedPaths.value;
           const newVal = path;
-          emit('update:modelValue', newVal);
-          emit('change', newVal, oldVal);
+          emit('update:selectedValue', newVal);
+          emit('selectedChange', newVal, oldVal);
         }
       }
     };
 
-    const onTreeNodeClick = ({ content, path }: NodeDataType) => {
-      emit('click', path, content);
+    const handleNodeClick = (node: NodeDataType) => {
+      emit('nodeClick', node);
     };
 
-    const onBracketsClick = (collapsed: boolean, path: string) => {
+    const updateCollapsedPaths = (collapsed: boolean, path: string) => {
       if (collapsed) {
         state.hiddenPaths = {
           ...state.hiddenPaths,
@@ -193,6 +216,25 @@ export default defineComponent({
       }
     };
 
+    const handleBracketsClick = (collapsed: boolean, path: string) => {
+      if (props.collapsedOnClickBrackets) {
+        updateCollapsedPaths(collapsed, path);
+      }
+      emit('bracketsClick', collapsed);
+    };
+
+    const handleIconClick = (collapsed: boolean, path: string) => {
+      updateCollapsedPaths(collapsed, path);
+      emit('iconClick', collapsed);
+    };
+
+    const handleValueChange = (value: unknown, path: string) => {
+      const newData = cloneDeep(props.data);
+      const rootPath = props.rootPath;
+      new Function('data', 'val', `data${path.slice(rootPath.length)}=val`)(newData, value);
+      emit('update:data', newData);
+    };
+
     watchEffect(() => {
       if (propsErrorMessage.value) {
         emitError(propsErrorMessage.value);
@@ -201,84 +243,83 @@ export default defineComponent({
 
     watchEffect(() => {
       if (flatData.value) {
-        updateVisibleData(flatData.value);
+        updateVisibleData();
       }
     });
 
-    return {
-      tree,
-      state,
-      flatData,
-      selectedPaths,
-      onTreeScroll,
-      onSelectedChange,
-      onTreeNodeClick,
-      onBracketsClick,
+    return () => {
+      const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
+
+      const nodeContent =
+        state.visibleData &&
+        state.visibleData.map(item => (
+          <TreeNode
+            key={item.id}
+            node={item}
+            collapsed={!!state.hiddenPaths[item.path]}
+            showDoubleQuotes={props.showDoubleQuotes}
+            showLength={props.showLength}
+            checked={selectedPaths.value.includes(item.path)}
+            selectableType={props.selectableType}
+            showLine={props.showLine}
+            showLineNumber={props.showLineNumber}
+            showSelectController={props.showSelectController}
+            selectOnClickNode={props.selectOnClickNode}
+            nodeSelectable={props.nodeSelectable}
+            highlightSelectedNode={props.highlightSelectedNode}
+            editable={props.editable}
+            editableTrigger={props.editableTrigger}
+            showIcon={props.showIcon}
+            renderNodeValue={renderNodeValue}
+            onNodeClick={handleNodeClick}
+            onBracketsClick={handleBracketsClick}
+            onIconClick={handleIconClick}
+            onSelectedChange={handleSelectedChange}
+            onValueChange={handleValueChange}
+            style={
+              props.itemHeight && props.itemHeight !== 20
+                ? { lineHeight: `${props.itemHeight}px` }
+                : {}
+            }
+          />
+        ));
+
+      return (
+        <div
+          ref={treeRef}
+          class={{
+            'vjs-tree': true,
+            'is-virtual': props.virtual,
+          }}
+          onScroll={props.virtual ? handleTreeScroll : undefined}
+          style={
+            props.showLineNumber
+              ? {
+                  paddingLeft: `${Number(flatData.value.length.toString().length) * 12}px`,
+                  ...props.style,
+                }
+              : props.style
+          }
+        >
+          {props.virtual ? (
+            <div class="vjs-tree-list" style={{ height: `${props.height}px` }}>
+              <div
+                class="vjs-tree-list-holder"
+                style={{ height: `${flatData.value.length * props.itemHeight}px` }}
+              >
+                <div
+                  class="vjs-tree-list-holder-inner"
+                  style={{ transform: `translateY(${state.translateY}px)` }}
+                >
+                  {nodeContent}
+                </div>
+              </div>
+            </div>
+          ) : (
+            nodeContent
+          )}
+        </div>
+      );
     };
-  },
-
-  render() {
-    const {
-      virtual,
-      itemHeight,
-      customValueFormatter,
-      showDoubleQuotes,
-      showLength,
-      showLine,
-      showSelectController,
-      selectOnClickNode,
-      pathSelectable,
-      highlightSelectedNode,
-      collapsedOnClickBrackets,
-      state,
-      flatData,
-      selectedPaths,
-      selectableType,
-    } = this;
-
-    const { onTreeNodeClick, onBracketsClick, onSelectedChange, onTreeScroll } = this;
-
-    const nodeContent =
-      state.visibleData &&
-      state.visibleData.map(item => (
-        <TreeNode
-          key={item.id}
-          node={item}
-          collapsed={!!state.hiddenPaths[item.path]}
-          custom-value-formatter={customValueFormatter}
-          show-double-quotes={showDoubleQuotes}
-          show-length={showLength}
-          collapsed-on-click-brackets={collapsedOnClickBrackets}
-          checked={selectedPaths.includes(item.path)}
-          selectable-type={selectableType}
-          show-line={showLine}
-          show-select-controller={showSelectController}
-          select-on-click-node={selectOnClickNode}
-          path-selectable={pathSelectable}
-          highlight-selected-node={highlightSelectedNode}
-          onTreeNodeClick={onTreeNodeClick}
-          onBracketsClick={onBracketsClick}
-          onSelectedChange={onSelectedChange}
-        />
-      ));
-
-    return (
-      <div
-        ref="tree"
-        class={{
-          'vjs-tree': true,
-          'is-virtual': virtual,
-        }}
-        onScroll={onTreeScroll}
-      >
-        {virtual ? (
-          <div style={{ height: `${flatData.length * itemHeight}px` }}>
-            <div style={{ transform: `translateY(${state.translateY}px)` }}>{nodeContent}</div>
-          </div>
-        ) : (
-          nodeContent
-        )}
-      </div>
-    );
   },
 });

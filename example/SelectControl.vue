@@ -1,11 +1,15 @@
 <template>
-  <div>
+  <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
       <textarea v-model="state.val" />
 
       <h3>Options:</h3>
       <div class="options">
+        <div>
+          <label>showIcon</label>
+          <input v-model="state.showIcon" type="checkbox" />
+        </div>
         <div>
           <label>selectableType</label>
           <select v-model="state.selectableType">
@@ -22,8 +26,8 @@
           <input v-model="state.selectOnClickNode" type="checkbox" />
         </div>
         <div>
-          <label>path</label>
-          <input v-model="state.path" type="text" />
+          <label>rootPath</label>
+          <input v-model="state.rootPath" type="text" />
         </div>
         <div>
           <label>showLength</label>
@@ -34,8 +38,8 @@
           <input v-model="state.showLine" type="checkbox" />
         </div>
         <div>
-          <label>showDoubleQuotes</label>
-          <input v-model="state.showDoubleQuotes" type="checkbox" />
+          <label>showLineNumber</label>
+          <input v-model="state.showLineNumber" type="checkbox" />
         </div>
         <div>
           <label>highlightSelectedNode</label>
@@ -53,40 +57,35 @@
             <option :value="4">4</option>
           </select>
         </div>
-        <div>
-          <label>use custom formatter</label>
-          <input v-model="state.useCustomLinkFormatter" type="checkbox" />
-        </div>
       </div>
-      <h3>v-model:</h3>
-      <div>{{ state.value }}</div>
-      <h3>Current Click:</h3>
-      <div>path: {{ state.itemPath }}</div>
-      <div>
-        data:
-        <pre>{{ state.itemData }}</pre>
-      </div>
+      <h3>v-model:selectedValue:</h3>
+      <div>{{ state.selectedValue }}</div>
+      <h3>Current Node Click:</h3>
+      <div>{{ state.node }}</div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         v-if="state.renderOK"
-        v-model="state.value"
+        v-model:selectedValue="state.selectedValue"
         :data="state.data"
-        :path="state.path"
+        :root-path="state.rootPath"
         :deep="state.deep"
-        :show-double-quotes="state.showDoubleQuotes"
+        :show-double-quotes="true"
         :highlight-selected-node="state.highlightSelectedNode"
         :show-length="state.showLength"
         :show-line="state.showLine"
+        :show-line-number="state.showLineNumber"
         :select-on-click-node="state.selectOnClickNode"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
-        :path-selectable="(path, data) => typeof state.data !== 'number'"
+        :node-selectable="node => typeof node.content !== 'number'"
         :selectable-type="state.selectableType"
         :show-select-controller="state.showSelectController"
-        :custom-value-formatter="state.useCustomLinkFormatter ? customLinkFormatter : null"
-        @click="handleClick"
-        @change="handleChange"
+        :show-icon="state.showIcon"
+        @node-click="handleNodeClick"
+        @brackets-click="handleAll"
+        @icon-click="handleAll"
+        @selected-change="handleAll"
       />
     </div>
   </div>
@@ -132,38 +131,27 @@ export default defineComponent({
       renderOK: true,
       val: JSON.stringify(defaultData),
       data: defaultData,
-      value: 'res.error',
+      selectedValue: 'res.error',
       selectableType: 'single',
       showSelectController: true,
       showLength: false,
       showLine: true,
-      showDoubleQuotes: true,
+      showLineNumber: false,
       highlightSelectedNode: true,
       selectOnClickNode: true,
       collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
-      path: 'res',
+      rootPath: 'res',
       deep: 3,
-      itemData: {},
-      itemPath: '',
+      node: '',
+      showIcon: false,
     });
 
-    const handleClick = (path, data) => {
-      // console.log('click: ', path, data);
-      state.itemPath = path;
-      state.itemData = !data ? data + '' : data; // 处理 data = null 的情况
+    const handleNodeClick = node => {
+      state.node = node;
     };
 
-    const handleChange = () => {
-      // console.log('newVal: ', newVal, ' oldVal: ', oldVal);
-    };
-
-    const customLinkFormatter = (data, key, path, defaultFormatted) => {
-      if (typeof data === 'string' && data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
-      }
+    const handleAll = (...rest) => {
+      console.log('handleAll: ', rest);
     };
 
     watch(
@@ -182,20 +170,11 @@ export default defineComponent({
       async newVal => {
         state.renderOK = false;
         if (newVal === 'single') {
-          state.value = 'res.error';
+          state.selectedValue = 'res.error';
         } else if (newVal === 'multiple') {
-          state.value = ['res.error', 'res.data[0].title'];
+          state.selectedValue = ['res.error', 'res.data[0].title'];
         }
-        // 重新渲染, 因为2中情况的v-model格式不同
-        await nextTick();
-        state.renderOK = true;
-      },
-    );
-
-    watch(
-      () => state.useCustomLinkFormatter,
-      async () => {
-        state.renderOK = false;
+        // Re-render because v-model:selectedValue format is different in case 2
         await nextTick();
         state.renderOK = true;
       },
@@ -203,9 +182,8 @@ export default defineComponent({
 
     return {
       state,
-      customLinkFormatter,
-      handleClick,
-      handleChange,
+      handleNodeClick,
+      handleAll,
     };
   },
 });

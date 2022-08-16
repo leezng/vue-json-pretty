@@ -35,10 +35,10 @@ export default defineComponent({
         class={[`vjs-check-controller`, model ? 'is-checked' : '']}
         onClick={e => e.stopPropagation()}
       >
-        <span class={`vjs-check-controller__inner is-${uiType}`} />
+        <span class={`vjs-check-controller-inner is-${uiType}`} />
         <input
           checked={model}
-          class={`vjs-check-controller__original is-${uiType}`}
+          class={`vjs-check-controller-original is-${uiType}`}
           type={uiType}
           onChange={() => $emit('change', model)}
         />

@@ -29,9 +29,10 @@ English | [简体中文](./README.zh_CN.md)
 ## Features
 
 - As a JSON Formatter.
-- Get item data from JSON.
-- Written in TypeScript with predictable static types.
+- Written in TypeScript, support `d.ts`.
+- Support get item data from JSON.
 - Support big data.
+- Support editable.
 
 ## Environment Support
 
@@ -52,10 +53,10 @@ $ npm install vue-json-pretty --save
 $ yarn add vue-json-pretty
 ```
 
-## Use Vue3
+## Use Vue2
 
 ```bash
-$ npm install vue-json-pretty@next --save
+$ npm install vue-json-pretty@v1-latest --save
 ```
 
 ## Usage
@@ -65,7 +66,7 @@ The CSS file is included separately and needs to be imported manually. You can e
 ```vue
 <template>
   <div>
-    <vue-json-pretty :path="'res'" :data="{ key: 'value' }" @click="handleClick"> </vue-json-pretty>
+    <vue-json-pretty :data="{ key: 'value' }" />
   </div>
 </template>
 
@@ -105,37 +106,47 @@ plugins: [
 
 ## Props
 
-- If you are using only the normal features (JSON pretty), just focus on the `base` properties.
-- If you are using higher features (Get data), you can use `base` and `higher` attributes.
-
-| Attribute                | Level  | Description                                                                             | Type                                           | Default  |
-| ------------------------ | ------ | --------------------------------------------------------------------------------------- | ---------------------------------------------- | -------- |
-| data                     | normal | JSON data                                                                               | JSON object                                    | -        |
-| deep                     | normal | Data depth, data larger than this depth will not be expanded                            | number                                         | Infinity |
-| deepCollapseChildren     | normal | Whether children collapsed by `deep` prop should also be collapsed                      | boolean                                         | false |
-| showLength               | normal | Whether to show the length when closed                                                  | boolean                                        | false    |
-| showLine                 | normal | Whether to show the line                                                                | boolean                                        | true     |
-| showDoubleQuotes         | normal | Whether to show doublequotes on key                                                     | boolean                                        | true     |
-| virtual                  | normal | Whether to use virtual scrolling, usually used for big data                             | boolean                                        | false    |
-| itemHeight               | normal | The height of each item when using virtual scrolling                                    | number                                         | auto     |
-| v-model                  | higher | Defines value when the tree can be selected                                             | string, array                                  | -        |
-| path                     | higher | Root data path                                                                          | string                                         | root     |
-| pathSelectable           | higher | Defines whether a data path supports selection                                          | function(path, content)                        | -        |
-| selectableType           | higher | Defines the selected type, this feature is not supported by default                     | multiple, single                               | -        |
-| showSelectController     | higher | Whether to show the select controller at left                                           | boolean                                        | false    |
-| selectOnClickNode        | higher | Whether to change selected value when click node                                        | boolean                                        | true     |
-| highlightSelectedNode    | higher | Highlight current node when selected                                                    | boolean                                        | true     |
-| collapsedOnClickBrackets | higher | Collapsed control                                                                       | boolean                                        | true     |
-| customValueFormatter     | higher | A function that can return different html or strings to display for values in the data. | function(data, key, path, defaultFormatResult) | -        |
+| Property                 | Description                                     | Type                              | Default |
+| ------------------------ | ----------------------------------------------- | --------------------------------- | ------- |
+| data(v-model)            | JSON data, support v-model when use editable    | JSON object                       | -       |
+| deep                     | Paths greater than this depth will be collapsed | number                            | -       |
+| showLength               | Show the length when collapsed                  | boolean                           | false   |
+| showLine                 | Show the line                                   | boolean                           | true    |
+| showLineNumber           | Show the line number                            | boolean                           | false   |
+| showIcon                 | Show the icon                                   | boolean                           | false   |
+| showDoubleQuotes         | Show doublequotes on key                        | boolean                           | true    |
+| virtual                  | Use virtual scroll                              | boolean                           | false   |
+| height                   | The height of list when using virtual           | number                            | 400     |
+| itemHeight               | The height of node when using virtual           | number                            | 20      |
+| selectedValue(v-model)   | Selected data path                              | string, array                     | -       |
+| rootPath                 | Root data path                                  | string                            | `root`  |
+| nodeSelectable           | Defines whether a node supports selection       | (node) => boolean                 | -       |
+| selectableType           | Support path select, default none               | `multiple` \| `single`            | -       |
+| showSelectController     | Show the select controller                      | boolean                           | false   |
+| selectOnClickNode        | Trigger select when click node                  | boolean                           | true    |
+| highlightSelectedNode    | Support highlighting selected nodes             | boolean                           | true    |
+| collapsedOnClickBrackets | Support click brackets to collapse              | boolean                           | true    |
+| renderNodeValue          | render node value, or use slot #renderNodeValue | ({ node, defaultValue }) => vNode | -       |
+| editable                 | Support editable                                | boolean                           | false   |
+| editableTrigger          | Trigger                                         | `click` \| `dblclick`             | `click` |
 
 ## Events
 
-| Event Name | Description                                                                  | Callback Parameters |
-| ---------- | ---------------------------------------------------------------------------- | ------------------- |
-| click      | triggered when a data item is clicked                                        | (path, data)        |
-| change     | triggered when the selected value changed (only the selectableType not null) | (newVal, oldVal)    |
+| Event Name     | Description                              | Parameters           |
+| -------------- | ---------------------------------------- | -------------------- |
+| nodeClick      | triggers when click node                 | (node: NodeData)     |
+| bracketsClick  | triggers when click brackets             | (collapsed: boolean) |
+| iconClick      | triggers when click icon                 | (collapsed: boolean) |
+| selectedChange | triggers when the selected value changed | (newVal, oldVal)     |
 
-## Major Contributors
+## Slots
 
-[![](https://avatars3.githubusercontent.com/u/153197?v=3&s=50)](https://github.com/rchl)
-[![](https://avatars1.githubusercontent.com/u/445616?v=3&s=50)](https://github.com/blackmad)
+| Slot Name       | Description       | Parameters             |
+| --------------- | ----------------- | ---------------------- |
+| renderNodeValue | render node value | { node, defaultValue } |
+
+## Contributors
+
+<a href="https://github.com/leezng/vue-json-pretty/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=leezng/vue-json-pretty" />
+</a>
