@@ -120,7 +120,7 @@ plugins: [
 | itemHeight               | The height of node when using virtual           | number                            | 20      |
 | selectedValue(v-model)   | Selected data path                              | string, array                     | -       |
 | rootPath                 | Root data path                                  | string                            | `root`  |
-| pathSelectable           | Defines whether a path supports selection       | (path, content) => boolean        | -       |
+| nodeSelectable           | Defines whether a node supports selection       | (node) => boolean                 | -       |
 | selectableType           | Support path select, default none               | `multiple` \| `single`            | -       |
 | showSelectController     | Show the select controller                      | boolean                           | false   |
 | selectOnClickNode        | Trigger select when click node                  | boolean                           | true    |

@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="block">
-      <h3>vue-json-pretty(1000+ items):</h3>
+      <h3>vue-json-pretty(10000+ items):</h3>
       <vue-json-pretty
         :virtual="true"
         :item-height="+state.itemHeight"
@@ -52,7 +52,7 @@ const defaultData = {
   data: [],
 };
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 10000; i++) {
   defaultData.data.push({
     news_id: i,
     title: 'iPhone X Review: Innovative future with real black technology',

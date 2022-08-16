@@ -47,8 +47,8 @@ export const treeNodePropsPass = {
     default: true,
   },
   // When using the selectableType, define whether current path/content is enabled.
-  pathSelectable: {
-    type: Function as PropType<(path: string, content: unknown) => boolean>,
+  nodeSelectable: {
+    type: Function as PropType<(node: NodeDataType) => boolean>,
     default: (): boolean => true,
   },
   // Highlight current node when selected.
@@ -119,9 +119,7 @@ export default defineComponent({
 
     // Whether the current node supports the selected function.
     const selectable = computed(
-      () =>
-        props.pathSelectable(props.node.path, props.node.content) &&
-        (isMultiple.value || isSingle.value),
+      () => props.nodeSelectable(props.node) && (isMultiple.value || isSingle.value),
     );
 
     const state = reactive({

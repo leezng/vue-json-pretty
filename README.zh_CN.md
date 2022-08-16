@@ -13,7 +13,7 @@
 | 属性                     | 说明                                        | 类型                              | 默认值        |
 | ------------------------ | ------------------------------------------- | --------------------------------- | ------------- |
 | data(v-model)            | 源数据，注意不是 `JSON` 字符串              | `JSON` 数据对象                   | -             |
-| deep                     | 深度，大于该深度的路径将被折叠              | number                            | Infinity      |
+| deep                     | 深度，大于该深度的节点将被折叠              | number                            | Infinity      |
 | showLength               | 在数据折叠的时候展示长度                    | boolean                           | false         |
 | showLine                 | 展示标识线                                  | boolean                           | true          |
 | showLineNumber           | 展示行计数                                  | boolean                           | false         |
@@ -24,7 +24,7 @@
 | itemHeight               | 使用虚拟滚动时，定义节点高度                | number                            | 20            |
 | selectedValue(v-model)   | 双向绑定选中的数据路径                      | string, array                     | string, array |
 | rootPath                 | 定义最顶层数据路径                          | string                            | `root`        |
-| pathSelectable           | 定义哪些数据路径可以被选择                  | function(path, content)           | -             |
+| nodeSelectable           | 定义哪些数据节点可以被选择                  | function(node)                    | -             |
 | selectableType           | 定义选择功能，默认无                        | `multiple` \| `single`            | -             |
 | showSelectController     | 展示选择器                                  | boolean                           | false         |
 | selectOnClickNode        | 支持点击节点的时候触发选择                  | boolean                           | true          |

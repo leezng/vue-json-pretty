@@ -77,6 +77,7 @@ export default defineComponent({
     'update:selectedValue',
     'update:data',
   ],
+
   setup(props, { emit, slots }) {
     const treeRef = ref<HTMLElement>();
 
@@ -264,7 +265,7 @@ export default defineComponent({
             showLineNumber={props.showLineNumber}
             showSelectController={props.showSelectController}
             selectOnClickNode={props.selectOnClickNode}
-            pathSelectable={props.pathSelectable}
+            nodeSelectable={props.nodeSelectable}
             highlightSelectedNode={props.highlightSelectedNode}
             editable={props.editable}
             editableTrigger={props.editableTrigger}
