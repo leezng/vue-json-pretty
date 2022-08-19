@@ -57,7 +57,7 @@ module.exports = {
         },
       },
       {
-        test: /\.js[x]$/,
+        test: /\.(jsx?)$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('example'), resolve('test')],
       },

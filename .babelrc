@@ -1,12 +1,19 @@
 {
   "presets": [
-    ["@babel/preset-env", {
-      "modules": false,
-      "targets": {
-        "browsers": ["> 1%", "last 10 versions", "not ie <= 11"]
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": ["> 1%", "last 10 versions", "not ie <= 11"]
+        },
+        "include": [
+          "@babel/plugin-proposal-optional-chaining",
+          "@babel/plugin-proposal-nullish-coalescing-operator"
+        ]
       }
-    }],
-    '@vue/babel-preset-jsx'
+    ],
+    "@vue/babel-preset-jsx"
   ],
   "plugins": ["@babel/plugin-transform-runtime"],
   "env": {
