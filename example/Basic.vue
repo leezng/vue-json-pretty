@@ -47,6 +47,10 @@
       <h3>Slots:</h3>
       <div class="options">
         <div>
+          <label>renderNodeKey</label>
+          <input v-model="state.useRenderNodeKeySlot" type="checkbox" />
+        </div>
+        <div>
           <label>renderNodeValue</label>
           <input v-model="state.useRenderNodeValueSlot" type="checkbox" />
         </div>
@@ -66,6 +70,13 @@
         :show-icon="state.showIcon"
         style="position: relative"
       >
+        <template v-if="state.useRenderNodeKeySlot" #renderNodeKey="{ node, label }">
+          <template v-if="node.key === 'title'">
+            <a>"{{ node.key }}":</a>
+          </template>
+          <template v-else>{{ label }}:</template>
+        </template>
+
         <template v-if="state.useRenderNodeValueSlot" #renderNodeValue="{ node, defaultValue }">
           <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
             <a :href="node.content" target="_blank">{{ node.content }}</a>
@@ -121,6 +132,7 @@ export default defineComponent({
       showLineNumber: false,
       showDoubleQuotes: true,
       collapsedOnClickBrackets: true,
+      useRenderNodeKeySlot: false,
       useRenderNodeValueSlot: false,
       deep: 4,
       setPathCollapsible: false,

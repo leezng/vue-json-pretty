@@ -126,6 +126,7 @@ plugins: [
 | selectOnClickNode        | Trigger select when click node                  | boolean                           | true    |
 | highlightSelectedNode    | Support highlighting selected nodes             | boolean                           | true    |
 | collapsedOnClickBrackets | Support click brackets to collapse              | boolean                           | true    |
+| renderNodeKey            | render node key, or use slot #renderNodeKey     | ({ node, label }) => vNode        | -       |
 | renderNodeValue          | render node value, or use slot #renderNodeValue | ({ node, defaultValue }) => vNode | -       |
 | editable                 | Support editable                                | boolean                           | false   |
 | editableTrigger          | Trigger                                         | `click` \| `dblclick`             | `click` |
@@ -143,6 +144,7 @@ plugins: [
 
 | Slot Name       | Description       | Parameters             |
 | --------------- | ----------------- | ---------------------- |
+| renderNodeKey   | render node key   | { node, label }        |
 | renderNodeValue | render node value | { node, defaultValue } |
 
 ## Contributors

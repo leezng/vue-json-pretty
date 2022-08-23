@@ -21,6 +21,10 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: true,
   },
+  // Custom render for key.
+  renderNodeKey: Function as PropType<
+    (opt: { node: NodeDataType; label: string | JSX.Element }) => unknown
+  >,
   // Custom render for value.
   renderNodeValue: Function as PropType<
     (opt: { node: NodeDataType; defaultValue: string | JSX.Element }) => unknown
@@ -112,6 +116,14 @@ export default defineComponent({
     const prettyKey = computed(() =>
       props.showDoubleQuotes ? `"${props.node.key}"` : props.node.key,
     );
+
+    const renderKey = () => {
+      const render = props.renderNodeKey;
+
+      return render
+        ? render({ node: props.node, label: prettyKey.value || '' })
+        : <span class="vjs-key">{`${prettyKey.value}: `}</span>;
+    };
 
     const isMultiple = computed(() => props.selectableType === 'multiple');
 
@@ -223,7 +235,7 @@ export default defineComponent({
             {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
           </div>
 
-          {node.key && <span class="vjs-key">{`${prettyKey.value}: `}</span>}
+          {node.key && renderKey()}
 
           <span>
             {node.type !== 'content' && node.content ? (

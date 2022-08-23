@@ -67,7 +67,7 @@ export default defineComponent({
     },
   },
 
-  slots: ['renderNodeValue'],
+  slots: ['renderNodeKey', 'renderNodeValue'],
 
   emits: [
     'nodeClick',
@@ -248,6 +248,7 @@ export default defineComponent({
     });
 
     return () => {
+      const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
 
       const nodeContent =
@@ -270,6 +271,7 @@ export default defineComponent({
             editable={props.editable}
             editableTrigger={props.editableTrigger}
             showIcon={props.showIcon}
+            renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
             onNodeClick={handleNodeClick}
             onBracketsClick={handleBracketsClick}
