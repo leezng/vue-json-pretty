@@ -142,7 +142,7 @@ plugins: [
 
 | Slot Name | Description       | Parameters             |
 | --------- | ----------------- | ---------------------- |
-| nodeKey | render node key | { node, label } |
+| nodeKey | render node key | { node, defaultKey } |
 | nodeValue | render node value | { node, defaultValue } |
 
 ## Contributors

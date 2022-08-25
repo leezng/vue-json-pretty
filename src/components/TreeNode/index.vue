@@ -33,7 +33,7 @@
       <carets v-if="showIcon" :node-type="node.type" @click="handleIconClick" />
     </div>
 
-    <slot v-if="node.key" name="key" :node="node" :label="prettyKey">
+    <slot v-if="node.key" name="key" :node="node" :defaultKey="prettyKey">
       <span class="vjs-key">{{ prettyKey }}:</span>
     </slot>
 

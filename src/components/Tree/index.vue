@@ -49,7 +49,7 @@
               <slot
                 name="nodeKey"
                 :node="slotProps.node"
-                :label="slotProps.label"
+                :defaultKey="slotProps.defaultKey"
               />
             </template>
 

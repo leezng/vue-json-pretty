@@ -70,11 +70,11 @@
         :show-icon="showIcon"
         style="position: relative"
       >
-        <template v-if="useNodeKeySlot" #nodeKey="{ node, label }">
+        <template v-if="useNodeKeySlot" #nodeKey="{ node, defaultKey }">
           <template v-if="node.key === 'title'">
             <a>"{{ node.key }}":</a>
           </template>
-          <template v-else>{{ label }}:</template>
+          <template v-else>{{ defaultKey }}:</template>
         </template>
 
         <template v-if="useNodeValueSlot" #nodeValue="{ node, defaultValue }">

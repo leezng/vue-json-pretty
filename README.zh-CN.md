@@ -45,5 +45,5 @@
 
 | 插槽名    | 描述       | 参数                   |
 | --------- | ---------- | ---------------------- |
-| nodeKey | 渲染节点键 | { node, label } |
+| nodeKey | 渲染节点键 | { node, defaultKey } |
 | nodeValue | 渲染节点值 | { node, defaultValue } |
