@@ -30,7 +30,7 @@
 | selectOnClickNode        | 支持点击节点的时候触发选择                  | boolean                           | true          |
 | highlightSelectedNode    | 支持高亮已选择节点                          | boolean                           | true          |
 | collapsedOnClickBrackets | 支持点击括号折叠                            | boolean                           | true          |
-| renderNodeKey            | 渲染节点键，也可使用 #renderNodeKey    | ({ node, defaultValue }) => vNode | -             |
+| renderNodeKey            | 渲染节点键，也可使用 #renderNodeKey    | ({ node, defaultKey }) => vNode | -             |
 | renderNodeValue          | 自定义渲染节点值，也可使用 #renderNodeValue | ({ node, defaultValue }) => vNode | -             |
 | editable                 | 支持可编辑                                  | boolean                           | false         |
 | editableTrigger          | 触发编辑的时机                              | `click` \| `dblclick`             | `click`       |
