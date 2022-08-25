@@ -23,7 +23,7 @@ export const treeNodePropsPass = {
   },
   // Custom render for key.
   renderNodeKey: Function as PropType<
-    (opt: { node: NodeDataType; label: string | JSX.Element }) => unknown
+    (opt: { node: NodeDataType; defaultKey: string | JSX.Element }) => unknown
   >,
   // Custom render for value.
   renderNodeValue: Function as PropType<
@@ -121,7 +121,7 @@ export default defineComponent({
       const render = props.renderNodeKey;
 
       return render
-        ? render({ node: props.node, label: prettyKey.value || '' })
+        ? render({ node: props.node, defaultKey: prettyKey.value || '' })
         : <span class="vjs-key">{`${prettyKey.value}: `}</span>;
     };
 

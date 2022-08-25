@@ -70,11 +70,11 @@
         :show-icon="state.showIcon"
         style="position: relative"
       >
-        <template v-if="state.useRenderNodeKeySlot" #renderNodeKey="{ node, label }">
+        <template v-if="state.useRenderNodeKeySlot" #renderNodeKey="{ node, defaultKey }">
           <template v-if="node.key === 'title'">
             <a>"{{ node.key }}":</a>
           </template>
-          <template v-else>{{ label }}:</template>
+          <template v-else>{{ defaultKey }}:</template>
         </template>
 
         <template v-if="state.useRenderNodeValueSlot" #renderNodeValue="{ node, defaultValue }">

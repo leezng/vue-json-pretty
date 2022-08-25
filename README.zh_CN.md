@@ -48,5 +48,5 @@
 
 | 插槽名          | 描述       | 参数                   |
 | --------------- | ---------- | ---------------------- |
-| renderNodeKey | 渲染节点键 | { node, defaultValue } |
+| renderNodeKey | 渲染节点键 | { node, defaultKey } |
 | renderNodeValue | 渲染节点值 | { node, defaultValue } |
