@@ -45,6 +45,14 @@
             @value-change="handleValueChange"
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
           >
+            <template #key="slotProps">
+              <slot
+                name="nodeKey"
+                :node="slotProps.node"
+                :defaultKey="slotProps.defaultKey"
+              />
+            </template>
+
             <template #value="slotProps">
               <slot
                 name="nodeValue"

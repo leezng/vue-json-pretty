@@ -47,6 +47,10 @@
       <h3>Slots:</h3>
       <div class="options">
         <div>
+          <label>nodeKey</label>
+          <input v-model="useNodeKeySlot" type="checkbox" />
+        </div>
+        <div>
           <label>nodeValue</label>
           <input v-model="useNodeValueSlot" type="checkbox" />
         </div>
@@ -66,6 +70,13 @@
         :show-icon="showIcon"
         style="position: relative"
       >
+        <template v-if="useNodeKeySlot" #nodeKey="{ node, defaultKey }">
+          <template v-if="node.key === 'title'">
+            <a>"{{ node.key }}":</a>
+          </template>
+          <template v-else>{{ defaultKey }}:</template>
+        </template>
+
         <template v-if="useNodeValueSlot" #nodeValue="{ node, defaultValue }">
           <template v-if="typeof node.content === 'string' && node.content.startsWith('http://')">
             <a href="node.content" target="_blank">{{ node.content }}</a>
@@ -122,6 +133,7 @@ export default {
       highlightMouseoverNode: true,
       collapsedOnClickBrackets: true,
       useNodeValueSlot: false,
+      useNodeKeySlot: false,
       deep: 3,
       showIcon: false,
     };
