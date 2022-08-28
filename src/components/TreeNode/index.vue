@@ -33,9 +33,10 @@
       <carets v-if="showIcon" :node-type="node.type" @click="handleIconClick" />
     </div>
 
-    <slot v-if="node.key" name="key" :node="node" :defaultKey="prettyKey">
-      <span class="vjs-key">{{ prettyKey }}:</span>
-    </slot>
+    <span v-if="node.key" class="vjs-key">
+      <slot name="key" :node="node" :defaultKey="prettyKey">{{ prettyKey }}</slot>
+      <span>:</span>
+    </span>
 
     <span>
       <brackets v-if="node.type !== 'content'" :data="node.content" @click="handleBracketsClick" />
