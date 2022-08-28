@@ -33,7 +33,7 @@ export function jsonFlatten(
       keys.map((objKey, idx, arr) =>
         jsonFlatten(
           data[objKey],
-          objKey.includes('.') ? `${path}["${objKey}"]` : `${path}.${objKey}`,
+          /^[a-zA-Z_]\w*$/.test(objKey) ? `${path}.${objKey}` : `${path}["${objKey}"]`,
           level + 1,
           {
             key: objKey,
