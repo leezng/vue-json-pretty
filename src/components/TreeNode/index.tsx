@@ -122,7 +122,7 @@ export default defineComponent({
 
       return render
         ? render({ node: props.node, defaultKey: prettyKey.value || '' })
-        : <span class="vjs-key">{`${prettyKey.value}: `}</span>;
+        : prettyKey.value;
     };
 
     const isMultiple = computed(() => props.selectableType === 'multiple');
@@ -235,7 +235,12 @@ export default defineComponent({
             {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
           </div>
 
-          {node.key && renderKey()}
+          {node.key && (
+            <span class="vjs-key">
+              {renderKey()}
+              <span>:</span>
+            </span>
+          )}
 
           <span>
             {node.type !== 'content' && node.content ? (
