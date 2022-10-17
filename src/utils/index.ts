@@ -133,7 +133,7 @@ export function arrFlat<T extends unknown[]>(arr: T): unknown[] {
 }
 
 export function cloneDeep<T extends unknown>(source: T, hash = new WeakMap()): T {
-  if (source === null) return source;
+  if (source === null || source === undefined) return source;
   if (source instanceof Date) return new Date(source) as T;
   if (source instanceof RegExp) return new RegExp(source) as T;
   if (typeof source !== 'object') return source;
