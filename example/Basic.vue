@@ -93,7 +93,9 @@ import VueJsonPretty from 'src';
 
 const defaultData = {
   status: 200,
-  error: '',
+  text: '',
+  error: null,
+  config: undefined,
   data: [
     {
       news_id: 51184,

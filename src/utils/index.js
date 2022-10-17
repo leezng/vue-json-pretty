@@ -84,7 +84,7 @@ export function arrFlat(arr) {
 }
 
 export function cloneDeep(source, hash = new WeakMap()) {
-  if (source === null) return source;
+  if (source === null || source === undefined) return source;
   if (source instanceof Date) return new Date(source);
   if (source instanceof RegExp) return new RegExp(source);
   if (typeof source !== 'object') return source;

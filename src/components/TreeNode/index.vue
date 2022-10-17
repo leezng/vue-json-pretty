@@ -175,9 +175,11 @@ export default {
     },
 
     defaultValue() {
-      const str = (this.node?.content ?? '') + '';
-      const text = this.dataType === 'string' ? `"${str}"` : str;
-      return text;
+      let value = this.node?.content;
+      if(value === null || value === undefined) {
+        value += '';
+      }
+      return this.dataType === 'string' ? `"${value}"` : value
     },
   },
   methods: {

@@ -47,7 +47,9 @@ import VueJsonPretty from 'src';
 
 const defaultData = {
   status: 200,
-  error: '',
+  text: '',
+  error: null,
+  config: undefined,
   data: Array.from(Array(1000)).map((item, index) => ({
     news_id: index,
     title: 'iPhone X Review: Innovative future with real black technology',
