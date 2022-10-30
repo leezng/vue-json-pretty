@@ -146,13 +146,12 @@ export default defineComponent({
 
     const defaultValue = computed(() => {
       let value = props.node?.content;
-      if(value === null) {
-        value = 'null'
+      if (value === null) {
+        value = 'null';
+      } else if (value === undefined) {
+        value = 'undefined';
       }
-      if(value === undefined) {
-        value = 'undefined'
-      }
-      return dataType.value === 'string' ? `"${value}"` : value + ''
+      return dataType.value === 'string' ? `"${value}"` : value + '';
     });
 
     const renderValue = () => {
