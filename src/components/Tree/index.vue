@@ -7,7 +7,9 @@
     }"
     @scroll="virtual ? handleTreeScroll() : undefined"
     :style="
-      showLineNumber ? { paddingLeft: `${Number(flatData.length.toString().length) * 12}px` } : {}
+      showLineNumber
+        ? { paddingLeft: `${Number(originFlatData.length.toString().length) * 12}px` }
+        : {}
     "
   >
     <div class="vjs-tree-list" :style="virtual && { height: `${height}px` }">
@@ -46,11 +48,7 @@
             :style="itemHeight && itemHeight !== 20 ? { lineHeight: `${itemHeight}px` } : {}"
           >
             <template #key="slotProps">
-              <slot
-                name="nodeKey"
-                :node="slotProps.node"
-                :defaultKey="slotProps.defaultKey"
-              />
+              <slot name="nodeKey" :node="slotProps.node" :defaultKey="slotProps.defaultKey" />
             </template>
 
             <template #value="slotProps">
