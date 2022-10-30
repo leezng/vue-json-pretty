@@ -297,7 +297,7 @@ export default defineComponent({
           style={
             props.showLineNumber
               ? {
-                  paddingLeft: `${Number(flatData.value.length.toString().length) * 12}px`,
+                  paddingLeft: `${Number(originFlatData.value.length.toString().length) * 12}px`,
                   ...props.style,
                 }
               : props.style
