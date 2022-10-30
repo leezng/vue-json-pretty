@@ -176,10 +176,10 @@ export default {
 
     defaultValue() {
       let value = this.node?.content;
-      if(value === null || value === undefined) {
+      if (value === null || value === undefined) {
         value += '';
       }
-      return this.dataType === 'string' ? `"${value}"` : value
+      return this.dataType === 'string' ? `"${value}"` : value;
     },
   },
   methods: {
