@@ -133,7 +133,7 @@ export function arrFlat<T extends unknown[]>(arr: T): unknown[] {
 }
 
 export function cloneDeep<T extends unknown>(source: T, hash = new WeakMap()): T {
-  if (source === null) return source;
+  if (source === null || source === undefined) return source;
   if (source instanceof Date) return new Date(source) as T;
   if (source instanceof RegExp) return new RegExp(source) as T;
   if (typeof source !== 'object') return source;
@@ -171,79 +171,3 @@ export function stringToAutoType(source: string): unknown {
   }
   return value;
 }
-
-// function jsonFlattenNext(data: JSONDataType, path = 'root'): JSONFlattenReturnType[] {
-//   function test(content: unknown, path: string, level: number, options: JSONFlattenOptions) {
-//     const { type = 'content', key, index, showComma, length } = options || {};
-//     return {
-//       content,
-//       level,
-//       key,
-//       index,
-//       path,
-//       showComma,
-//       length,
-//       type,
-//     };
-//   }
-
-//   let endObj = {} as Record<string, unknown>;
-//   let i = 0;
-//   let output: any = [data];
-//   let startArr = [];
-//   while (output.length || endObj[i]) {
-//     if (i && endObj[i]) {
-//       const k = endObj[i];
-//       delete endObj[i];
-//       startArr.push(k);
-//       i++;
-//     } else {
-//       const now = output.shift();
-//       if (Array.isArray(now)) {
-//         startArr.push(
-//           test('[', path, 0, {
-//             type: 'arrayStart',
-//             showComma: false,
-//             length: now.length,
-//           }),
-//         );
-//         output = now.concat(output);
-//         Object.keys(endObj)
-//           .sort((a, b) => Number(b) - Number(a))
-//           .forEach(id => {
-//             endObj[Number(id) + now.length + 1] = endObj[id];
-//             delete endObj[id];
-//           });
-//         endObj[i + now.length] = ']';
-//       } else if (typeof now === 'object') {
-//         startArr.push(
-//           test('{', path, 0, {
-//             type: 'objectStart',
-//             showComma: false,
-//             length: Object.keys(now).length,
-//           }),
-//         );
-//         output = Object.keys(now)
-//           .map(key => now[key])
-//           .concat(output);
-//         Object.keys(endObj)
-//           .sort((a, b) => Number(b) - Number(a))
-//           .forEach(id => {
-//             endObj[Number(id) + Object.keys(now).length + 1] = endObj[id];
-//             delete endObj[id];
-//           });
-//         endObj[i + Object.keys(now).length] = '}';
-//       } else {
-//         startArr.push(
-//           test(now, path, 0, {
-//             type: 'content',
-//             showComma: false,
-//             length: 0,
-//           }),
-//         );
-//       }
-//     }
-//   }
-
-//   return startArr as any;
-// }

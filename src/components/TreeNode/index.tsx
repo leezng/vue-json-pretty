@@ -145,9 +145,13 @@ export default defineComponent({
     };
 
     const defaultValue = computed(() => {
-      const str = (props.node?.content ?? '') + '';
-      const text = dataType.value === 'string' ? `"${str}"` : str;
-      return text;
+      let value = props.node?.content;
+      if (value === null) {
+        value = 'null';
+      } else if (value === undefined) {
+        value = 'undefined';
+      }
+      return dataType.value === 'string' ? `"${value}"` : value + '';
     });
 
     const renderValue = () => {
