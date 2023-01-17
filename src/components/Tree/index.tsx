@@ -18,7 +18,7 @@ export default defineComponent({
     ...treeNodePropsPass,
     // JSONLike data.
     data: {
-      type: Object as PropType<JSONDataType>,
+      type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
       default: null,
     },
     // Define the depth of the tree, nodes greater than this depth will not be expanded.
