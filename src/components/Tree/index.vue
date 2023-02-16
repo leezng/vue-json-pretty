@@ -177,16 +177,16 @@ export default {
     return {
       translateY: 0,
       visibleData: null,
-      hiddenPaths: jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
-        const depthComparison = item.level >= this.deep;
-        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
-          return {
-            ...acc,
-            [item.path]: 1,
-          };
-        }
-        return acc;
-      }, {}),
+      // hiddenPaths: jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
+      //   const depthComparison = item.level >= this.deep;
+      //   if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+      //     return {
+      //       ...acc,
+      //       [item.path]: 1,
+      //     };
+      //   }
+      //   return acc;
+      // }, {}),
     };
   },
   computed: {
@@ -246,6 +246,19 @@ export default {
       return error
         ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.'
         : '';
+    },
+
+    hiddenPaths() {
+      return jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
+        const depthComparison = item.level >= this.deep;
+        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+          return {
+            ...acc,
+            [item.path]: 1,
+          };
+        }
+        return acc;
+      }, {});
     },
   },
   watch: {
