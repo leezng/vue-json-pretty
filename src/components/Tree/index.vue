@@ -264,6 +264,21 @@ export default {
       },
       immediate: true,
     },
+
+    deep: {
+      handler() {
+        this.hiddenPaths = jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
+          const depthComparison = item.level >= this.deep;
+          if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+            return {
+              ...acc,
+              [item.path]: 1,
+            };
+          }
+          return acc;
+        }, {});
+      },
+    },
   },
   methods: {
     updateVisibleData(flatDataValue) {
