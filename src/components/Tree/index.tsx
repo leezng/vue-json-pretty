@@ -271,6 +271,7 @@ export default defineComponent({
             editable={props.editable}
             editableTrigger={props.editableTrigger}
             showIcon={props.showIcon}
+            showKeyValueSpace={props.showKeyValueSpace}
             renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
             onNodeClick={handleNodeClick}

@@ -64,6 +64,10 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: false,
   },
+  showKeyValueSpace: {
+    type: Boolean,
+    default: true,
+  },
   editable: {
     type: Boolean,
     default: false,
@@ -242,7 +246,7 @@ export default defineComponent({
           {node.key && (
             <span class="vjs-key">
               {renderKey()}
-              <span>:</span>
+              <span class="vjs-colon">{`:${props.showKeyValueSpace ? ' ' : ''}`}</span>
             </span>
           )}
 
