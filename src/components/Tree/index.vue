@@ -38,6 +38,7 @@
             :node-selectable="nodeSelectable"
             :highlight-selected-node="highlightSelectedNode"
             :show-icon="showIcon"
+            :show-key-value-space="showKeyValueSpace"
             :editable="editable"
             :editable-trigger="editableTrigger"
             @node-click="handleNodeClick"
@@ -163,6 +164,10 @@ export default {
     showIcon: {
       type: Boolean,
       default: false,
+    },
+    showKeyValueSpace: {
+      type: Boolean,
+      default: true,
     },
     editable: {
       type: Boolean,

@@ -35,7 +35,7 @@
 
     <span v-if="node.key" class="vjs-key">
       <slot name="key" :node="node" :defaultKey="prettyKey">{{ prettyKey }}</slot>
-      <span>:</span>
+      <span class="vjs-colon">{{ `:${showKeyValueSpace ? ' ' : ''}` }}</span>
     </span>
 
     <span>
@@ -134,6 +134,10 @@ export default {
     showIcon: {
       type: Boolean,
       default: false,
+    },
+    showKeyValueSpace: {
+      type: Boolean,
+      default: true,
     },
     editable: {
       type: Boolean,

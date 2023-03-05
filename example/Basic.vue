@@ -27,6 +27,10 @@
           <input v-model="showDoubleQuotes" type="checkbox" />
         </div>
         <div>
+          <label>showKeyValueSpace</label>
+          <input v-model="showKeyValueSpace" type="checkbox" />
+        </div>
+        <div>
           <label>highlightMouseoverNode</label>
           <input v-model="highlightMouseoverNode" type="checkbox" />
         </div>
@@ -68,6 +72,7 @@
         :highlight-mouseover-node="highlightMouseoverNode"
         :collapsed-on-click-brackets="collapsedOnClickBrackets"
         :show-icon="showIcon"
+        :show-key-value-space="showKeyValueSpace"
         style="position: relative"
       >
         <template v-if="useNodeKeySlot" #nodeKey="{ node, defaultKey }">
@@ -138,6 +143,7 @@ export default {
       useNodeKeySlot: false,
       deep: 3,
       showIcon: false,
+      showKeyValueSpace: true,
     };
   },
   watch: {
