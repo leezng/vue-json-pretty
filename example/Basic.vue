@@ -27,6 +27,10 @@
           <input v-model="state.showDoubleQuotes" type="checkbox" />
         </div>
         <div>
+          <label>showKeyValueSpace</label>
+          <input v-model="state.showKeyValueSpace" type="checkbox" />
+        </div>
+        <div>
           <label>collapsedOnClickBrackets</label>
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
@@ -68,6 +72,7 @@
         :show-line-number="state.showLineNumber"
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
         :show-icon="state.showIcon"
+        :show-key-value-space="state.showKeyValueSpace"
         style="position: relative"
       >
         <template v-if="state.useRenderNodeKeySlot" #renderNodeKey="{ node, defaultKey }">
@@ -139,6 +144,7 @@ export default defineComponent({
       deep: 4,
       setPathCollapsible: false,
       showIcon: false,
+      showKeyValueSpace: true,
     });
 
     const pathCollapsible = node => {

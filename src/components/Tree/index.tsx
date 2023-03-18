@@ -3,6 +3,7 @@ import {
   reactive,
   computed,
   watchEffect,
+  watch,
   ref,
   PropType,
   CSSProperties,
@@ -18,7 +19,7 @@ export default defineComponent({
     ...treeNodePropsPass,
     // JSONLike data.
     data: {
-      type: Object as PropType<JSONDataType>,
+      type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
       default: null,
     },
     // Define the depth of the tree, nodes greater than this depth will not be expanded.
@@ -83,11 +84,9 @@ export default defineComponent({
 
     const originFlatData = computed(() => jsonFlatten(props.data, props.rootPath));
 
-    const state = reactive({
-      translateY: 0,
-      visibleData: null as NodeDataType[] | null,
-      hiddenPaths: originFlatData.value.reduce((acc, item) => {
-        const depthComparison = item.level >= props.deep;
+    const initHiddenPaths = (deep: number) => {
+      return originFlatData.value.reduce((acc, item) => {
+        const depthComparison = item.level >= deep;
         const pathComparison = props.pathCollapsible?.(item as NodeDataType);
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
@@ -99,7 +98,13 @@ export default defineComponent({
           };
         }
         return acc;
-      }, {}) as Record<string, 1>,
+      }, {}) as Record<string, 1>;
+    };
+
+    const state = reactive({
+      translateY: 0,
+      visibleData: null as NodeDataType[] | null,
+      hiddenPaths: initHiddenPaths(props.deep),
     });
 
     const flatData = computed(() => {
@@ -247,6 +252,13 @@ export default defineComponent({
       }
     });
 
+    watch(
+      () => props.deep,
+      val => {
+        if (val) state.hiddenPaths = initHiddenPaths(val);
+      },
+    );
+
     return () => {
       const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
@@ -271,6 +283,7 @@ export default defineComponent({
             editable={props.editable}
             editableTrigger={props.editableTrigger}
             showIcon={props.showIcon}
+            showKeyValueSpace={props.showKeyValueSpace}
             renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
             onNodeClick={handleNodeClick}
