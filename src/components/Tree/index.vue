@@ -182,16 +182,7 @@ export default {
     return {
       translateY: 0,
       visibleData: null,
-      hiddenPaths: jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
-        const depthComparison = item.level >= this.deep;
-        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
-          return {
-            ...acc,
-            [item.path]: 1,
-          };
-        }
-        return acc;
-      }, {}),
+      hiddenPaths: this.initHiddenPaths(jsonFlatten(this.data, this.rootPath), this.deep),
     };
   },
   computed: {
@@ -271,21 +262,25 @@ export default {
     },
 
     deep: {
-      handler() {
-        this.hiddenPaths = jsonFlatten(this.data, this.rootPath).reduce((acc, item) => {
-          const depthComparison = item.level >= this.deep;
-          if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
-            return {
-              ...acc,
-              [item.path]: 1,
-            };
-          }
-          return acc;
-        }, {});
+      handler(val) {
+        this.hiddenPaths = this.initHiddenPaths(this.originFlatData, val);
       },
     },
   },
   methods: {
+    initHiddenPaths(originFlatData, deep) {
+      return originFlatData.reduce((acc, item) => {
+        const depthComparison = item.level >= deep;
+        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+          return {
+            ...acc,
+            [item.path]: 1,
+          };
+        }
+        return acc;
+      }, {});
+    },
+
     updateVisibleData(flatDataValue) {
       if (this.virtual) {
         const visibleCount = this.height / this.itemHeight;
