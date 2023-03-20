@@ -19,6 +19,12 @@ jobs:
           GITHUB_EMAIL: ${{ secrets.CI_EMAIL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+
       - name: Publish NPM
         run: |
           npm ci
