@@ -26,11 +26,19 @@
             <option :value="4">4</option>
           </select>
         </div>
+        <div>
+          <label>collapsedNodeLength</label>
+          <select v-model="collapsedNodeLength">
+            <option :value="10">10</option>
+            <option :value="Infinity">Infinity</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
+        :collapse-threshold="collapsedNodeLength"
         :virtual="true"
         :item-height="+itemHeight"
         :data="data"
@@ -69,6 +77,7 @@ export default {
       showLine: true,
       collapsedOnClickBrackets: true,
       deep: 3,
+      collapsedNodeLength: Infinity,
       itemHeight: 20,
     };
   },

@@ -80,6 +80,10 @@ export default {
     prop: 'data',
   },
   props: {
+    collapsedNodeLength: {
+      type: Number,
+      default: Infinity
+    },
     // JSON
     data: {
       type: [String, Number, Boolean, Array, Object],
@@ -182,7 +186,7 @@ export default {
     return {
       translateY: 0,
       visibleData: null,
-      hiddenPaths: this.initHiddenPaths(jsonFlatten(this.data, this.rootPath), this.deep),
+      hiddenPaths: this.initHiddenPaths(jsonFlatten(this.data, this.rootPath), this.deep, this.collapsedNodeLength),
     };
   },
   computed: {
@@ -263,15 +267,21 @@ export default {
 
     deep: {
       handler(val) {
-        this.hiddenPaths = this.initHiddenPaths(this.originFlatData, val);
+        this.hiddenPaths = this.initHiddenPaths(this.originFlatData, val, this.collapsedNodeLength);
+      },
+    },
+
+    collapsedNodeLength: {
+      handler(val) {
+        this.hiddenPaths = this.initHiddenPaths(this.originFlatData, this.deep, val);
       },
     },
   },
   methods: {
-    initHiddenPaths(originFlatData, deep) {
+    initHiddenPaths(originFlatData, deep, collapsedNodeLength) {
       return originFlatData.reduce((acc, item) => {
-        const depthComparison = item.level >= deep;
-        if ((item.type === 'objectStart' || item.type === 'arrayStart') && depthComparison) {
+        const doCollapse = item.level >= deep || item.length >= collapsedNodeLength;
+        if ((item.type === 'objectStart' || item.type === 'arrayStart') && doCollapse) {
           return {
             ...acc,
             [item.path]: 1,
