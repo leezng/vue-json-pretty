@@ -22,6 +22,10 @@ export default defineComponent({
       type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
       default: null,
     },
+    collapsedNodeLength: {
+      type: Number,
+      default: Infinity
+    },
     // Define the depth of the tree, nodes greater than this depth will not be expanded.
     deep: {
       type: Number,
@@ -84,13 +88,13 @@ export default defineComponent({
 
     const originFlatData = computed(() => jsonFlatten(props.data, props.rootPath));
 
-    const initHiddenPaths = (deep: number) => {
+    const initHiddenPaths = (deep: number, collapsedNodeLength: number) => {
       return originFlatData.value.reduce((acc, item) => {
-        const depthComparison = item.level >= deep;
+        const doCollapse = item.level >= deep || item.length >= collapsedNodeLength;
         const pathComparison = props.pathCollapsible?.(item as NodeDataType);
         if (
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
-          (depthComparison || pathComparison)
+          (doCollapse || pathComparison)
         ) {
           return {
             ...acc,
@@ -104,7 +108,7 @@ export default defineComponent({
     const state = reactive({
       translateY: 0,
       visibleData: null as NodeDataType[] | null,
-      hiddenPaths: initHiddenPaths(props.deep),
+      hiddenPaths: initHiddenPaths(props.deep, props.collapsedNodeLength),
     });
 
     const flatData = computed(() => {
@@ -255,7 +259,14 @@ export default defineComponent({
     watch(
       () => props.deep,
       val => {
-        if (val) state.hiddenPaths = initHiddenPaths(val);
+        if (val) state.hiddenPaths = initHiddenPaths(val, props.collapsedNodeLength);
+      },
+    );
+
+    watch(
+      () => props.collapsedNodeLength,
+      val => {
+        if (val) state.hiddenPaths = initHiddenPaths(props.deep, val);
       },
     );
 
