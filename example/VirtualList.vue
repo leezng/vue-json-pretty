@@ -38,7 +38,7 @@
     <div class="block">
       <h3>vue-json-pretty(1000+ items):</h3>
       <vue-json-pretty
-        :collapse-threshold="collapsedNodeLength"
+        :collapsed-node-length="collapsedNodeLength"
         :virtual="true"
         :item-height="+itemHeight"
         :data="data"
