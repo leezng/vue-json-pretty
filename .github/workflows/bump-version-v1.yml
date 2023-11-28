@@ -1,9 +1,7 @@
-name: Create Release
+name: Create Release for v1
 
 on:
-  push:
-    branches:
-      - 'master'
+  workflow_dispatch:
 
 jobs:
   bump-version:
@@ -27,10 +25,10 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
 
-      - name: Publish NPM
-        run: |
-          npm ci
-          npm run build
-          npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Publish NPM
+      #   run: |
+      #     npm ci
+      #     npm run build
+      #     npm publish --tag v1-latest
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
