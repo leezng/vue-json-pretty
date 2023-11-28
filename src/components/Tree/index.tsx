@@ -24,7 +24,7 @@ export default defineComponent({
     },
     collapsedNodeLength: {
       type: Number,
-      default: Infinity
+      default: Infinity,
     },
     // Define the depth of the tree, nodes greater than this depth will not be expanded.
     deep: {
