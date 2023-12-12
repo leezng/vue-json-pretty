@@ -13,6 +13,7 @@
 | 属性                     | 说明                                        | 类型                              | 默认值        |
 | ------------------------ | ------------------------------------------- | --------------------------------- | ------------- |
 | data(v-model)            | 源数据，注意不是 `JSON` 字符串              | `JSON` 数据对象                   | -             |
+| collapsedNodeLength        | 长度大于此阈值的对象或数组将被折叠 | number               | Infinity      |
 | deep                     | 深度，大于该深度的节点将被折叠              | number                            | Infinity      |
 | showLength               | 在数据折叠的时候展示长度                    | boolean                           | false         |
 | showLine                 | 展示标识线                                  | boolean                           | true          |

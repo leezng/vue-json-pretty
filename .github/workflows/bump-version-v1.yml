@@ -1,9 +1,7 @@
-name: Create Release
+name: Create Release for v1
 
 on:
-  push:
-    branches:
-      - 'master'
+  workflow_dispatch:
 
 jobs:
   bump-version:
@@ -31,6 +29,6 @@ jobs:
         run: |
           npm ci
           npm run build
-          npm publish
+          npm publish --tag v1-latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
