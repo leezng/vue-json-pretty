@@ -34,11 +34,16 @@
           </select>
         </div>
       </div>
+      <div>
+        <label>darkMode</label>
+        <input v-model="state.darkMode" type="checkbox" />
+      </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         v-model:data="state.data"
+        :darkMode="state.darkMode"
         :deep="state.deep"
         :show-double-quotes="true"
         :show-line="state.showLine"

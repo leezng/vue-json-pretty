@@ -46,6 +46,10 @@
           <label>setPathCollapsible</label>
           <input v-model="state.setPathCollapsible" type="checkbox" />
         </div>
+        <div>
+          <label>darkMode</label>
+          <input v-model="state.darkMode" type="checkbox" />
+        </div>
       </div>
 
       <h3>Slots:</h3>
@@ -63,6 +67,7 @@
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
+        :darkMode="state.darkMode"
         :data="state.data"
         :deep="state.deep"
         :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"

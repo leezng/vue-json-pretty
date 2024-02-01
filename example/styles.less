@@ -1,4 +1,7 @@
 @primary-color: #1890ff;
+@dark-background-color: darken(#333, 5%);
+@dark-text-color: #fff;
+@dark-border-color: #555;
 
 * {
   box-sizing: border-box;
@@ -7,37 +10,59 @@
 html,
 body {
   margin: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body {
   font-size: 14px;
   background-color: #f9f9f9;
+
+  &.dark-mode {
+    background-color: @dark-background-color;
+    color: @dark-text-color;
+  }
 }
 
 .tabs-header {
   display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
   border-bottom: 1px solid #ccc;
 }
 
-.tabs-header-item {
-  position: relative;
-  margin-right: 20px;
-  padding: 8px 0;
-  cursor: pointer;
-  transition: color 0.3s;
+.tabs-items-container {
+  display: flex;
 
-  &:hover,
-  &.is-active {
-    color: @primary-color;
+  .tabs-header-item {
+    position: relative;
+    margin-right: 20px;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: color 0.3s;
 
-    &:after {
-      border-bottom: 2px solid @primary-color;
-      content: '';
-      width: 100%;
-      position: absolute;
-      left: 0;
-      bottom: -1px;
+    &:hover,
+    &.is-active {
+      color: @primary-color;
+
+      &:after {
+        border-bottom: 2px solid @primary-color;
+        content: '';
+        width: 100%;
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+      }
+    }
+    body.dark-mode & {
+      color: @dark-text-color;
+      &:hover,
+      &.is-active {
+        color: lighten(@primary-color, 20%);
+
+        &:after {
+          border-bottom: 2px solid lighten(@primary-color, 20%);
+        }
+      }
     }
   }
 }
