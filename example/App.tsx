@@ -75,11 +75,12 @@ export default defineComponent({
       state,
       onActiveChange,
       toggleDarkMode,
+      globalDarkModeState,
     };
   },
 
   render() {
-    const { state, onActiveChange, toggleDarkMode } = this;
+    const { state, onActiveChange, toggleDarkMode, globalDarkModeState } = this;
 
     return (
       <div class={`example ${state.isDarkMode ? 'dark-mode' : ''}`}>
@@ -103,7 +104,7 @@ export default defineComponent({
               ))}
             </div>
             <div class="dark-mode-toggle" onClick={toggleDarkMode}>
-              {state.isDarkMode ? <SunIcon /> : <MoonIcon />}
+              {globalDarkModeState.isDarkMode ? <SunIcon /> : <MoonIcon />}
             </div>
           </div>
 
