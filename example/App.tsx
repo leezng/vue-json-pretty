@@ -1,4 +1,4 @@
-import { defineComponent, reactive, provide, onMounted } from 'vue';
+import { defineComponent, reactive, provide, onMounted, watch } from 'vue';
 import Basic from './Basic.vue';
 import VirtualList from './VirtualList.vue';
 import SelectControl from './SelectControl.vue';
@@ -79,10 +79,13 @@ export default defineComponent({
     const state = reactive({
       activeKey: list[0].key,
       opened: [list[0].key],
+    });
+
+    const globalDarkModeState = reactive({
       isDarkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
     });
 
-    provide('darkModeState', state);
+    provide('darkModeState', globalDarkModeState);
 
     const onActiveChange = (key: string) => {
       state.activeKey = key;
@@ -91,23 +94,31 @@ export default defineComponent({
       }
     };
 
+    const toggleDarkMode = () => {
+      globalDarkModeState.isDarkMode = !globalDarkModeState.isDarkMode;
+    };
+
     onMounted(() => {
-      document.body.classList.toggle('dark-mode', state.isDarkMode);
+      document.body.classList.toggle('dark-mode', globalDarkModeState.isDarkMode);
     });
+
+    watch(
+      () => globalDarkModeState.isDarkMode,
+      newVal => {
+        document.body.classList.toggle('dark-mode', newVal);
+      },
+      { immediate: true },
+    );
 
     return {
       state,
       onActiveChange,
+      toggleDarkMode,
     };
   },
 
   render() {
-    const { state, onActiveChange } = this;
-
-    const toggleDarkMode = () => {
-      state.isDarkMode = !state.isDarkMode;
-      document.body.classList.toggle('dark-mode', state.isDarkMode);
-    };
+    const { state, onActiveChange, toggleDarkMode } = this;
 
     return (
       <div class={`example ${state.isDarkMode ? 'dark-mode' : ''}`}>

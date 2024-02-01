@@ -2,7 +2,7 @@
   <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
-      <textarea v-model="state.val" />
+      <textarea :class="{ 'dark-textarea': localDarkMode }" v-model="state.val"></textarea>
 
       <h3>Options:</h3>
       <div class="options">
@@ -47,8 +47,8 @@
           <input v-model="state.setPathCollapsible" type="checkbox" />
         </div>
         <div>
-          <label>darkMode</label>
-          <input v-model="state.darkMode" type="checkbox" />
+          <label>darkHighlightMode</label>
+          <input v-model="localDarkMode" type="checkbox" />
         </div>
       </div>
 
@@ -67,7 +67,7 @@
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        :darkMode="state.darkMode"
+        :darkHighlightMode="localDarkMode"
         :data="state.data"
         :deep="state.deep"
         :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"
@@ -100,6 +100,7 @@
 
 <script>
 import { defineComponent, reactive, watch } from 'vue';
+import { useDarkMode } from './useDarkMode';
 import VueJsonPretty from 'src';
 
 const defaultData = {
@@ -152,6 +153,8 @@ export default defineComponent({
       showKeyValueSpace: true,
     });
 
+    const { localDarkMode, toggleLocalDarkMode } = useDarkMode();
+
     const pathCollapsible = node => {
       return node.key === 'members';
     };
@@ -170,6 +173,8 @@ export default defineComponent({
     return {
       state,
       pathCollapsible,
+      localDarkMode,
+      toggleLocalDarkMode,
     };
   },
 });

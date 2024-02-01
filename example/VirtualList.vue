@@ -2,7 +2,7 @@
   <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
-      <textarea v-model="state.val" />
+      <textarea :class="{ 'dark-textarea': localDarkMode }" v-model="state.val"></textarea>
 
       <h3>Options:</h3>
       <div class="options">
@@ -35,14 +35,14 @@
         </div>
       </div>
       <div>
-        <label>darkMode</label>
-        <input v-model="state.darkMode" type="checkbox" />
+        <label>darkHighlightMode</label>
+        <input v-model="localDarkMode" type="checkbox" />
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty(10000+ items):</h3>
       <vue-json-pretty
-        :darkMode="state.darkMode"
+        :darkHighlightMode="localDarkMode"
         :collapsed-node-length="state.collapsedNodeLength"
         :virtual="true"
         :item-height="+state.itemHeight"
@@ -58,6 +58,7 @@
 <script>
 import { defineComponent, reactive, watch } from 'vue';
 import VueJsonPretty from 'src';
+import { useDarkMode } from './useDarkMode';
 
 const defaultData = {
   status: 200,
@@ -91,6 +92,8 @@ export default defineComponent({
       itemHeight: 20,
     });
 
+    const { localDarkMode, toggleLocalDarkMode } = useDarkMode();
+
     watch(
       () => state.val,
       newVal => {
@@ -104,6 +107,8 @@ export default defineComponent({
 
     return {
       state,
+      localDarkMode,
+      toggleLocalDarkMode,
     };
   },
 });
