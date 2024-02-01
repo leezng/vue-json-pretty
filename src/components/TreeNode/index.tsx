@@ -64,9 +64,9 @@ export const treeNodePropsPass = {
     type: Boolean,
     default: false,
   },
-  darkHighlightMode: {
-    type: Boolean,
-    default: false,
+  theme: {
+    type: String as PropType<'light' | 'dark'>,
+    default: 'light',
   },
   showKeyValueSpace: {
     type: Boolean,
@@ -217,7 +217,7 @@ export default defineComponent({
             'has-selector': props.showSelectController,
             'has-carets': props.showIcon,
             'is-highlight': props.highlightSelectedNode && props.checked,
-            'dark-highlight-mode': props.darkHighlightMode,
+            dark: props.theme === 'dark',
           }}
           onClick={handleNodeClick}
           style={props.style}

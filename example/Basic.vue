@@ -47,8 +47,11 @@
           <input v-model="state.setPathCollapsible" type="checkbox" />
         </div>
         <div>
-          <label>darkHighlightMode</label>
-          <input v-model="localDarkMode" type="checkbox" />
+          <label>theme</label>
+          <select v-model="localDarkMode">
+            <option value="light">light</option>
+            <option value="dark">dark</option>
+          </select>
         </div>
       </div>
 
@@ -67,7 +70,7 @@
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
-        :darkHighlightMode="localDarkMode"
+        :theme="localDarkMode"
         :data="state.data"
         :deep="state.deep"
         :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"

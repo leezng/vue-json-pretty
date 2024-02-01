@@ -35,14 +35,17 @@
         </div>
       </div>
       <div>
-        <label>darkHighlightMode</label>
-        <input v-model="localDarkMode" type="checkbox" />
+        <label>theme</label>
+        <select v-model="localDarkMode">
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+        </select>
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty(10000+ items):</h3>
       <vue-json-pretty
-        :darkHighlightMode="localDarkMode"
+        :theme="localDarkMode"
         :collapsed-node-length="state.collapsedNodeLength"
         :virtual="true"
         :item-height="+state.itemHeight"

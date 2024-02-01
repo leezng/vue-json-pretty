@@ -35,15 +35,18 @@
         </div>
       </div>
       <div>
-        <label>darkHighlightMode</label>
-        <input v-model="localDarkMode" type="checkbox" />
+        <label>theme</label>
+        <select v-model="localDarkMode">
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+        </select>
       </div>
     </div>
     <div class="block">
       <h3>vue-json-pretty:</h3>
       <vue-json-pretty
         v-model:data="state.data"
-        :darkHighlightMode="localDarkMode"
+        :theme="localDarkMode"
         :deep="state.deep"
         :show-double-quotes="true"
         :show-line="state.showLine"

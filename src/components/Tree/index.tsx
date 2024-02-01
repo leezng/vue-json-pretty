@@ -70,9 +70,9 @@ export default defineComponent({
     onSelectedChange: {
       type: Function as PropType<(newVal: string | string[], oldVal: string | string[]) => void>,
     },
-    darkHighlightMode: {
-      type: Boolean,
-      default: false,
+    theme: {
+      type: String as PropType<'light' | 'dark'>,
+      default: 'light',
     },
   },
 
@@ -285,7 +285,7 @@ export default defineComponent({
             key={item.id}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
-            darkHighlightMode={props.darkHighlightMode}
+            theme={props.theme}
             showDoubleQuotes={props.showDoubleQuotes}
             showLength={props.showLength}
             checked={selectedPaths.value.includes(item.path)}
@@ -321,7 +321,7 @@ export default defineComponent({
           class={{
             'vjs-tree': true,
             'is-virtual': props.virtual,
-            'dark-highlight-mode': props.darkHighlightMode,
+            dark: props.theme === 'dark',
           }}
           onScroll={props.virtual ? handleTreeScroll : undefined}
           style={

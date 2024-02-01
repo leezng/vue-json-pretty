@@ -58,8 +58,11 @@
           </select>
         </div>
         <div>
-          <label>darkHighlightMode</label>
-          <input v-model="localDarkMode" type="checkbox" />
+          <label>theme</label>
+          <select v-model="localDarkMode">
+            <option value="light">light</option>
+            <option value="dark">dark</option>
+          </select>
         </div>
       </div>
       <h3>v-model:selectedValue:</h3>
@@ -72,7 +75,7 @@
       <vue-json-pretty
         v-if="state.renderOK"
         v-model:selectedValue="state.selectedValue"
-        :darkHighlightMode="localDarkMode"
+        :theme="localDarkMode"
         :data="state.data"
         :root-path="state.rootPath"
         :deep="state.deep"
