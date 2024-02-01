@@ -2,7 +2,7 @@
   <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
-      <textarea :class="{ 'dark-textarea': localDarkMode }" v-model="state.val"></textarea>
+      <textarea :class="{ 'dark-textarea': globalDarkModeState }" v-model="state.val"></textarea>
 
       <h3>Options:</h3>
       <div class="options">
@@ -153,7 +153,7 @@ export default defineComponent({
       showKeyValueSpace: true,
     });
 
-    const { localDarkMode, toggleLocalDarkMode } = useDarkMode();
+    const { localDarkMode, toggleLocalDarkMode, globalDarkModeState } = useDarkMode();
 
     const pathCollapsible = node => {
       return node.key === 'members';
@@ -175,6 +175,7 @@ export default defineComponent({
       pathCollapsible,
       localDarkMode,
       toggleLocalDarkMode,
+      globalDarkModeState,
     };
   },
 });

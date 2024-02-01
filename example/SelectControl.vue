@@ -2,7 +2,7 @@
   <div class="example-box">
     <div class="block">
       <h3>JSON:</h3>
-      <textarea :class="{ 'dark-textarea': localDarkMode }" v-model="state.val"></textarea>
+      <textarea :class="{ 'dark-textarea': globalDarkModeState }" v-model="state.val"></textarea>
 
       <h3>Options:</h3>
       <div class="options">
@@ -154,7 +154,7 @@ export default defineComponent({
       showIcon: false,
     });
 
-    const { localDarkMode, toggleLocalDarkMode } = useDarkMode();
+    const { localDarkMode, toggleLocalDarkMode, globalDarkModeState } = useDarkMode();
 
     const handleNodeClick = node => {
       state.node = node;
@@ -196,6 +196,7 @@ export default defineComponent({
       handleAll,
       localDarkMode,
       toggleLocalDarkMode,
+      globalDarkModeState,
     };
   },
 });
