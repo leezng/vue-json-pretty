@@ -70,6 +70,10 @@ export default defineComponent({
     onSelectedChange: {
       type: Function as PropType<(newVal: string | string[], oldVal: string | string[]) => void>,
     },
+    theme: {
+      type: String as PropType<'light' | 'dark'>,
+      default: 'light',
+    },
   },
 
   slots: ['renderNodeKey', 'renderNodeValue'],
@@ -281,6 +285,7 @@ export default defineComponent({
             key={item.id}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
+            theme={props.theme}
             showDoubleQuotes={props.showDoubleQuotes}
             showLength={props.showLength}
             checked={selectedPaths.value.includes(item.path)}
@@ -316,6 +321,7 @@ export default defineComponent({
           class={{
             'vjs-tree': true,
             'is-virtual': props.virtual,
+            dark: props.theme === 'dark',
           }}
           onScroll={props.virtual ? handleTreeScroll : undefined}
           style={
