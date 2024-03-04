@@ -39,6 +39,14 @@ webpack(webpackConfig, (err, stats) => {
       ),
     );
   } else {
+    const buildEsmProcess = spawn('npm', ['run', 'build:esm'], {
+      stdio: 'inherit',
+    });
+
+    buildEsmProcess.on('close', () => {
+      console.log(chalk.cyan('Build esm complete.\n'));
+    });
+
     const buildTypesProcess = spawn('npm', ['run', 'build:dts'], {
       stdio: 'inherit',
     });

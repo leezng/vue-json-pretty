@@ -93,6 +93,7 @@
   ],
   "files": [
     "lib",
+    "esm",
     "types"
   ],
   "peerDependencies": {
