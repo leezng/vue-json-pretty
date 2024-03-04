@@ -4,9 +4,11 @@
   "description": "A JSON tree view component that is easy to use and also supports data selection.",
   "author": "leezng <im.leezng@gmail.com>",
   "main": "lib/vue-json-pretty.js",
+  "module": "esm/vue-json-pretty.js",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
+    "build:esm": "cross-env ESM=true node build/build.js",
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "build:dts": "tsc --p tsconfig.dts.json && tsc-alias -p ./tsconfig.dts.json",
     "test": "cypress open",
