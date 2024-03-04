@@ -233,12 +233,12 @@ export default defineComponent({
       if (props.collapsedOnClickBrackets) {
         updateCollapsedPaths(collapsed, path);
       }
-      emit('bracketsClick', collapsed);
+      emit('bracketsClick', collapsed, path);
     };
 
     const handleIconClick = (collapsed: boolean, path: string) => {
       updateCollapsedPaths(collapsed, path);
-      emit('iconClick', collapsed);
+      emit('iconClick', collapsed, path);
     };
 
     const handleValueChange = (value: unknown, path: string) => {
