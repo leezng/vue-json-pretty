@@ -2,14 +2,18 @@ require('./check-versions')();
 
 process.env.NODE_ENV = 'production';
 
-const fs = require('fs');
-const path = require('path');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const { spawn } = require('child_process');
 const webpackConfig = require('./webpack.prod.conf');
 
+const isEsm = process.env.ESM;
 const isExampleEnv = process.env.EXAMPLE_ENV;
+
+const successText = {
+  main: 'Build main sources complete.',
+  esm: 'Build esm sources complete.',
+  example: 'Build example page complete.',
+};
 
 webpack(webpackConfig, (err, stats) => {
   if (err) throw err;
@@ -29,7 +33,8 @@ webpack(webpackConfig, (err, stats) => {
     process.exit(1);
   }
 
-  console.log(chalk.cyan('Build sources complete.\n'));
+  const text = isExampleEnv ? successText.example : isEsm ? successText.esm : successText.main;
+  console.log(chalk.cyan(`${text}\n`));
 
   if (isExampleEnv) {
     console.log(
@@ -38,21 +43,5 @@ webpack(webpackConfig, (err, stats) => {
           "Opening index.html over file:// won't work.\n",
       ),
     );
-  } else {
-    const buildEsmProcess = spawn('npm', ['run', 'build:esm'], {
-      stdio: 'inherit',
-    });
-
-    buildEsmProcess.on('close', () => {
-      console.log(chalk.cyan('Build esm complete.\n'));
-    });
-
-    const buildTypesProcess = spawn('npm', ['run', 'build:dts'], {
-      stdio: 'inherit',
-    });
-
-    buildTypesProcess.on('close', () => {
-      console.log(chalk.cyan('Build types(.d.ts) complete.\n'));
-    });
   }
 });
