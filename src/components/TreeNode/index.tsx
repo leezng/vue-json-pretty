@@ -84,10 +84,10 @@ export const treeNodePropsPass = {
     type: Function as PropType<(node: NodeDataType) => void>,
   },
   onBracketsClick: {
-    type: Function as PropType<(collapsed: boolean, path: string) => void>,
+    type: Function as PropType<(collapsed: boolean, node: NodeDataType) => void>,
   },
   onIconClick: {
-    type: Function as PropType<(collapsed: boolean, path: string) => void>,
+    type: Function as PropType<(collapsed: boolean, node: NodeDataType) => void>,
   },
   onValueChange: {
     type: Function as PropType<(value: boolean, path: string) => void>,
@@ -171,11 +171,11 @@ export default defineComponent({
     };
 
     const handleBracketsClick = () => {
-      emit('bracketsClick', !props.collapsed, props.node.path);
+      emit('bracketsClick', !props.collapsed, props.node);
     };
 
     const handleIconClick = () => {
-      emit('iconClick', !props.collapsed, props.node.path);
+      emit('iconClick', !props.collapsed, props.node);
     };
 
     const handleSelectedChange = () => {

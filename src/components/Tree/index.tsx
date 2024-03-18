@@ -229,16 +229,16 @@ export default defineComponent({
       }
     };
 
-    const handleBracketsClick = (collapsed: boolean, path: string) => {
+    const handleBracketsClick = (collapsed: boolean, node: NodeDataType) => {
       if (props.collapsedOnClickBrackets) {
-        updateCollapsedPaths(collapsed, path);
+        updateCollapsedPaths(collapsed, node.path);
       }
-      emit('bracketsClick', collapsed, path);
+      emit('bracketsClick', collapsed, node);
     };
 
-    const handleIconClick = (collapsed: boolean, path: string) => {
-      updateCollapsedPaths(collapsed, path);
-      emit('iconClick', collapsed, path);
+    const handleIconClick = (collapsed: boolean, node: NodeDataType) => {
+      updateCollapsedPaths(collapsed, node.path);
+      emit('iconClick', collapsed, node);
     };
 
     const handleValueChange = (value: unknown, path: string) => {

@@ -135,12 +135,12 @@ plugins: [
 
 ## Events
 
-| Event Name     | Description                              | Parameters           |
-| -------------- | ---------------------------------------- | -------------------- |
-| nodeClick      | triggers when click node                 | (node: NodeData)     |
-| bracketsClick  | triggers when click brackets             | (collapsed: boolean) |
-| iconClick      | triggers when click icon                 | (collapsed: boolean) |
-| selectedChange | triggers when the selected value changed | (newVal, oldVal)     |
+| Event Name     | Description                              | Parameters                           |
+| -------------- | ---------------------------------------- | ------------------------------------ |
+| nodeClick      | triggers when click node                 | (node: NodeData)                     |
+| bracketsClick  | triggers when click brackets             | (collapsed: boolean, node: NodeData) |
+| iconClick      | triggers when click icon                 | (collapsed: boolean, node: NodeData) |
+| selectedChange | triggers when the selected value changed | (newVal, oldVal)                     |
 
 ## Slots
 
