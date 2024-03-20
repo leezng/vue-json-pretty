@@ -10,8 +10,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 
+const isEsm = process.env.ESM;
 const isExampleEnv = process.env.EXAMPLE_ENV;
-const distPath = '../lib';
+const distPath = isEsm ? '../esm' : '../lib';
 
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : config.build.env;
 
@@ -32,21 +33,35 @@ const webpackConfig = merge(baseWebpackConfig, {
 });
 
 if (!isExampleEnv) {
-  webpackConfig.entry = {
-    'vue-json-pretty': './src/index.ts',
-  };
   webpackConfig.output = {
     path: path.resolve(__dirname, distPath),
     filename: `${distPath}/[name].js`,
-    globalObject: 'this',
-    library: 'VueJsonPretty',
-    libraryTarget: 'umd',
   };
+  if (isEsm) {
+    webpackConfig.entry = {
+      'vue-json-pretty': './src/index.ts',
+    };
+    webpackConfig.experiments = {
+      outputModule: true,
+    };
+    webpackConfig.output.library = { type: 'module' };
+    webpackConfig.output.chunkFormat = 'module';
+    webpackConfig.target = 'es2019';
+  } else {
+    webpackConfig.entry = {
+      'vue-json-pretty': './src/index.ts',
+    };
+    webpackConfig.output.globalObject = 'this';
+    webpackConfig.output.library = 'VueJsonPretty';
+    webpackConfig.output.libraryTarget = 'umd';
+  }
   webpackConfig.externals = {
     vue: {
       root: 'Vue',
-      commonjs: 'vue',
       commonjs2: 'vue',
+      commonjs: 'vue',
+      amd: 'vue',
+      module: 'vue',
     },
   };
   webpackConfig.plugins.push(

@@ -106,46 +106,47 @@ plugins: [
 
 ## Props
 
-| Property                  | Description                                                                     | Type                              | Default |
-|---------------------------|---------------------------------------------------------------------------------|-----------------------------------| ------- |
-| data(v-model)             | JSON data, support v-model when use editable                                    | JSON object                       | -       |
-| collapsedNodeLength       | Objects or arrays which length is greater than this threshold will be collapsed | number                            | -       |
-| deep                      | Paths greater than this depth will be collapsed                                 | number                            | -       |
-| showLength                | Show the length when collapsed                                                  | boolean                           | false   |
-| showLine                  | Show the line                                                                   | boolean                           | true    |
-| showLineNumber            | Show the line number                                                            | boolean                           | false   |
-| showIcon                  | Show the icon                                                                   | boolean                           | false   |
-| showDoubleQuotes          | Show doublequotes on key                                                        | boolean                           | true    |
-| virtual                   | Use virtual scroll                                                              | boolean                           | false   |
-| height                    | The height of list when using virtual                                           | number                            | 400     |
-| itemHeight                | The height of node when using virtual                                           | number                            | 20      |
-| selectedValue(v-model)    | Selected data path                                                              | string, array                     | -       |
-| rootPath                  | Root data path                                                                  | string                            | `root`  |
-| nodeSelectable            | Defines whether a node supports selection                                       | (node) => boolean                 | -       |
-| selectableType            | Support path select, default none                                               | `multiple` \| `single`            | -       |
-| showSelectController      | Show the select controller                                                      | boolean                           | false   |
-| selectOnClickNode         | Trigger select when click node                                                  | boolean                           | true    |
-| highlightSelectedNode     | Support highlighting selected nodes                                             | boolean                           | true    |
-| collapsedOnClickBrackets  | Support click brackets to collapse                                              | boolean                           | true    |
-| renderNodeKey             | render node key, or use slot #renderNodeKey                                     | ({ node, defaultKey }) => vNode   | -       |
-| renderNodeValue           | render node value, or use slot #renderNodeValue                                 | ({ node, defaultValue }) => vNode | -       |
-| editable                  | Support editable                                                                | boolean                           | false   |
-| editableTrigger           | Trigger                                                                         | `click` \| `dblclick`             | `click` |
+| Property                 | Description                                                                                                             | Type                              | Default |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------- |
+| data(v-model)            | JSON data, support v-model when use editable                                                                            | JSON object                       | -       |
+| collapsedNodeLength      | Objects or arrays which length is greater than this threshold will be collapsed                                         | number                            | -       |
+| deep                     | Paths greater than this depth will be collapsed                                                                         | number                            | -       |
+| showLength               | Show the length when collapsed                                                                                          | boolean                           | false   |
+| showLine                 | Show the line                                                                                                           | boolean                           | true    |
+| showLineNumber           | Show the line number                                                                                                    | boolean                           | false   |
+| showIcon                 | Show the icon                                                                                                           | boolean                           | false   |
+| showDoubleQuotes         | Show doublequotes on key                                                                                                | boolean                           | true    |
+| virtual                  | Use virtual scroll                                                                                                      | boolean                           | false   |
+| height                   | The height of list when using virtual                                                                                   | number                            | 400     |
+| itemHeight               | The height of node when using virtual                                                                                   | number                            | 20      |
+| selectedValue(v-model)   | Selected data path                                                                                                      | string, array                     | -       |
+| rootPath                 | Root data path                                                                                                          | string                            | `root`  |
+| nodeSelectable           | Defines whether a node supports selection                                                                               | (node) => boolean                 | -       |
+| selectableType           | Support path select, default none                                                                                       | `multiple` \| `single`            | -       |
+| showSelectController     | Show the select controller                                                                                              | boolean                           | false   |
+| selectOnClickNode        | Trigger select when click node                                                                                          | boolean                           | true    |
+| highlightSelectedNode    | Support highlighting selected nodes                                                                                     | boolean                           | true    |
+| collapsedOnClickBrackets | Support click brackets to collapse                                                                                      | boolean                           | true    |
+| renderNodeKey            | render node key, or use slot #renderNodeKey                                                                             | ({ node, defaultKey }) => vNode   | -       |
+| renderNodeValue          | render node value, or use slot #renderNodeValue                                                                         | ({ node, defaultValue }) => vNode | -       |
+| editable                 | Support editable                                                                                                        | boolean                           | false   |
+| editableTrigger          | Trigger                                                                                                                 | `click` \| `dblclick`             | `click` |
+| theme                    | Sets the theme of the component. Options are 'light' or 'dark', with dark mode enhancing visibility on dark backgrounds | `'light' \| 'dark'`               | `light` |
 
 ## Events
 
-| Event Name     | Description                              | Parameters           |
-| -------------- | ---------------------------------------- | -------------------- |
-| nodeClick      | triggers when click node                 | (node: NodeData)     |
-| bracketsClick  | triggers when click brackets             | (collapsed: boolean) |
-| iconClick      | triggers when click icon                 | (collapsed: boolean) |
-| selectedChange | triggers when the selected value changed | (newVal, oldVal)     |
+| Event Name     | Description                              | Parameters                           |
+| -------------- | ---------------------------------------- | ------------------------------------ |
+| nodeClick      | triggers when click node                 | (node: NodeData)                     |
+| bracketsClick  | triggers when click brackets             | (collapsed: boolean, node: NodeData) |
+| iconClick      | triggers when click icon                 | (collapsed: boolean, node: NodeData) |
+| selectedChange | triggers when the selected value changed | (newVal, oldVal)                     |
 
 ## Slots
 
 | Slot Name       | Description       | Parameters             |
 | --------------- | ----------------- | ---------------------- |
-| renderNodeKey   | render node key   | { node, defaultKey }        |
+| renderNodeKey   | render node key   | { node, defaultKey }   |
 | renderNodeValue | render node value | { node, defaultValue } |
 
 ## Contributors

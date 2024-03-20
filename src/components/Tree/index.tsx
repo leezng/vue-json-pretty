@@ -70,6 +70,10 @@ export default defineComponent({
     onSelectedChange: {
       type: Function as PropType<(newVal: string | string[], oldVal: string | string[]) => void>,
     },
+    theme: {
+      type: String as PropType<'light' | 'dark'>,
+      default: 'light',
+    },
   },
 
   slots: ['renderNodeKey', 'renderNodeValue'],
@@ -225,16 +229,16 @@ export default defineComponent({
       }
     };
 
-    const handleBracketsClick = (collapsed: boolean, path: string) => {
+    const handleBracketsClick = (collapsed: boolean, node: NodeDataType) => {
       if (props.collapsedOnClickBrackets) {
-        updateCollapsedPaths(collapsed, path);
+        updateCollapsedPaths(collapsed, node.path);
       }
-      emit('bracketsClick', collapsed);
+      emit('bracketsClick', collapsed, node);
     };
 
-    const handleIconClick = (collapsed: boolean, path: string) => {
-      updateCollapsedPaths(collapsed, path);
-      emit('iconClick', collapsed);
+    const handleIconClick = (collapsed: boolean, node: NodeDataType) => {
+      updateCollapsedPaths(collapsed, node.path);
+      emit('iconClick', collapsed, node);
     };
 
     const handleValueChange = (value: unknown, path: string) => {
@@ -281,6 +285,7 @@ export default defineComponent({
             key={item.id}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
+            theme={props.theme}
             showDoubleQuotes={props.showDoubleQuotes}
             showLength={props.showLength}
             checked={selectedPaths.value.includes(item.path)}
@@ -316,6 +321,7 @@ export default defineComponent({
           class={{
             'vjs-tree': true,
             'is-virtual': props.virtual,
+            dark: props.theme === 'dark',
           }}
           onScroll={props.virtual ? handleTreeScroll : undefined}
           style={
