@@ -4,7 +4,7 @@ type UseErrorOptions = {
   emitListener: boolean;
 };
 
-export default function useError(message: string, { emitListener }: UseErrorOptions) {
+export function useError(message: string, { emitListener }: UseErrorOptions) {
   const emit = () => {
     throw new Error(`[VueJsonPretty] ${message}`);
   };
