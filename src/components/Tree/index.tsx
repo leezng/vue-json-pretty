@@ -80,6 +80,7 @@ export default defineComponent({
 
   emits: [
     'nodeClick',
+    'nodeMouseover',
     'bracketsClick',
     'iconClick',
     'selectedChange',
@@ -216,6 +217,10 @@ export default defineComponent({
       emit('nodeClick', node);
     };
 
+    const handleNodeMouseover = (node: NodeDataType) => {
+      emit('nodeMouseover', node);
+    };
+
     const updateCollapsedPaths = (collapsed: boolean, path: string) => {
       if (collapsed) {
         state.hiddenPaths = {
@@ -303,6 +308,7 @@ export default defineComponent({
             renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
             onNodeClick={handleNodeClick}
+            onNodeMouseover={handleNodeMouseover}
             onBracketsClick={handleBracketsClick}
             onIconClick={handleIconClick}
             onSelectedChange={handleSelectedChange}

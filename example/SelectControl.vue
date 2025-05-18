@@ -91,6 +91,7 @@
         :show-select-controller="state.showSelectController"
         :show-icon="state.showIcon"
         @node-click="handleNodeClick"
+        @node-mouseover="handleAll"
         @brackets-click="handleAll"
         @icon-click="handleAll"
         @selected-change="handleAll"

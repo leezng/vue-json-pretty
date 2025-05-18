@@ -83,6 +83,9 @@ export const treeNodePropsPass = {
   onNodeClick: {
     type: Function as PropType<(node: NodeDataType) => void>,
   },
+  onNodeMouseover: {
+    type: Function as PropType<(node: NodeDataType) => void>,
+  },
   onBracketsClick: {
     type: Function as PropType<(collapsed: boolean, node: NodeDataType) => void>,
   },
@@ -114,7 +117,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['nodeClick', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
+  emits: ['nodeClick', 'nodeMouseover', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
 
   setup(props, { emit }) {
     const dataType = computed<string>(() => getDataType(props.node.content));
@@ -189,6 +192,10 @@ export default defineComponent({
       }
     };
 
+    const handleNodeMouseover = () => {
+      emit('nodeMouseover', props.node);
+    };
+
     const handleValueEdit = (e: MouseEvent) => {
       if (!props.editable) return;
       if (!state.editing) {
@@ -220,6 +227,7 @@ export default defineComponent({
             dark: props.theme === 'dark',
           }}
           onClick={handleNodeClick}
+          onMouseover={handleNodeMouseover}
           style={props.style}
         >
           {props.showLineNumber && <span class="vjs-node-index">{node.id + 1}</span>}
