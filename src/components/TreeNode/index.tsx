@@ -2,7 +2,7 @@ import { defineComponent, reactive, computed, PropType, CSSProperties } from 'vu
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
-import { getDataType, JSONFlattenReturnType, stringToAutoType } from 'src/utils';
+import { getDataType, JSONFlattenReturnType, JSONDataType, stringToAutoType } from 'src/utils';
 import { useClipboard } from 'src/hooks/useClipboard';
 import './styles.less';
 

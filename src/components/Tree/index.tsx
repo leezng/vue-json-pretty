@@ -17,11 +17,6 @@ export default defineComponent({
 
   props: {
     ...treeNodePropsPass,
-    // JSONLike data.
-    data: {
-      type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
-      default: null,
-    },
     collapsedNodeLength: {
       type: Number,
       default: Infinity,
@@ -34,11 +29,6 @@ export default defineComponent({
     pathCollapsible: {
       type: Function as PropType<(node: NodeDataType) => boolean>,
       default: (): boolean => false,
-    },
-    // Data root path.
-    rootPath: {
-      type: String,
-      default: 'root',
     },
     // Whether to use virtual scroll, usually applied to big data.
     virtual: {
