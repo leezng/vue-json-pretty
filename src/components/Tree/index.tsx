@@ -9,7 +9,7 @@ import {
   CSSProperties,
 } from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
+import { emitError, jsonFlatten, cloneDeep } from 'src/utils';
 import './styles.less';
 
 export default defineComponent({
@@ -280,6 +280,7 @@ export default defineComponent({
             key={item.id}
             data={props.data}
             rootPath={props.rootPath}
+            indent={props.indent}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
             theme={props.theme}

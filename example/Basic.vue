@@ -35,6 +35,13 @@
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
+          <label>indent</label>
+          <select v-model="state.indent">
+            <option :value="2">2</option>
+            <option :value="4">4</option>
+          </select>
+        </div>
+        <div>
           <label>deep</label>
           <select v-model="state.deep">
             <option :value="2">2</option>
@@ -73,6 +80,7 @@
         :theme="localDarkMode"
         :data="state.data"
         :deep="state.deep"
+        :indent="state.indent"
         :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
@@ -150,6 +158,7 @@ export default defineComponent({
       collapsedOnClickBrackets: true,
       useRenderNodeKeySlot: false,
       useRenderNodeValueSlot: false,
+      indent: 2,
       deep: 4,
       setPathCollapsible: false,
       showIcon: false,

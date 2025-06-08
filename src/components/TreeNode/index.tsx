@@ -22,6 +22,10 @@ export const treeNodePropsPass = {
     type: String,
     default: 'root',
   },
+  indent: {
+    type: Number,
+    default: 2,
+  },
   // Whether to display the length of (array|object).
   showLength: {
     type: Boolean,
@@ -272,7 +276,9 @@ export default defineComponent({
                   'vjs-indent-unit': true,
                   'has-line': props.showLine,
                 }}
-              />
+              >
+                {Array.from(Array(props.indent)).map(() => <>&nbsp;</>)}
+              </div>
             ))}
             {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
           </div>
