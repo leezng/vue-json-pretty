@@ -3,6 +3,7 @@ import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
 import { getDataType, JSONFlattenReturnType, stringToAutoType } from 'src/utils';
+import { useClipboard } from 'src/hooks/useClipboard';
 import './styles.less';
 
 export interface NodeDataType extends JSONFlattenReturnType {
@@ -11,6 +12,16 @@ export interface NodeDataType extends JSONFlattenReturnType {
 
 // The props here will be exposed to the user through the topmost component.
 export const treeNodePropsPass = {
+  // JSONLike data.
+  data: {
+    type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
+    default: null,
+  },
+  // Data root path.
+  rootPath: {
+    type: String,
+    default: 'root',
+  },
   // Whether to display the length of (array|object).
   showLength: {
     type: Boolean,
@@ -214,6 +225,16 @@ export default defineComponent({
       }
     };
 
+    const { copy } = useClipboard();
+
+    const handleCopy = () => {
+      const { key, path } = props.node;
+      const rootPath = props.rootPath;
+      const content = new Function('data', `return data${path.slice(rootPath.length)}`)(props.data);
+      const copiedData = JSON.stringify(key ? { [key]: content } : content, null, 2);
+      copy(copiedData);
+    }
+
     return () => {
       const { node } = props;
 
@@ -304,6 +325,10 @@ export default defineComponent({
             {props.showLength && props.collapsed && (
               <span class="vjs-comment"> // {node.length} items </span>
             )}
+          </span>
+
+          <span class="vjs-tree-node-actions">
+            <span onClick={handleCopy}>copy</span>
           </span>
         </div>
       );

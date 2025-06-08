@@ -1,13 +1,9 @@
 import { ref } from 'vue';
 
-export type UseClipboardOptions = {
-  source: string;
-};
-
-export function useClipboard({ source }: UseClipboardOptions) {
+export function useClipboard() {
   const copied = ref(false);
 
-  const copy = async () => {
+  const copy = async (source: string) => {
     try {
       await navigator.clipboard.writeText(source);
       copied.value = true;
@@ -22,4 +18,4 @@ export function useClipboard({ source }: UseClipboardOptions) {
   return {
     copy,
   };
-};
+}

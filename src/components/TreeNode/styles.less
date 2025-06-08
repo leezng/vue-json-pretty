@@ -21,6 +21,11 @@
   &.is-highlight,
   &:hover {
     background-color: @highlight-bg-color;
+    border-radius: 4px;
+
+    .@{css-prefix}-tree-node-actions {
+      display: block;
+    }
   }
 
   .@{css-prefix}-indent {
@@ -36,9 +41,22 @@
     }
   }
 
+  .@{css-prefix}-tree-node-actions {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0 4px;
+    background-color: @highlight-bg-color;
+    border-radius: 4px;
+  }
+
   &.dark {
     &.is-highlight,
     &:hover {
+      background-color: @highlight-bg-color-dark;
+    }
+    .@{css-prefix}-tree-node-actions {
       background-color: @highlight-bg-color-dark;
     }
   }

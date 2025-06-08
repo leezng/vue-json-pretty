@@ -288,6 +288,8 @@ export default defineComponent({
         state.visibleData.map(item => (
           <TreeNode
             key={item.id}
+            data={props.data}
+            rootPath={props.rootPath}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
             theme={props.theme}
