@@ -66,7 +66,7 @@ export default defineComponent({
     },
   },
 
-  slots: ['renderNodeKey', 'renderNodeValue'],
+  slots: ['renderNodeKey', 'renderNodeValue', 'renderNodeActions'],
 
   emits: [
     'nodeClick',
@@ -272,7 +272,8 @@ export default defineComponent({
     return () => {
       const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
-
+      const renderNodeActions = props.renderNodeActions || slots.renderNodeActions || false;
+      
       const nodeContent =
         state.visibleData &&
         state.visibleData.map(item => (
@@ -300,6 +301,7 @@ export default defineComponent({
             showKeyValueSpace={props.showKeyValueSpace}
             renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
+            renderNodeActions={renderNodeActions}
             onNodeClick={handleNodeClick}
             onNodeMouseover={handleNodeMouseover}
             onBracketsClick={handleBracketsClick}

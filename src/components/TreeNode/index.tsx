@@ -44,6 +44,13 @@ export const treeNodePropsPass = {
   renderNodeValue: Function as PropType<
     (opt: { node: NodeDataType; defaultValue: string | JSX.Element }) => unknown
   >,
+  // Custom render for node actions.
+  renderNodeActions: {
+    type: [Boolean, Function] as PropType<
+      boolean | ((opt: { node: NodeDataType; defaultActions: { copy: () => void } }) => unknown)
+    >,
+    default: false,
+  },
   // Define the selection method supported by the data level, which is not available by default.
   selectableType: String as PropType<'multiple' | 'single' | ''>,
   // Whether to display the selection control.
@@ -239,6 +246,18 @@ export default defineComponent({
       copy(copiedData);
     }
 
+    const renderNodeActions = () => {
+      const render = props.renderNodeActions;
+      if (render === false) return null;
+      else if (render === true) return <span onClick={handleCopy} class="vjs-tree-node-actions-item">copy</span>;
+      const defaultActions = {
+        copy: handleCopy,
+      };
+      return render
+        ? render({ node: props.node, defaultActions })
+        : null;
+    };
+
     return () => {
       const { node } = props;
 
@@ -333,9 +352,11 @@ export default defineComponent({
             )}
           </span>
 
-          <span class="vjs-tree-node-actions">
-            <span onClick={handleCopy}>copy</span>
-          </span>
+          {props.renderNodeActions !== false && (
+            <span class="vjs-tree-node-actions">
+              { renderNodeActions() }
+            </span>
+          )}
         </div>
       );
     };
