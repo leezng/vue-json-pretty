@@ -139,7 +139,14 @@ export default defineComponent({
     },
   },
 
-  emits: ['nodeClick', 'nodeMouseover', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
+  emits: [
+    'nodeClick',
+    'nodeMouseover',
+    'bracketsClick',
+    'iconClick',
+    'selectedChange',
+    'valueChange',
+  ],
 
   setup(props, { emit }) {
     const dataType = computed<string>(() => getDataType(props.node.content));
@@ -244,7 +251,7 @@ export default defineComponent({
       const content = new Function('data', `return data${path.slice(rootPath.length)}`)(props.data);
       const copiedData = JSON.stringify(key ? { [key]: content } : content, null, 2);
       copy(copiedData);
-    }
+    };
 
     const renderNodeActions = () => {
       const render = props.renderNodeActions;
@@ -252,9 +259,13 @@ export default defineComponent({
       const defaultActions = {
         copy: handleCopy,
       };
-      return typeof render === 'function'
-        ? render({ node: props.node, defaultActions })
-        : <span onClick={handleCopy} class="vjs-tree-node-actions-item">copy</span>;
+      return typeof render === 'function' ? (
+        render({ node: props.node, defaultActions })
+      ) : (
+        <span onClick={handleCopy} class="vjs-tree-node-actions-item">
+          copy
+        </span>
+      );
     };
 
     return () => {
@@ -295,7 +306,9 @@ export default defineComponent({
                   'has-line': props.showLine,
                 }}
               >
-                {Array.from(Array(props.indent)).map(() => <>&nbsp;</>)}
+                {Array.from(Array(props.indent)).map(() => (
+                  <>&nbsp;</>
+                ))}
               </div>
             ))}
             {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
@@ -352,9 +365,7 @@ export default defineComponent({
           </span>
 
           {props.renderNodeActions && (
-            <span class="vjs-tree-node-actions">
-              { renderNodeActions() }
-            </span>
+            <span class="vjs-tree-node-actions">{renderNodeActions()}</span>
           )}
         </div>
       );

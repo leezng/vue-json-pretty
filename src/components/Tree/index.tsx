@@ -273,7 +273,7 @@ export default defineComponent({
       const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
       const renderNodeActions = props.renderNodeActions ?? slots.renderNodeActions ?? false;
-      
+
       const nodeContent =
         state.visibleData &&
         state.visibleData.map(item => (
