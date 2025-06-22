@@ -2,7 +2,8 @@ import { defineComponent, reactive, computed, PropType, CSSProperties } from 'vu
 import Brackets from 'src/components/Brackets';
 import CheckController from 'src/components/CheckController';
 import Carets from 'src/components/Carets';
-import { getDataType, JSONFlattenReturnType, stringToAutoType } from 'src/utils';
+import { getDataType, JSONFlattenReturnType, JSONDataType, stringToAutoType } from 'src/utils';
+import { useClipboard } from 'src/hooks/useClipboard';
 import './styles.less';
 
 export interface NodeDataType extends JSONFlattenReturnType {
@@ -11,6 +12,20 @@ export interface NodeDataType extends JSONFlattenReturnType {
 
 // The props here will be exposed to the user through the topmost component.
 export const treeNodePropsPass = {
+  // JSONLike data.
+  data: {
+    type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
+    default: null,
+  },
+  // Data root path.
+  rootPath: {
+    type: String,
+    default: 'root',
+  },
+  indent: {
+    type: Number,
+    default: 2,
+  },
   // Whether to display the length of (array|object).
   showLength: {
     type: Boolean,
@@ -29,6 +44,13 @@ export const treeNodePropsPass = {
   renderNodeValue: Function as PropType<
     (opt: { node: NodeDataType; defaultValue: string | JSX.Element }) => unknown
   >,
+  // Custom render for node actions.
+  renderNodeActions: {
+    type: [Boolean, Function] as PropType<
+      boolean | ((opt: { node: NodeDataType; defaultActions: { copy: () => void } }) => unknown)
+    >,
+    default: undefined,
+  },
   // Define the selection method supported by the data level, which is not available by default.
   selectableType: String as PropType<'multiple' | 'single' | ''>,
   // Whether to display the selection control.
@@ -83,6 +105,9 @@ export const treeNodePropsPass = {
   onNodeClick: {
     type: Function as PropType<(node: NodeDataType) => void>,
   },
+  onNodeMouseover: {
+    type: Function as PropType<(node: NodeDataType) => void>,
+  },
   onBracketsClick: {
     type: Function as PropType<(collapsed: boolean, node: NodeDataType) => void>,
   },
@@ -114,7 +139,14 @@ export default defineComponent({
     },
   },
 
-  emits: ['nodeClick', 'bracketsClick', 'iconClick', 'selectedChange', 'valueChange'],
+  emits: [
+    'nodeClick',
+    'nodeMouseover',
+    'bracketsClick',
+    'iconClick',
+    'selectedChange',
+    'valueChange',
+  ],
 
   setup(props, { emit }) {
     const dataType = computed<string>(() => getDataType(props.node.content));
@@ -189,6 +221,10 @@ export default defineComponent({
       }
     };
 
+    const handleNodeMouseover = () => {
+      emit('nodeMouseover', props.node);
+    };
+
     const handleValueEdit = (e: MouseEvent) => {
       if (!props.editable) return;
       if (!state.editing) {
@@ -207,6 +243,31 @@ export default defineComponent({
       }
     };
 
+    const { copy } = useClipboard();
+
+    const handleCopy = () => {
+      const { key, path } = props.node;
+      const rootPath = props.rootPath;
+      const content = new Function('data', `return data${path.slice(rootPath.length)}`)(props.data);
+      const copiedData = JSON.stringify(key ? { [key]: content } : content, null, 2);
+      copy(copiedData);
+    };
+
+    const renderNodeActions = () => {
+      const render = props.renderNodeActions;
+      if (!render) return null;
+      const defaultActions = {
+        copy: handleCopy,
+      };
+      return typeof render === 'function' ? (
+        render({ node: props.node, defaultActions })
+      ) : (
+        <span onClick={handleCopy} class="vjs-tree-node-actions-item">
+          copy
+        </span>
+      );
+    };
+
     return () => {
       const { node } = props;
 
@@ -220,6 +281,7 @@ export default defineComponent({
             dark: props.theme === 'dark',
           }}
           onClick={handleNodeClick}
+          onMouseover={handleNodeMouseover}
           style={props.style}
         >
           {props.showLineNumber && <span class="vjs-node-index">{node.id + 1}</span>}
@@ -243,7 +305,11 @@ export default defineComponent({
                   'vjs-indent-unit': true,
                   'has-line': props.showLine,
                 }}
-              />
+              >
+                {Array.from(Array(props.indent)).map(() => (
+                  <>&nbsp;</>
+                ))}
+              </div>
             ))}
             {props.showIcon && <Carets nodeType={node.type} onClick={handleIconClick} />}
           </div>
@@ -297,6 +363,10 @@ export default defineComponent({
               <span class="vjs-comment"> // {node.length} items </span>
             )}
           </span>
+
+          {props.renderNodeActions && (
+            <span class="vjs-tree-node-actions">{renderNodeActions()}</span>
+          )}
         </div>
       );
     };

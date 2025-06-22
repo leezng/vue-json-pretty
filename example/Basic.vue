@@ -35,6 +35,13 @@
           <input v-model="state.collapsedOnClickBrackets" type="checkbox" />
         </div>
         <div>
+          <label>indent</label>
+          <select v-model="state.indent">
+            <option :value="2">2</option>
+            <option :value="4">4</option>
+          </select>
+        </div>
+        <div>
           <label>deep</label>
           <select v-model="state.deep">
             <option :value="2">2</option>
@@ -65,6 +72,14 @@
           <label>renderNodeValue</label>
           <input v-model="state.useRenderNodeValueSlot" type="checkbox" />
         </div>
+        <div>
+          <label>renderNodeActions</label>
+          <select v-model="state.useRenderNodeActionsSlot">
+            <option :value="false">default(false)</option>
+            <option :value="true">true</option>
+            <option value="custom">custom</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="block">
@@ -73,6 +88,7 @@
         :theme="localDarkMode"
         :data="state.data"
         :deep="state.deep"
+        :indent="state.indent"
         :path-collapsible="state.setPathCollapsible ? pathCollapsible : undefined"
         :show-double-quotes="state.showDoubleQuotes"
         :show-length="state.showLength"
@@ -81,6 +97,11 @@
         :collapsed-on-click-brackets="state.collapsedOnClickBrackets"
         :show-icon="state.showIcon"
         :show-key-value-space="state.showKeyValueSpace"
+        :render-node-actions="
+          typeof state.useRenderNodeActionsSlot === 'boolean'
+            ? state.useRenderNodeActionsSlot
+            : undefined
+        "
         style="position: relative"
       >
         <template v-if="state.useRenderNodeKeySlot" #renderNodeKey="{ node, defaultKey }">
@@ -95,6 +116,14 @@
             <a :href="node.content" target="_blank">{{ node.content }}</a>
           </template>
           <template v-else>{{ defaultValue }}</template>
+        </template>
+
+        <template
+          v-if="state.useRenderNodeActionsSlot === 'custom'"
+          #renderNodeActions="{ node, defaultActions }"
+        >
+          <span><a :href="node.content" target="_blank">link</a></span>
+          <span @click="defaultActions.copy" style="margin-left: 4px">copy</span>
         </template>
       </vue-json-pretty>
     </div>
@@ -150,6 +179,8 @@ export default defineComponent({
       collapsedOnClickBrackets: true,
       useRenderNodeKeySlot: false,
       useRenderNodeValueSlot: false,
+      useRenderNodeActionsSlot: false,
+      indent: 2,
       deep: 4,
       setPathCollapsible: false,
       showIcon: false,

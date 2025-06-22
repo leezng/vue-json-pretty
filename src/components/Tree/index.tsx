@@ -9,7 +9,7 @@ import {
   CSSProperties,
 } from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, JSONDataType, cloneDeep } from 'src/utils';
+import { emitError, jsonFlatten, cloneDeep } from 'src/utils';
 import './styles.less';
 
 export default defineComponent({
@@ -17,11 +17,6 @@ export default defineComponent({
 
   props: {
     ...treeNodePropsPass,
-    // JSONLike data.
-    data: {
-      type: [String, Number, Boolean, Array, Object] as PropType<JSONDataType>,
-      default: null,
-    },
     collapsedNodeLength: {
       type: Number,
       default: Infinity,
@@ -34,11 +29,6 @@ export default defineComponent({
     pathCollapsible: {
       type: Function as PropType<(node: NodeDataType) => boolean>,
       default: (): boolean => false,
-    },
-    // Data root path.
-    rootPath: {
-      type: String,
-      default: 'root',
     },
     // Whether to use virtual scroll, usually applied to big data.
     virtual: {
@@ -76,10 +66,11 @@ export default defineComponent({
     },
   },
 
-  slots: ['renderNodeKey', 'renderNodeValue'],
+  slots: ['renderNodeKey', 'renderNodeValue', 'renderNodeActions'],
 
   emits: [
     'nodeClick',
+    'nodeMouseover',
     'bracketsClick',
     'iconClick',
     'selectedChange',
@@ -216,6 +207,10 @@ export default defineComponent({
       emit('nodeClick', node);
     };
 
+    const handleNodeMouseover = (node: NodeDataType) => {
+      emit('nodeMouseover', node);
+    };
+
     const updateCollapsedPaths = (collapsed: boolean, path: string) => {
       if (collapsed) {
         state.hiddenPaths = {
@@ -277,12 +272,16 @@ export default defineComponent({
     return () => {
       const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
+      const renderNodeActions = props.renderNodeActions ?? slots.renderNodeActions ?? false;
 
       const nodeContent =
         state.visibleData &&
         state.visibleData.map(item => (
           <TreeNode
             key={item.id}
+            data={props.data}
+            rootPath={props.rootPath}
+            indent={props.indent}
             node={item}
             collapsed={!!state.hiddenPaths[item.path]}
             theme={props.theme}
@@ -302,7 +301,9 @@ export default defineComponent({
             showKeyValueSpace={props.showKeyValueSpace}
             renderNodeKey={renderNodeKey}
             renderNodeValue={renderNodeValue}
+            renderNodeActions={renderNodeActions}
             onNodeClick={handleNodeClick}
+            onNodeMouseover={handleNodeMouseover}
             onBracketsClick={handleBracketsClick}
             onIconClick={handleIconClick}
             onSelectedChange={handleSelectedChange}
