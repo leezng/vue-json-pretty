@@ -147,10 +147,10 @@ plugins: [
 
 ## Slots
 
-| Slot Name         | Description         | Parameters                                     |
+| Slot Name         | Description         | Parameters                                     |       |
 | ----------------- | ------------------- | ---------------------------------------------- | ----- |
-| renderNodeKey     | render node key     | { node, defaultKey }                           |
-| renderNodeValue   | render node value   | { node, defaultValue }                         |
+| renderNodeKey     | render node key     | { node, defaultKey }                           |       |
+| renderNodeValue   | render node value   | { node, defaultValue }                         |       |
 | renderNodeActions | render node actions | boolean \| ({ node, defaultActions }) => vNode | false |
 
 ## Contributors
