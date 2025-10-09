@@ -119,7 +119,9 @@ plugins: [
 | showDoubleQuotes         | Show doublequotes on key                                                                                                | boolean                                        | true    |
 | virtual                  | Use virtual scroll                                                                                                      | boolean                                        | false   |
 | height                   | The height of list when using virtual                                                                                   | number                                         | 400     |
-| itemHeight               | The height of node when using virtual                                                                                   | number                                         | 20      |
+| itemHeight               | Fixed row height when using virtual (ignored if `dynamicHeight` is true)                                                | number                                         | 20      |
+| dynamicHeight            | Enable dynamic row heights (measured per row)                                                                           | boolean                                        | false   |
+| estimatedItemHeight      | Estimated row height used before measurement when `dynamicHeight` is true                                               | number                                         | 20      |
 | selectedValue(v-model)   | Selected data path                                                                                                      | string, array                                  | -       |
 | rootPath                 | Root data path                                                                                                          | string                                         | `root`  |
 | nodeSelectable           | Defines whether a node supports selection                                                                               | (node) => boolean                              | -       |
