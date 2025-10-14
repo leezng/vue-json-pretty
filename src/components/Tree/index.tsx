@@ -51,11 +51,6 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    // Estimated item height used before measurement in dynamic mode.
-    estimatedItemHeight: {
-      type: Number,
-      default: 20,
-    },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
     selectedValue: {
@@ -131,7 +126,7 @@ export default defineComponent({
     const initDynamicHeights = (length: number) => {
       heights = Array(length)
         .fill(0)
-        .map(() => props.estimatedItemHeight || props.itemHeight || 20);
+        .map(() => props.itemHeight || 20);
       offsets = new Array(length + 1);
       offsets[0] = 0;
       for (let i = 0; i < length; i++) {
@@ -396,7 +391,7 @@ export default defineComponent({
 
     // Re-initialize dynamic height arrays when data shape changes significantly
     watch(
-      () => [props.dynamicHeight, props.estimatedItemHeight, originFlatData.value.length],
+      () => [props.dynamicHeight, props.itemHeight, originFlatData.value.length],
       () => {
         if (props.virtual && props.dynamicHeight) {
           initDynamicHeights(flatData.value.length);

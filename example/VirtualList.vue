@@ -14,10 +14,6 @@
           <label>dynamicHeight</label>
           <input v-model="state.dynamicHeight" type="checkbox" />
         </div>
-        <div v-if="state.dynamicHeight">
-          <label>estimatedItemHeight</label>
-          <input v-model="state.estimatedItemHeight" type="number" />
-        </div>
         <div>
           <label>showLine</label>
           <input v-model="state.showLine" type="checkbox" />
@@ -106,7 +102,6 @@ export default defineComponent({
       collapsedNodeLength: Infinity,
       itemHeight: 20,
       dynamicHeight: true,
-      estimatedItemHeight: 20,
     });
 
     const { localDarkMode, toggleLocalDarkMode, globalDarkModeState } = useDarkMode();
