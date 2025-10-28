@@ -82,15 +82,16 @@ body {
 
 .example-box {
   display: flex;
+  gap: 60px;
 
   .title {
     text-align: center;
   }
 
   .block {
-    width: 50%;
+    flex: auto;
     &:first-child {
-      padding-right: 30px;
+      flex: 0 0 450px;
     }
   }
 

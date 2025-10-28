@@ -7,6 +7,7 @@ import {
   ref,
   PropType,
   CSSProperties,
+  nextTick,
 } from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
 import { emitError, jsonFlatten, cloneDeep } from 'src/utils';
@@ -40,10 +41,15 @@ export default defineComponent({
       type: Number,
       default: 400,
     },
-    // When using virtual scroll, define the height of each row.
+    // When using virtual scroll without dynamicHeight, define the height of each row.
     itemHeight: {
       type: Number,
       default: 20,
+    },
+    // Enable dynamic row heights for virtual scroll.
+    dynamicHeight: {
+      type: Boolean,
+      default: true,
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
@@ -104,7 +110,72 @@ export default defineComponent({
       translateY: 0,
       visibleData: null as NodeDataType[] | null,
       hiddenPaths: initHiddenPaths(props.deep, props.collapsedNodeLength),
+      startIndex: 0,
+      endIndex: 0,
     });
+
+    // Dynamic height bookkeeping
+    // heights[i] is the measured height of row i in the current flatData (or estimated if not measured yet)
+    // offsets[i] is the cumulative offset before row i (offsets[0] = 0, offsets[length] = totalHeight)
+    let heights: number[] = [];
+    let offsets: number[] = [];
+    let totalHeight = 0;
+    const rowRefs: Record<number, HTMLElement | null> = {};
+    const OVERSCAN_COUNT = 5;
+
+    const initDynamicHeights = (length: number) => {
+      heights = Array(length)
+        .fill(0)
+        .map(() => props.itemHeight || 20);
+      offsets = new Array(length + 1);
+      offsets[0] = 0;
+      for (let i = 0; i < length; i++) {
+        offsets[i + 1] = offsets[i] + heights[i];
+      }
+      totalHeight = offsets[length] || 0;
+    };
+
+    const recomputeOffsetsFrom = (start: number) => {
+      const length = heights.length;
+      if (start < 0) start = 0;
+      if (start > length) start = length;
+      for (let i = start; i < length; i++) {
+        offsets[i + 1] = offsets[i] + heights[i];
+      }
+      totalHeight = offsets[length] || 0;
+    };
+
+    const setRowRef = (index: number, el: HTMLElement | null) => {
+      if (el) {
+        rowRefs[index] = el;
+      } else {
+        delete rowRefs[index];
+      }
+    };
+
+    const lowerBound = (arr: number[], target: number) => {
+      // first index i where arr[i] >= target
+      let lo = 0;
+      let hi = arr.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (arr[mid] < target) lo = mid + 1;
+        else hi = mid;
+      }
+      return lo;
+    };
+
+    const findStartIndexByScrollTop = (scrollTop: number) => {
+      // largest i such that offsets[i] <= scrollTop
+      const i = lowerBound(offsets, scrollTop + 0.0001); // epsilon to handle exact matches
+      return Math.max(0, Math.min(i - 1, heights.length - 1));
+    };
+
+    const findEndIndexByViewport = (scrollTop: number, viewportHeight: number) => {
+      const target = scrollTop + viewportHeight;
+      const i = lowerBound(offsets, target);
+      return Math.max(0, Math.min(i + 1, heights.length));
+    };
 
     const flatData = computed(() => {
       let startHiddenItem: null | NodeDataType = null;
@@ -154,31 +225,89 @@ export default defineComponent({
         : '';
     });
 
+    const listHeight = computed(() => {
+      if (props.dynamicHeight) {
+        return totalHeight || 0;
+      }
+      return flatData.value.length * props.itemHeight;
+    });
+
     const updateVisibleData = () => {
       const flatDataValue = flatData.value;
+      if (!flatDataValue) return;
       if (props.virtual) {
-        const visibleCount = props.height / props.itemHeight;
         const scrollTop = treeRef.value?.scrollTop || 0;
-        const scrollCount = Math.floor(scrollTop / props.itemHeight);
-        let start =
-          scrollCount < 0
-            ? 0
-            : scrollCount + visibleCount > flatDataValue.length
-            ? flatDataValue.length - visibleCount
-            : scrollCount;
-        if (start < 0) {
-          start = 0;
+
+        if (props.dynamicHeight) {
+          // Ensure dynamic arrays are initialized and consistent with data length
+          if (heights.length !== flatDataValue.length) {
+            initDynamicHeights(flatDataValue.length);
+          }
+
+          const start = findStartIndexByScrollTop(scrollTop);
+          const endNoOverscan = findEndIndexByViewport(scrollTop, props.height);
+          const startWithOverscan = Math.max(0, start - OVERSCAN_COUNT);
+          const endWithOverscan = Math.min(flatDataValue.length, endNoOverscan + OVERSCAN_COUNT);
+
+          state.startIndex = startWithOverscan;
+          state.endIndex = endWithOverscan;
+          state.translateY = offsets[startWithOverscan] || 0;
+          state.visibleData = flatDataValue.slice(startWithOverscan, endWithOverscan);
+
+          // Measure after render and update heights/offets if needed
+          nextTick().then(() => {
+            let changed = false;
+            for (let i = state.startIndex; i < state.endIndex; i++) {
+              const el = rowRefs[i];
+              if (!el) continue;
+              const h = el.offsetHeight;
+              if (h && heights[i] !== h) {
+                heights[i] = h;
+                // Update offsets from i forward
+                offsets[i + 1] = offsets[i] + heights[i];
+                recomputeOffsetsFrom(i + 1);
+                changed = true;
+              }
+            }
+            if (changed) {
+              // Recalculate slice based on new offsets
+              updateVisibleData();
+            }
+          });
+        } else {
+          const visibleCount = props.height / props.itemHeight;
+          const scrollCount = Math.floor(scrollTop / props.itemHeight);
+          let start =
+            scrollCount < 0
+              ? 0
+              : scrollCount + visibleCount > flatDataValue.length
+              ? flatDataValue.length - visibleCount
+              : scrollCount;
+          if (start < 0) {
+            start = 0;
+          }
+          const end = start + visibleCount;
+          state.translateY = start * props.itemHeight;
+          state.startIndex = start;
+          state.endIndex = end;
+          state.visibleData = flatDataValue.slice(start, end);
         }
-        const end = start + visibleCount;
-        state.translateY = start * props.itemHeight;
-        state.visibleData = flatDataValue.filter((item, index) => index >= start && index < end);
       } else {
+        state.translateY = 0;
+        state.startIndex = 0;
+        state.endIndex = flatDataValue.length;
         state.visibleData = flatDataValue;
       }
     };
 
+    let rafId: number | null = null;
     const handleTreeScroll = () => {
-      updateVisibleData();
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      rafId = requestAnimationFrame(() => {
+        updateVisibleData();
+      });
     };
 
     const handleSelectedChange = ({ path }: NodeDataType) => {
@@ -251,9 +380,25 @@ export default defineComponent({
 
     watchEffect(() => {
       if (flatData.value) {
+        if (props.virtual && props.dynamicHeight) {
+          if (heights.length !== flatData.value.length) {
+            initDynamicHeights(flatData.value.length);
+          }
+        }
         updateVisibleData();
       }
     });
+
+    // Re-initialize dynamic height arrays when data shape changes significantly
+    watch(
+      () => [props.dynamicHeight, props.itemHeight, originFlatData.value.length],
+      () => {
+        if (props.virtual && props.dynamicHeight) {
+          initDynamicHeights(flatData.value.length);
+          nextTick(updateVisibleData);
+        }
+      },
+    );
 
     watch(
       () => props.deep,
@@ -274,47 +419,52 @@ export default defineComponent({
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
       const renderNodeActions = props.renderNodeActions ?? slots.renderNodeActions ?? false;
 
-      const nodeContent =
-        state.visibleData &&
-        state.visibleData.map(item => (
-          <TreeNode
-            key={item.id}
-            data={props.data}
-            rootPath={props.rootPath}
-            indent={props.indent}
-            node={item}
-            collapsed={!!state.hiddenPaths[item.path]}
-            theme={props.theme}
-            showDoubleQuotes={props.showDoubleQuotes}
-            showLength={props.showLength}
-            checked={selectedPaths.value.includes(item.path)}
-            selectableType={props.selectableType}
-            showLine={props.showLine}
-            showLineNumber={props.showLineNumber}
-            showSelectController={props.showSelectController}
-            selectOnClickNode={props.selectOnClickNode}
-            nodeSelectable={props.nodeSelectable}
-            highlightSelectedNode={props.highlightSelectedNode}
-            editable={props.editable}
-            editableTrigger={props.editableTrigger}
-            showIcon={props.showIcon}
-            showKeyValueSpace={props.showKeyValueSpace}
-            renderNodeKey={renderNodeKey}
-            renderNodeValue={renderNodeValue}
-            renderNodeActions={renderNodeActions}
-            onNodeClick={handleNodeClick}
-            onNodeMouseover={handleNodeMouseover}
-            onBracketsClick={handleBracketsClick}
-            onIconClick={handleIconClick}
-            onSelectedChange={handleSelectedChange}
-            onValueChange={handleValueChange}
-            style={
-              props.itemHeight && props.itemHeight !== 20
-                ? { lineHeight: `${props.itemHeight}px` }
-                : {}
-            }
-          />
-        ));
+      const nodeContent = state.visibleData?.map((item, localIndex) => {
+        const globalIndex = state.startIndex + localIndex;
+        return (
+          <div key={item.id} ref={el => setRowRef(globalIndex, (el as HTMLElement) || null)}>
+            <TreeNode
+              data={props.data}
+              rootPath={props.rootPath}
+              indent={props.indent}
+              node={item}
+              collapsed={!!state.hiddenPaths[item.path]}
+              theme={props.theme}
+              showDoubleQuotes={props.showDoubleQuotes}
+              showLength={props.showLength}
+              checked={selectedPaths.value.includes(item.path)}
+              selectableType={props.selectableType}
+              showLine={props.showLine}
+              showLineNumber={props.showLineNumber}
+              showSelectController={props.showSelectController}
+              selectOnClickNode={props.selectOnClickNode}
+              nodeSelectable={props.nodeSelectable}
+              highlightSelectedNode={props.highlightSelectedNode}
+              editable={props.editable}
+              editableTrigger={props.editableTrigger}
+              showIcon={props.showIcon}
+              showKeyValueSpace={props.showKeyValueSpace}
+              renderNodeKey={renderNodeKey}
+              renderNodeValue={renderNodeValue}
+              renderNodeActions={renderNodeActions}
+              onNodeClick={handleNodeClick}
+              onNodeMouseover={handleNodeMouseover}
+              onBracketsClick={handleBracketsClick}
+              onIconClick={handleIconClick}
+              onSelectedChange={handleSelectedChange}
+              onValueChange={handleValueChange}
+              class={props.dynamicHeight ? 'dynamic-height' : undefined}
+              style={
+                props.dynamicHeight
+                  ? {}
+                  : props.itemHeight && props.itemHeight !== 20
+                  ? { lineHeight: `${props.itemHeight}px` }
+                  : {}
+              }
+            />
+          </div>
+        );
+      });
 
       return (
         <div
@@ -336,10 +486,7 @@ export default defineComponent({
         >
           {props.virtual ? (
             <div class="vjs-tree-list" style={{ height: `${props.height}px` }}>
-              <div
-                class="vjs-tree-list-holder"
-                style={{ height: `${flatData.value.length * props.itemHeight}px` }}
-              >
+              <div class="vjs-tree-list-holder" style={{ height: `${listHeight.value}px` }}>
                 <div
                   class="vjs-tree-list-holder-inner"
                   style={{ transform: `translateY(${state.translateY}px)` }}

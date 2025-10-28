@@ -83,8 +83,16 @@
   color: @comment-color;
 }
 
+.@{css-prefix}-key {
+  white-space: nowrap;
+}
+
 .@{css-prefix}-value {
   word-break: break-word;
+}
+
+.@{css-prefix}-tree-node.dynamic-height .@{css-prefix}-value {
+  white-space: pre-wrap;
 }
 
 .@{css-prefix}-value-null {
