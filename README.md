@@ -120,7 +120,7 @@ plugins: [
 | virtual                  | Use virtual scroll                                                                                                      | boolean                                        | false   |
 | height                   | The height of list when using virtual                                                                                   | number                                         | 400     |
 | itemHeight               | Fixed row height when using virtual (Estimated row height used before measurement when `dynamicHeight` is true)         | number                                         | 20      |
-| dynamicHeight            | Enable dynamic row heights (measured per row)                                                                           | boolean                                        | false   |
+| dynamicHeight            | Enable dynamic row heights (measured per row)                                                                           | boolean                                        | true    |
 | selectedValue(v-model)   | Selected data path                                                                                                      | string, array                                  | -       |
 | rootPath                 | Root data path                                                                                                          | string                                         | `root`  |
 | nodeSelectable           | Defines whether a node supports selection                                                                               | (node) => boolean                              | -       |

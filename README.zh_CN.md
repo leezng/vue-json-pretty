@@ -23,7 +23,8 @@
 | showDoubleQuotes         | 展示 key 名的双引号                             | boolean                                        | true          |
 | virtual                  | 使用虚拟滚动(大数据量)                          | boolean                                        | false         |
 | height                   | 使用虚拟滚动时，定义总高度                      | number                                         | 400           |
-| itemHeight               | 使用虚拟滚动时，定义节点高度                    | number                                         | 20            |
+| itemHeight               | 使用虚拟滚动时，定义节点高度(可为预估值)        | number                                         | 20            |
+| dynamicHeight            | 使用虚拟滚动时，开启每一行可为动态高度          | boolean                                        | true          |
 | selectedValue(v-model)   | 双向绑定选中的数据路径                          | string, array                                  | string, array |
 | rootPath                 | 定义最顶层数据路径                              | string                                         | `root`        |
 | nodeSelectable           | 定义哪些数据节点可以被选择                      | function(node)                                 | -             |
