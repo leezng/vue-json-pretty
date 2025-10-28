@@ -49,7 +49,7 @@ export default defineComponent({
     // Enable dynamic row heights for virtual scroll.
     dynamicHeight: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     // When there is a selection function, define the selected path.
     // For multiple selections, it is an array ['root.a','root.b'], for single selection, it is a string of 'root.a'.
