@@ -119,7 +119,7 @@ export default defineComponent({
     // offsets[i] is the cumulative offset before row i (offsets[0] = 0, offsets[length] = totalHeight)
     let heights: number[] = [];
     let offsets: number[] = [];
-    let totalHeight = 0;
+    const totalHeight = ref(0);
     const rowRefs: Record<number, HTMLElement | null> = {};
     const OVERSCAN_COUNT = 5;
 
@@ -132,7 +132,7 @@ export default defineComponent({
       for (let i = 0; i < length; i++) {
         offsets[i + 1] = offsets[i] + heights[i];
       }
-      totalHeight = offsets[length] || 0;
+      totalHeight.value = offsets[length] || 0;
     };
 
     const recomputeOffsetsFrom = (start: number) => {
@@ -142,7 +142,7 @@ export default defineComponent({
       for (let i = start; i < length; i++) {
         offsets[i + 1] = offsets[i] + heights[i];
       }
-      totalHeight = offsets[length] || 0;
+      totalHeight.value = offsets[length] || 0;
     };
 
     const setRowRef = (index: number, el: HTMLElement | null) => {
@@ -227,7 +227,7 @@ export default defineComponent({
 
     const listHeight = computed(() => {
       if (props.dynamicHeight) {
-        return totalHeight || 0;
+        return totalHeight.value || 0;
       }
       return flatData.value.length * props.itemHeight;
     });
