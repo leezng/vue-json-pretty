@@ -97,10 +97,7 @@ export default defineComponent({
           (item.type === 'objectStart' || item.type === 'arrayStart') &&
           (doCollapse || pathComparison)
         ) {
-          return {
-            ...acc,
-            [item.path]: 1,
-          };
+          acc[item.path] = 1;
         }
         return acc;
       }, {}) as Record<string, 1>;
