@@ -137,6 +137,19 @@ export default defineComponent({
     onSelectedChange: {
       type: Function as PropType<(node: NodeDataType) => void>,
     },
+    // Search highlight
+    highlightText: {
+      type: String,
+      default: '',
+    },
+    highlightCaseSensitive: {
+      type: Boolean,
+      default: false,
+    },
+    isActiveMatch: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   emits: [
@@ -157,12 +170,65 @@ export default defineComponent({
       props.showDoubleQuotes ? `"${props.node.key}"` : props.node.key,
     );
 
+    // ── Search highlight helpers ──
+    const highlightKeyword = (
+      text: string,
+    ): (string | { text: string; highlighted: boolean })[] => {
+      const keyword = props.highlightText?.trim();
+      if (!keyword || !text) return [text];
+
+      const source = props.highlightCaseSensitive ? text : text.toLowerCase();
+      const key = props.highlightCaseSensitive ? keyword : keyword.toLowerCase();
+
+      const segments: (string | { text: string; highlighted: boolean })[] = [];
+      let lastIndex = 0;
+
+      let idx = source.indexOf(key, lastIndex);
+      while (idx >= 0) {
+        if (idx > lastIndex) {
+          segments.push(text.slice(lastIndex, idx));
+        }
+        segments.push({ text: text.slice(idx, idx + keyword.length), highlighted: true });
+        lastIndex = idx + keyword.length;
+        idx = source.indexOf(key, lastIndex);
+      }
+      if (lastIndex < text.length) {
+        segments.push(text.slice(lastIndex));
+      }
+      return segments;
+    };
+
+    const renderHighlightedText = (text: string): JSX.Element => {
+      const segments = highlightKeyword(text);
+      if (segments.length === 1 && typeof segments[0] === 'string') {
+        return <>{text}</>;
+      }
+      const children = segments.map((seg, i) => {
+        if (typeof seg === 'string') {
+          return seg;
+        }
+        return (
+          <span key={i} class="vjs-highlight">
+            {seg.text}
+          </span>
+        );
+      });
+      return <>{children}</>;
+    };
+
     const renderKey = () => {
       const render = props.renderNodeKey;
+      const defaultKey = prettyKey.value || '';
 
-      return render
-        ? render({ node: props.node, defaultKey: prettyKey.value || '' })
-        : prettyKey.value;
+      if (render) {
+        return render({ node: props.node, defaultKey });
+      }
+
+      if (props.highlightText?.trim() && props.node.key) {
+        return renderHighlightedText(defaultKey);
+      }
+
+      return defaultKey;
     };
 
     const isMultiple = computed(() => props.selectableType === 'multiple');
@@ -196,10 +262,17 @@ export default defineComponent({
 
     const renderValue = () => {
       const render = props.renderNodeValue;
+      const defaultVal = defaultValue.value;
 
-      return render
-        ? render({ node: props.node, defaultValue: defaultValue.value })
-        : defaultValue.value;
+      if (render) {
+        return render({ node: props.node, defaultValue: defaultVal });
+      }
+
+      if (props.highlightText?.trim() && props.node.type === 'content') {
+        return renderHighlightedText(defaultVal);
+      }
+
+      return defaultVal;
     };
 
     const handleBracketsClick = () => {
@@ -278,6 +351,7 @@ export default defineComponent({
             'has-selector': props.showSelectController,
             'has-carets': props.showIcon,
             'is-highlight': props.highlightSelectedNode && props.checked,
+            'is-active-match': props.isActiveMatch,
             dark: props.theme === 'dark',
           }}
           onClick={handleNodeClick}

@@ -114,3 +114,29 @@
 .@{css-prefix}-value-string {
   .gen-value-style(@color-string);
 }
+
+// ── Search highlight ──
+.@{css-prefix}-highlight {
+  background-color: #fff3a8;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.@{css-prefix}-tree-node.dark .@{css-prefix}-highlight {
+  background-color: #3d5a3d;
+}
+
+.@{css-prefix}-tree-node.is-active-match {
+  background-color: #fff3cf !important;
+  border-radius: 4px;
+  box-shadow: inset 3px 0 0 #f5a623;
+
+  &.dark {
+    background-color: #1a2d40 !important;
+    box-shadow: inset 3px 0 0 #4a9bd9;
+  }
+
+  .@{css-prefix}-tree-node-actions {
+    display: block;
+  }
+}

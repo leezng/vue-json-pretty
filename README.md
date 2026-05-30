@@ -33,6 +33,7 @@ English | [简体中文](./README.zh_CN.md)
 - Support get item data from JSON.
 - Support big data.
 - Support editable.
+- Support search/filter with result navigation.
 
 ## Environment Support
 
@@ -135,16 +136,22 @@ plugins: [
 | editable                 | Support editable                                                                                                        | boolean                                        | false   |
 | editableTrigger          | Trigger                                                                                                                 | `click` \| `dblclick`                          | `click` |
 | theme                    | Sets the theme of the component. Options are 'light' or 'dark', with dark mode enhancing visibility on dark backgrounds | `'light' \| 'dark'`                            | `light` |
+| searchText               | Keyword for filtering the JSON tree. When non-empty, only matching nodes and their ancestors are shown                  | string                                         | -       |
+| searchCaseSensitive      | Whether the search is case-sensitive                                                                                    | boolean                                        | false   |
+| searchStrict             | Whether to use strict (exact) matching. When false, uses fuzzy (includes) matching                                      | boolean                                        | false   |
+| searchMode               | Search scope: `'key'` for property names, `'value'` for values, `'all'` for both                                        | `'key' \| 'value' \| 'all'`                    | `'all'` |
+| showSearchResultInfo     | Show a built-in result info bar inside the component with match count and ◀ ▶ navigation buttons                        | boolean                                        | false   |
 
 ## Events
 
-| Event Name     | Description                              | Parameters                           |
-| -------------- | ---------------------------------------- | ------------------------------------ |
-| nodeClick      | triggers when click node                 | (node: NodeData)                     |
-| nodeMouseover  | triggers when mouseover node             | (node: NodeData)                     |
-| bracketsClick  | triggers when click brackets             | (collapsed: boolean, node: NodeData) |
-| iconClick      | triggers when click icon                 | (collapsed: boolean, node: NodeData) |
-| selectedChange | triggers when the selected value changed | (newVal, oldVal)                     |
+| Event Name        | Description                                              | Parameters                           |
+| ----------------- | -------------------------------------------------------- | ------------------------------------ |
+| nodeClick         | triggers when click node                                 | (node: NodeData)                     |
+| nodeMouseover     | triggers when mouseover node                             | (node: NodeData)                     |
+| bracketsClick     | triggers when click brackets                             | (collapsed: boolean, node: NodeData) |
+| iconClick         | triggers when click icon                                 | (collapsed: boolean, node: NodeData) |
+| selectedChange    | triggers when the selected value changed                 | (newVal, oldVal)                     |
+| searchMatchChange | triggers when search results change or navigation occurs | ({ currentIndex, totalCount })       |
 
 ## Slots
 
@@ -153,6 +160,14 @@ plugins: [
 | renderNodeKey     | render node key     | { node, defaultKey }                           |       |
 | renderNodeValue   | render node value   | { node, defaultValue }                         |       |
 | renderNodeActions | render node actions | boolean \| ({ node, defaultActions }) => vNode | false |
+
+## Expose (via template ref)
+
+| Method                  | Description                           | Returns                        |
+| ----------------------- | ------------------------------------- | ------------------------------ |
+| `nextMatch()`           | Navigate to the next search match     | -                              |
+| `prevMatch()`           | Navigate to the previous search match | -                              |
+| `getSearchResultInfo()` | Get current search result info        | `{ currentIndex, totalCount }` |
 
 ## Contributors
 

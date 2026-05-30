@@ -3,6 +3,7 @@ import Basic from './Basic.vue';
 import VirtualList from './VirtualList.vue';
 import SelectControl from './SelectControl.vue';
 import Editable from './Editable.vue';
+import Searchable from './Searchable.vue';
 // import Tsx from './Tsx';
 import './styles.less';
 import { MoonIcon, SunIcon } from './Icons';
@@ -27,6 +28,11 @@ const list = [
     title: 'Editable',
     key: 'Editable',
     component: Editable,
+  },
+  {
+    title: 'Search',
+    key: 'Search',
+    component: Searchable,
   },
   // {
   //   title: 'Tsx',
