@@ -71,7 +71,7 @@ export default defineComponent({
       default: 'light',
     },
     // Search keyword for filtering the JSON tree.
-    searchText: {
+    search: {
       type: String,
       default: '',
     },
@@ -90,11 +90,7 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    // Whether to show the built-in search result info bar (count + navigation).
-    showSearchResultInfo: {
-      type: Boolean,
-      default: false,
-    },
+
   },
 
   slots: ['renderNodeKey', 'renderNodeValue', 'renderNodeActions'],
@@ -175,7 +171,7 @@ export default defineComponent({
     // Pure computed: filters the flattened data based on search criteria.
     const searchFilteredData = computed<JSONFlattenReturnType[]>(() => {
       const origin = originFlatData.value;
-      const keyword = props.searchText?.trim();
+      const keyword = props.search?.trim();
       if (!keyword) return origin;
 
       const caseSensitive = props.searchCaseSensitive;
@@ -257,9 +253,9 @@ export default defineComponent({
     });
 
     // Watch to update searchMatchInfo reactively (side effects are allowed here)
-    watch([searchFilteredData, () => props.searchText], () => {
+    watch([searchFilteredData, () => props.search], () => {
       const origin = originFlatData.value;
-      const keyword = props.searchText?.trim();
+      const keyword = props.search?.trim();
 
       if (!keyword) {
         searchMatchInfo.paths = [];
@@ -642,7 +638,7 @@ export default defineComponent({
 
     // ── Search: auto-expand ancestors of matched paths ──
     watch(
-      () => props.searchText,
+      () => props.search,
       text => {
         if (text?.trim()) {
           // Expand all paths that appear in the search-filtered result
@@ -785,7 +781,7 @@ export default defineComponent({
               renderNodeKey={renderNodeKey}
               renderNodeValue={renderNodeValue}
               renderNodeActions={renderNodeActions}
-              highlightText={props.searchText}
+              highlightText={props.search}
               highlightCaseSensitive={props.searchCaseSensitive}
               isActiveMatch={isActiveMatch}
               onNodeClick={handleNodeClick}
@@ -807,37 +803,12 @@ export default defineComponent({
         );
       });
 
-      // ── Search info bar ──
-      const showSearchBar =
-        props.showSearchResultInfo && props.searchText?.trim() && searchMatchInfo.totalCount > 0;
-
-      const searchInfoBar = showSearchBar ? (
-        <div class="vjs-search-info">
-          <span class="vjs-search-info-label">
-            {searchMatchInfo.activeIndex + 1} / {searchMatchInfo.totalCount}
-          </span>
-          <button
-            class="vjs-search-info-btn"
-            onClick={prevMatch}
-            title="Previous match"
-            innerHTML="&#9664;"
-          />
-          <button
-            class="vjs-search-info-btn"
-            onClick={nextMatch}
-            title="Next match"
-            innerHTML="&#9654;"
-          />
-        </div>
-      ) : null;
-
       return (
         <div
           ref={treeRef}
           class={{
             'vjs-tree': true,
             'is-virtual': props.virtual,
-            'has-search-info': !!showSearchBar,
             dark: props.theme === 'dark',
           }}
           onScroll={props.virtual ? handleTreeScroll : undefined}
@@ -852,7 +823,6 @@ export default defineComponent({
               : props.style
           }
         >
-          {searchInfoBar}
           {props.virtual ? (
             <div class="vjs-tree-list" style={{ height: `${props.height}px` }}>
               <div class="vjs-tree-list-holder" style={{ height: `${listHeight.value}px` }}>

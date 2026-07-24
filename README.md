@@ -136,11 +136,10 @@ plugins: [
 | editable                 | Support editable                                                                                                        | boolean                                        | false   |
 | editableTrigger          | Trigger                                                                                                                 | `click` \| `dblclick`                          | `click` |
 | theme                    | Sets the theme of the component. Options are 'light' or 'dark', with dark mode enhancing visibility on dark backgrounds | `'light' \| 'dark'`                            | `light` |
-| searchText               | Keyword for filtering the JSON tree. When non-empty, only matching nodes and their ancestors are shown                  | string                                         | -       |
+| search                   | Keyword for filtering the JSON tree. When non-empty, only matching nodes and their ancestors are shown                  | string                                         | -       |
 | searchCaseSensitive      | Whether the search is case-sensitive                                                                                    | boolean                                        | false   |
 | searchStrict             | Whether to use strict (exact) matching. When false, uses fuzzy (includes) matching                                      | boolean                                        | false   |
 | searchMode               | Search scope: `'key'` for property names, `'value'` for values, `'all'` for both                                        | `'key' \| 'value' \| 'all'`                    | `'all'` |
-| showSearchResultInfo     | Show a built-in result info bar inside the component with match count and ◀ ▶ navigation buttons                        | boolean                                        | false   |
 
 ## Events
 

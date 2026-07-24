@@ -58,10 +58,7 @@
           <label>Virtual Scroll</label>
           <input v-model="state.virtual" type="checkbox" />
         </div>
-        <div>
-          <label>Show Result Bar</label>
-          <input v-model="state.showResultInfo" type="checkbox" />
-        </div>
+
         <div>
           <label>deep</label>
           <select v-model="state.deep">
@@ -92,11 +89,10 @@
         :show-line-number="state.showLineNumber"
         :show-length="state.showLength"
         :virtual="state.virtual"
-        :search-text="state.searchText"
+        :search="state.searchText"
         :search-case-sensitive="state.caseSensitive"
         :search-strict="state.strict"
         :search-mode="state.searchMode"
-        :show-search-result-info="state.showResultInfo"
         @search-match-change="handleSearchMatchChange"
       />
     </div>
@@ -195,7 +191,7 @@ export default defineComponent({
       caseSensitive: false,
       strict: false,
       searchMode: 'all',
-      showResultInfo: true,
+
       showLine: true,
       showLineNumber: false,
       showLength: false,
