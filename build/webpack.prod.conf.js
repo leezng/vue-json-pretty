@@ -41,6 +41,8 @@ if (!isExampleEnv) {
     webpackConfig.entry = {
       'vue-json-pretty': './src/index.ts',
     };
+    // .mjs so Node parses the bundle as ESM (the package has no "type": "module")
+    webpackConfig.output.filename = `${distPath}/[name].mjs`;
     webpackConfig.experiments = {
       outputModule: true,
     };

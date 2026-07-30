@@ -3,8 +3,19 @@
   "version": "2.2.3",
   "description": "A JSON tree view component that is easy to use and also supports data selection.",
   "author": "leezng <im.leezng@gmail.com>",
+  "type": "commonjs",
   "main": "lib/vue-json-pretty.js",
-  "module": "esm/vue-json-pretty.js",
+  "module": "esm/vue-json-pretty.mjs",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./esm/vue-json-pretty.mjs",
+      "require": "./lib/vue-json-pretty.js"
+    },
+    "./lib/styles.css": "./lib/styles.css",
+    "./esm/styles.css": "./esm/styles.css",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "npm run build:main && npm run build:esm && npm run build:dts",
