@@ -10,7 +10,7 @@ import {
   nextTick,
 } from 'vue';
 import TreeNode, { treeNodePropsPass, NodeDataType } from 'src/components/TreeNode';
-import { emitError, jsonFlatten, cloneDeep } from 'src/utils';
+import { emitError, jsonFlatten, cloneDeep, JSONFlattenReturnType } from 'src/utils';
 import './styles.less';
 
 export default defineComponent({
@@ -70,6 +70,27 @@ export default defineComponent({
       type: String as PropType<'light' | 'dark'>,
       default: 'light',
     },
+    // Search keyword for filtering the JSON tree.
+    search: {
+      type: String,
+      default: '',
+    },
+    // Whether the search is case-sensitive.
+    searchCaseSensitive: {
+      type: Boolean,
+      default: false,
+    },
+    // Search scope: 'key' | 'value' | 'all'.
+    searchMode: {
+      type: String as PropType<'key' | 'value' | 'all'>,
+      default: 'all',
+    },
+    // Whether to use strict (exact) matching. When false, uses fuzzy (includes) matching.
+    searchStrict: {
+      type: Boolean,
+      default: false,
+    },
+
   },
 
   slots: ['renderNodeKey', 'renderNodeValue', 'renderNodeActions'],
@@ -82,12 +103,215 @@ export default defineComponent({
     'selectedChange',
     'update:selectedValue',
     'update:data',
+    'searchMatchChange',
   ],
 
-  setup(props, { emit, slots }) {
+  setup(props, { emit, slots, expose }) {
     const treeRef = ref<HTMLElement>();
 
     const originFlatData = computed(() => jsonFlatten(props.data, props.rootPath));
+
+    // ── Search state ──
+    const searchMatchInfo = reactive({
+      paths: [] as string[],
+      totalCount: 0,
+      activeIndex: -1,
+    });
+
+    const matchesSearch = (
+      text: string,
+      keyword: string,
+      caseSensitive: boolean,
+      strict: boolean,
+    ): boolean => {
+      if (!text) return false;
+      const source = caseSensitive ? text : text.toLowerCase();
+      const key = caseSensitive ? keyword : keyword.toLowerCase();
+      return strict ? source === key : source.includes(key);
+    };
+
+    // Collect ancestor paths from a given path string.
+    // Correctly handles bracket notation like `data[0]` and special keys like `["foo.bar"]`.
+    const getAncestorPaths = (path: string): Set<string> => {
+      const ancestors = new Set<string>();
+
+      // Parse path into segments, respecting bracket depth
+      const segments: string[] = [];
+      let current = '';
+      let bracketDepth = 0;
+      for (const ch of path) {
+        if (ch === '.' && bracketDepth === 0) {
+          segments.push(current);
+          current = '';
+        } else {
+          if (ch === '[') bracketDepth++;
+          else if (ch === ']') bracketDepth--;
+          current += ch;
+        }
+      }
+      if (current) segments.push(current);
+
+      // Build ancestor paths; for array-indexed segments (e.g. `data[0]`),
+      // also add the parent path without the index (e.g. `root.data`).
+      let acc = '';
+      for (const seg of segments) {
+        const bracketIdx = seg.indexOf('[');
+        if (bracketIdx >= 0) {
+          const keyPart = seg.slice(0, bracketIdx);
+          const parentAcc = acc ? `${acc}.${keyPart}` : keyPart;
+          ancestors.add(parentAcc);
+        }
+        acc = acc ? `${acc}.${seg}` : seg;
+        ancestors.add(acc);
+      }
+
+      return ancestors;
+    };
+
+    // Pure computed: filters the flattened data based on search criteria.
+    const searchFilteredData = computed<JSONFlattenReturnType[]>(() => {
+      const origin = originFlatData.value;
+      const keyword = props.search?.trim();
+      if (!keyword) return origin;
+
+      const caseSensitive = props.searchCaseSensitive;
+      const strict = props.searchStrict;
+      const mode = props.searchMode;
+
+      // Step 1: Find matching nodes
+      // Key matching: check content nodes AND structural nodes (objectStart/arrayStart)
+      // Value matching: check only content nodes
+      const matchedPaths = new Set<string>();
+      for (const item of origin) {
+        let keyMatch = false;
+        let valueMatch = false;
+
+        if (mode === 'key' || mode === 'all') {
+          if (item.key) {
+            keyMatch = matchesSearch(item.key, keyword, caseSensitive, strict);
+          }
+        }
+        if (mode === 'value' || mode === 'all') {
+          if (item.type === 'content') {
+            const strValue = String(item.content ?? '');
+            valueMatch = matchesSearch(strValue, keyword, caseSensitive, strict);
+          }
+        }
+
+        if (keyMatch || valueMatch) {
+          matchedPaths.add(item.path);
+        }
+      }
+
+      // Step 2: Collect ancestor paths
+      const allowedPaths = new Set<string>();
+      for (const p of matchedPaths) {
+        const ancestors = getAncestorPaths(p);
+        for (const a of ancestors) {
+          allowedPaths.add(a);
+        }
+      }
+
+      // Step 2b: If a matched path is a structural node (objectStart/arrayStart),
+      // include all descendant paths so the full subtree is visible.
+      // e.g. searching key "members" matches the arrayStart node — show everything inside.
+      const structuralMatched = new Set<string>();
+      for (const item of origin) {
+        if (
+          (item.type === 'objectStart' || item.type === 'arrayStart') &&
+          matchedPaths.has(item.path)
+        ) {
+          structuralMatched.add(item.path);
+        }
+      }
+      if (structuralMatched.size > 0) {
+        for (const item of origin) {
+          for (const smp of structuralMatched) {
+            if (
+              item.path !== smp &&
+              (item.path.startsWith(smp + '.') || item.path.startsWith(smp + '['))
+            ) {
+              allowedPaths.add(item.path);
+              break;
+            }
+          }
+        }
+      }
+
+      // Step 3: Filter originFlatData to only include allowed paths, preserving order
+      const result: JSONFlattenReturnType[] = [];
+      for (const item of origin) {
+        if (allowedPaths.has(item.path)) {
+          result.push(item);
+        }
+      }
+
+      // If search yields no matches, show the original data (with 0-match indicator)
+      if (result.length === 0) return origin;
+
+      return result;
+    });
+
+    // Watch to update searchMatchInfo reactively (side effects are allowed here)
+    watch([searchFilteredData, () => props.search], () => {
+      const origin = originFlatData.value;
+      const keyword = props.search?.trim();
+
+      if (!keyword) {
+        searchMatchInfo.paths = [];
+        searchMatchInfo.totalCount = 0;
+        searchMatchInfo.activeIndex = -1;
+        emit('searchMatchChange', {
+          currentIndex: -1,
+          totalCount: 0,
+        });
+        return;
+      }
+
+      const caseSensitive = props.searchCaseSensitive;
+      const strict = props.searchStrict;
+      const mode = props.searchMode;
+
+      // Re-derive matched paths (lightweight operation on the already-flat data)
+      const matchedPaths: string[] = [];
+      for (const item of origin) {
+        let keyMatch = false;
+        let valueMatch = false;
+
+        if (mode === 'key' || mode === 'all') {
+          if (item.key) {
+            keyMatch = matchesSearch(item.key, keyword, caseSensitive, strict);
+          }
+        }
+        if (mode === 'value' || mode === 'all') {
+          if (item.type === 'content') {
+            const strValue = String(item.content ?? '');
+            valueMatch = matchesSearch(strValue, keyword, caseSensitive, strict);
+          }
+        }
+
+        if (keyMatch || valueMatch) {
+          matchedPaths.push(item.path);
+        }
+      }
+
+      searchMatchInfo.paths = matchedPaths;
+      searchMatchInfo.totalCount = matchedPaths.length;
+
+      if (searchMatchInfo.activeIndex < 0 && matchedPaths.length > 0) {
+        searchMatchInfo.activeIndex = 0;
+      } else if (matchedPaths.length === 0) {
+        searchMatchInfo.activeIndex = -1;
+      } else if (searchMatchInfo.activeIndex >= matchedPaths.length) {
+        searchMatchInfo.activeIndex = matchedPaths.length - 1;
+      }
+
+      // Emit change event so parent can update its UI
+      emit('searchMatchChange', {
+        currentIndex: searchMatchInfo.activeIndex,
+        totalCount: searchMatchInfo.totalCount,
+      });
+    });
 
     const initHiddenPaths = (deep: number, collapsedNodeLength: number) => {
       return originFlatData.value.reduce((acc, item) => {
@@ -100,7 +324,7 @@ export default defineComponent({
           acc[item.path] = 1;
         }
         return acc;
-      }, {}) as Record<string, 1>;
+      }, {} as Record<string, 1>);
     };
 
     const state = reactive({
@@ -175,11 +399,12 @@ export default defineComponent({
     };
 
     const flatData = computed(() => {
+      const source = searchFilteredData.value as NodeDataType[];
       let startHiddenItem: null | NodeDataType = null;
       const data = [];
-      const length = originFlatData.value.length;
+      const length = source.length;
       for (let i = 0; i < length; i++) {
-        const cur = originFlatData.value[i];
+        const cur = source[i];
         const item = {
           ...cur,
           id: i,
@@ -411,6 +636,110 @@ export default defineComponent({
       },
     );
 
+    // ── Search: auto-expand ancestors of matched paths ──
+    watch(
+      () => props.search,
+      text => {
+        if (text?.trim()) {
+          // Expand all paths that appear in the search-filtered result
+          const visiblePaths = new Set<string>();
+          for (const item of searchFilteredData.value) {
+            visiblePaths.add(item.path);
+          }
+          const newHidden: Record<string, 1> = { ...state.hiddenPaths };
+          for (const path of Object.keys(newHidden)) {
+            if (visiblePaths.has(path)) {
+              delete newHidden[path];
+            }
+          }
+          state.hiddenPaths = newHidden;
+
+          // Make tree container scrollable so navigation doesn't scroll the page
+          nextTick(() => {
+            if (!props.virtual && treeRef.value && !treeRef.value.style.maxHeight) {
+              treeRef.value.style.maxHeight = '55vh';
+              treeRef.value.style.overflowY = 'auto';
+            }
+          });
+        } else {
+          // Restore initial hidden state
+          state.hiddenPaths = initHiddenPaths(props.deep, props.collapsedNodeLength);
+
+          // Remove scroll confinement
+          if (treeRef.value) {
+            treeRef.value.style.maxHeight = '';
+            treeRef.value.style.overflowY = '';
+          }
+        }
+      },
+    );
+
+    // ── Navigation methods (exposed via ref) ──
+    // Find the flatData index of a matched path (for virtual scroll navigation)
+    const getFlatIndexByPath = (targetPath: string): number => {
+      const fd = flatData.value;
+      for (let i = 0; i < fd.length; i++) {
+        if (fd[i].path === targetPath) return i;
+      }
+      return -1;
+    };
+
+    const scrollToPath = (path: string) => {
+      nextTick(() => {
+        // Escape special characters for querySelector
+        const escaped = path.replace(/"/g, '\\"');
+        const el = treeRef.value?.querySelector(`[data-vjs-path="${escaped}"]`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          return;
+        }
+        // If DOM element not found (e.g. virtual scroll, element off-screen),
+        // calculate and set scrollTop manually.
+        if (props.virtual && treeRef.value) {
+          const idx = getFlatIndexByPath(path);
+          if (idx >= 0) {
+            const scrollTop = props.dynamicHeight ? offsets[idx] || 0 : idx * props.itemHeight;
+            treeRef.value.scrollTop = Math.max(0, scrollTop - 40);
+          }
+        }
+      });
+    };
+
+    const nextMatch = () => {
+      if (searchMatchInfo.totalCount <= 0) return;
+      const next = (searchMatchInfo.activeIndex + 1) % searchMatchInfo.totalCount;
+      searchMatchInfo.activeIndex = next;
+      scrollToPath(searchMatchInfo.paths[next]);
+      emit('searchMatchChange', {
+        currentIndex: next,
+        totalCount: searchMatchInfo.totalCount,
+      });
+    };
+
+    const prevMatch = () => {
+      if (searchMatchInfo.totalCount <= 0) return;
+      const prev =
+        (searchMatchInfo.activeIndex - 1 + searchMatchInfo.totalCount) % searchMatchInfo.totalCount;
+      searchMatchInfo.activeIndex = prev;
+      scrollToPath(searchMatchInfo.paths[prev]);
+      emit('searchMatchChange', {
+        currentIndex: prev,
+        totalCount: searchMatchInfo.totalCount,
+      });
+    };
+
+    const getSearchResultInfo = () => ({
+      currentIndex: searchMatchInfo.activeIndex,
+      totalCount: searchMatchInfo.totalCount,
+    });
+
+    // Expose methods for external ref access
+    expose({
+      nextMatch,
+      prevMatch,
+      getSearchResultInfo,
+    });
+
     return () => {
       const renderNodeKey = props.renderNodeKey ?? slots.renderNodeKey;
       const renderNodeValue = props.renderNodeValue ?? slots.renderNodeValue;
@@ -418,8 +747,16 @@ export default defineComponent({
 
       const nodeContent = state.visibleData?.map((item, localIndex) => {
         const globalIndex = state.startIndex + localIndex;
+        const isActiveMatch =
+          searchMatchInfo.activeIndex >= 0 &&
+          searchMatchInfo.paths[searchMatchInfo.activeIndex] === item.path;
         return (
-          <div key={item.id} ref={el => setRowRef(globalIndex, (el as HTMLElement) || null)}>
+          <div
+            key={item.id}
+            ref={el => setRowRef(globalIndex, (el as HTMLElement) || null)}
+            data-vjs-path={item.path}
+            data-vjs-active={isActiveMatch ? 'true' : undefined}
+          >
             <TreeNode
               data={props.data}
               rootPath={props.rootPath}
@@ -444,6 +781,9 @@ export default defineComponent({
               renderNodeKey={renderNodeKey}
               renderNodeValue={renderNodeValue}
               renderNodeActions={renderNodeActions}
+              highlightText={props.search}
+              highlightCaseSensitive={props.searchCaseSensitive}
+              isActiveMatch={isActiveMatch}
               onNodeClick={handleNodeClick}
               onNodeMouseover={handleNodeMouseover}
               onBracketsClick={handleBracketsClick}
@@ -475,7 +815,9 @@ export default defineComponent({
           style={
             props.showLineNumber
               ? {
-                  paddingLeft: `${Number(originFlatData.value.length.toString().length) * 12}px`,
+                  paddingLeft: `${
+                    Number(searchFilteredData.value.length.toString().length) * 12
+                  }px`,
                   ...props.style,
                 }
               : props.style
